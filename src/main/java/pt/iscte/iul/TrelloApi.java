@@ -17,15 +17,33 @@ public class TrelloApi extends JSONObject {
     public static void get_info(String[] user_git_info, String[] user_trello_info) throws UnirestException {
 
         HttpResponse<JsonNode> response;
-        response = Unirest.get(CARD_IN_BOARD_URL + "?key=" + user_trello_info[1] + "&token=" + user_trello_info[2])
+        response = Unirest.get(BOARD_URL + "&key=" + user_trello_info[1] + "&token=" + user_trello_info[2])
                 .header("Accept", "application/json")
                 .asJson();
 
         JSONArray array = response.getBody().getArray();
 
+        if (check_more_than_one_board(array)){
+            System.out.println("true");
+        }
+    }
+
+    // check if there is more than 1 board
+    public static boolean check_more_than_one_board(JSONArray array){
+        int count = 0;
         for (int i = 0; i < array.length(); i++) {
             JSONObject object = array.getJSONObject(i);
             System.out.println(object);
+            // if the there is a key "name" in the array, that means that it's a board
+            if (object.getString("name").equals(object.get("name"))){
+                // for every board we count ++1
+                count++;
+            }
         }
+        // if there is more than 1 board, return true
+        if (count > 1){
+            return true;
+        }
+        return false;
     }
 }

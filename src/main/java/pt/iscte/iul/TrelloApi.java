@@ -24,7 +24,19 @@ public class TrelloApi extends JSONObject {
         JSONArray array = response.getBody().getArray();
 
         if (check_more_than_one_board(array)){
-            System.out.println("true");
+            // make prompt to know what board to access
+            String prompt = "ES-LETI-1Sem-2021-Grupo10";
+            // based on the prompt, get the id for the specific board
+            String id = getBoardId(array, prompt);
+            //http response to get the board that we want
+            HttpResponse<JsonNode> response_board = Unirest.get("https://api.trello.com/1//boards/" +
+                            id + "?"+ "&key=" + user_trello_info[1] + "&token=" + user_trello_info[2])
+                    .header("Accept", "application/json")
+                    .asJson();
+
+            // print all the board information
+            JSONArray board_array = response_board.getBody().getArray();
+            System.out.println(board_array);
         }
     }
 
@@ -41,9 +53,22 @@ public class TrelloApi extends JSONObject {
             }
         }
         // if there is more than 1 board, return true
-        if (count > 1){
-            return true;
+        return count > 1;
+    }
+
+    // based on a prompt, get the ID for the board that the user specified
+    public static String getBoardId(JSONArray array, String prompt) {
+        String board_id;
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject object = array.getJSONObject(i);
+            if (object.get("name").equals(prompt)) {
+                // get the id from the board name that we wanted
+                board_id = (String) object.get("id");
+                return board_id;
+            }
         }
-        return false;
+        // if there is no suh name, mus be error!
+        //TODO: Try to figure out how to return an error and then display message in the UI
+        return "0";
     }
 }

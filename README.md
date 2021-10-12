@@ -4,5 +4,5 @@
 # Projeto desenvolvido por:
   - Duarte Casaleiro, nº 92697
   - Miguel Romana, nº[adiciona dps]
-  - Oleksandr Kobeliuk, nº[adiciona dps]
+  - Oleksandr Kobeliuk, nº92402
   - Rodrigo Guerreiro, nº 92388

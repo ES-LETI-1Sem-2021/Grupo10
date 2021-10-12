@@ -2,7 +2,7 @@
 
 ------------------------------------------
 # Projeto desenvolvido por:
-  º Duarte Casaleiro, nº[adiciona dps]\n
+  º Duarte Casaleiro, nº[adiciona dps] \n
   º Miguel Romana, nº[adiciona dps]
   º Oleksandr Kobeliuk, nº[adiciona dps]
   º Rodrigo Guerreiro, nº 92388

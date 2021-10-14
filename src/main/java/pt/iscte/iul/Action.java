@@ -3,6 +3,7 @@ package pt.iscte.iul;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 
 public class Action {
@@ -20,7 +21,7 @@ public class Action {
 
         try {
             TrelloApi.get_info(user_git_info,user_trello_info);
-        } catch (UnirestException ex){
+        } catch (IOException ex){
             ex.printStackTrace();
         }
 

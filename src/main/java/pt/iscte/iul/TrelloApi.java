@@ -1,12 +1,84 @@
 package pt.iscte.iul;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import okhttp3.*;
 
+import java.io.IOException;
+
+public class TrelloApi {
+    private String apiKey;
+    private String apiToken;
+    private String boarName;
+    private String baseAPIUrl;
+    private OkHttpClient httpClient;
+    private final String boardId = "614df1d076293f6b763c1c9c";
+
+    //TODO: Implement getter for this class
+    public TrelloApi(String boardName, String apiKey, String apiToken) {
+        this.apiKey = apiKey;
+        this.apiToken = apiToken;
+        this.boarName = boardName;
+
+        this.baseAPIUrl = "https://api.trello.com/1/members/me/boards?key=" + apiKey + "&token=" + apiToken;
+
+        this.httpClient = new OkHttpClient();
+    }
+
+    public static class Collaborators {
+        private String login;
+        private String user_url;
+        private String html_url;
+
+        public String getName() {
+            return this.login;
+        }
+
+        public String getUser() {
+            return this.user_url;
+        }
+
+        public String getProfile() {
+            return this.html_url;
+        }
+    }
+
+    //TODO: Change function name
+    public Collaborators[] getCollaborators() throws IOException {
+        //HTTP request to acess every user's boards
+        Request request = new Request.Builder()
+                .header("Accept", "application/json")
+                .url(this.baseAPIUrl).build();
+
+        Response resp = this.httpClient.newCall(request).execute();
+        // Print response url
+        System.out.println(resp);
+
+        // Build ObjectMapper
+        ObjectMapper mapper = new ObjectMapper();
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+        return mapper.readValue(resp.body().string(), Collaborators[].class);
+    }
+
+    // TODO: Implement ObjectMapper in get_info function
+    public static void get_info(String[] user_git_info, String[] user_trello_info) throws IOException {
+        TrelloApi trello = new TrelloApi(user_trello_info[0], user_trello_info[1], user_trello_info[2]);
+        trello.getCollaborators();
+        //TODO: With the board name, try to get all lists in the board
+    }
+
+
+}
+
+
+
+
+/*
 public class TrelloApi extends JSONObject {
     private static String BOARD_ID = "614df1d076293f6b763c1c9c";
     private static String CARD_ID = "6161b9ba22c7ef3873833cb7";
@@ -72,3 +144,4 @@ public class TrelloApi extends JSONObject {
         return "0";
     }
 }
+ */

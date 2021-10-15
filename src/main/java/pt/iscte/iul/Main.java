@@ -10,9 +10,14 @@ public class Main {
 
             String[] trello = DataReader.getUserTrelloData();
             String[] git = DataReader.getUserGitData();
-            HomeUI.pop();
-            HomeUI.show_frame(frame);
-            Action.do_action(frame, git, trello);
+            int opc = HomeUI.pop();
+            if (opc ==JOptionPane.YES_OPTION){
+                HomeUI.show_frame(frame);
+                Action.do_action(frame, git, trello);
+            }else if(opc == JOptionPane.NO_OPTION){
+                new HomeUI();
+
+            }
 
         }else
         new HomeUI();

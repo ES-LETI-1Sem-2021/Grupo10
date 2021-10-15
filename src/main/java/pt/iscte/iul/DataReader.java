@@ -19,7 +19,7 @@ public class DataReader {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println(user_trello_info[1]);
+
         return user_trello_info;
     }
 

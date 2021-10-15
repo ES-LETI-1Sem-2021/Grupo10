@@ -76,9 +76,10 @@ public class HomeUI implements ActionListener {
 
     }
 
-    public static void pop(){
+    public static int pop(){
         int opc = JOptionPane.showConfirmDialog(null, "Would you like to load with the saved informations?",
                 "Warning?", JOptionPane.YES_NO_OPTION);
+        return opc;
     }
 
     private void add_inboxes() {

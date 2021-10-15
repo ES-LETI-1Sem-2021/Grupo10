@@ -16,6 +16,7 @@ public class TrelloApi {
     private final String boarName;
     private final String baseAPIUrl;
     private final OkHttpClient httpClient;
+    private final String boardURL = "https://api.trello.com/1/boards/";
     private final String boardId = "614df1d076293f6b763c1c9c";
 
     public TrelloApi(String boardName, String apiKey, String apiToken) {
@@ -47,6 +48,7 @@ public class TrelloApi {
         }
     }
 
+    // Function to access every user's boards
     public Board[] getBoards() throws IOException {
         //HTTP request to acess every user's boards
         Request request = new Request.Builder()
@@ -66,19 +68,41 @@ public class TrelloApi {
         return mapper.readValue(resp.body().string(), Board[].class);
     }
 
+    // Function to return the Board that the user specified at login
+    public Board getProjectBoard(String boardId) throws IOException {
+        //HTTP request to access the board
+        Request request = new Request.Builder()
+                .header("Accept", "application/json")
+                .url(this.boardURL + boardId + "?key=" + apiKey + "&token=" + apiToken).build();
+
+        Response response = this.httpClient.newCall(request).execute();
+        // Print response url
+        System.out.println(response);
+
+        // Build ObjectMapper
+        ObjectMapper mapper = new ObjectMapper();
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+        // map http response to the class Board
+        return mapper.readValue(response.body().string(), Board.class);
+    }
+
+
     public static void get_info(String[] user_git_info, String[] user_trello_info) throws IOException {
         TrelloApi trello = new TrelloApi(user_trello_info[0], user_trello_info[1], user_trello_info[2]);
         var boards = trello.getBoards();
-        for (int i = 0; i <= boards.length; i++){
-            if (boards[i].name.equals(user_trello_info[0])){
-                String boardID = boards[i].id;
+        String boardId = null;
+        // Iterate over all boards to find the one with the same name as prompted at login
+        for (Board info : boards) {
+            if (info.name.equals(user_trello_info[0])) {
+                // If the key name is the same, get the id of the board
+                boardId = info.id;
             }
         }
-        /*
-        System.out.println(a.id);
-        System.out.println(a.name);
-        System.out.println(a.url);
-         */
+        // Board Specified by user at Login
+        Board board = trello.getProjectBoard(boardId);
+        System.out.println(board.getName());
     }
 
 

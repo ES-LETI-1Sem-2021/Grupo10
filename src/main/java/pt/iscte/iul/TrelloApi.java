@@ -9,11 +9,11 @@ import okhttp3.*;
 import java.io.IOException;
 
 public class TrelloApi {
-    private String apiKey;
-    private String apiToken;
-    private String boarName;
-    private String baseAPIUrl;
-    private OkHttpClient httpClient;
+    private final String apiKey;
+    private final String apiToken;
+    private final String boarName;
+    private final String baseAPIUrl;
+    private final OkHttpClient httpClient;
     private final String boardId = "614df1d076293f6b763c1c9c";
 
     //TODO: Implement getter for this class
@@ -27,7 +27,7 @@ public class TrelloApi {
         this.httpClient = new OkHttpClient();
     }
 
-    public static class Collaborators {
+    public static class Cards {
         private String login;
         private String user_url;
         private String html_url;
@@ -45,8 +45,7 @@ public class TrelloApi {
         }
     }
 
-    //TODO: Change function name
-    public Collaborators[] getCollaborators() throws IOException {
+    public Cards[] getCards() throws IOException {
         //HTTP request to acess every user's boards
         Request request = new Request.Builder()
                 .header("Accept", "application/json")
@@ -62,13 +61,12 @@ public class TrelloApi {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-        return mapper.readValue(resp.body().string(), Collaborators[].class);
+        return mapper.readValue(resp.body().string(), Cards[].class);
     }
 
-    // TODO: Implement ObjectMapper in get_info function
     public static void get_info(String[] user_git_info, String[] user_trello_info) throws IOException {
         TrelloApi trello = new TrelloApi(user_trello_info[0], user_trello_info[1], user_trello_info[2]);
-        trello.getCollaborators();
+        trello.getCards();
         //TODO: With the board name, try to get all lists in the board
     }
 

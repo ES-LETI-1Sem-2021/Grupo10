@@ -24,7 +24,7 @@ public class TrelloApi {
         this.boarName = boardName;
 
         //TODO: Function to get the id of the board giving the name of the board
-        this.baseAPIUrl = "https://api.trello.com/1/boards/614df1d076293f6b763c1c9c?key=" + apiKey + "&token=" + apiToken;
+        this.baseAPIUrl = "https://api.trello.com/1/members/me/boards?key=" + apiKey + "&token=" + apiToken;
 
         this.httpClient = new OkHttpClient();
     }
@@ -47,7 +47,7 @@ public class TrelloApi {
         }
     }
 
-    public Board getBoard() throws IOException {
+    public Board[] getBoards() throws IOException {
         //HTTP request to acess every user's boards
         Request request = new Request.Builder()
                 .header("Accept", "application/json")
@@ -63,15 +63,22 @@ public class TrelloApi {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
         // map http response to the class Board
-        return mapper.readValue(resp.body().string(), Board.class);
+        return mapper.readValue(resp.body().string(), Board[].class);
     }
 
     public static void get_info(String[] user_git_info, String[] user_trello_info) throws IOException {
         TrelloApi trello = new TrelloApi(user_trello_info[0], user_trello_info[1], user_trello_info[2]);
-        var a = trello.getBoard();
+        var boards = trello.getBoards();
+        for (int i = 0; i <= boards.length; i++){
+            if (boards[i].name.equals(user_trello_info[0])){
+                String boardID = boards[i].id;
+            }
+        }
+        /*
         System.out.println(a.id);
         System.out.println(a.name);
         System.out.println(a.url);
+         */
     }
 
 

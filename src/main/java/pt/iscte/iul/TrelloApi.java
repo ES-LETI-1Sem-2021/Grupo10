@@ -66,6 +66,25 @@ public class TrelloApi {
         }
     }
 
+    // TODO: The class Card need more attributes for the rest of the project
+    public static class Card {
+        private String name;
+        private String id;
+        private String url;
+
+        public String getName() {
+            return this.name;
+        }
+
+        public String getId() {
+            return this.id;
+        }
+
+        public String getUrl() {
+            return this.url;
+        }
+    }
+
     // Function to access every user's boards
     public Board[] getBoards() throws IOException {
         //HTTP request to acess every user's boards
@@ -126,6 +145,26 @@ public class TrelloApi {
         return mapper.readValue(response.body().string(), List[].class);
     }
 
+    // Function to return all the lists in the board
+    public Card[] getBoardCards(String boardId) throws IOException {
+        //HTTP request to access the board
+        Request request = new Request.Builder()
+                .header("Accept", "application/json")
+                .url(this.boardURL + boardId + "/cards?key=" + apiKey + "&token=" + apiToken).build();
+
+        Response response = this.httpClient.newCall(request).execute();
+        // Print response url
+        System.out.println(response);
+
+        // Build ObjectMapper
+        ObjectMapper mapper = new ObjectMapper();
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+        // map http response to the class Board
+        return mapper.readValue(response.body().string(), Card[].class);
+    }
+
 
     public static void get_info(String[] user_git_info, String[] user_trello_info) throws IOException {
         TrelloApi trello = new TrelloApi(user_trello_info[0], user_trello_info[1], user_trello_info[2]);
@@ -145,6 +184,11 @@ public class TrelloApi {
         //iterate over all lists and print everyone to check if it's correct
         var lists = trello.getBoardLists(boardId);
         for (List info: lists){
+            System.out.println(info.getName());
+        }
+        //iterate over all cards on the board
+        var cards = trello.getBoardCards(boardId);
+        for (Card info: cards){
             System.out.println(info.getName());
         }
     }

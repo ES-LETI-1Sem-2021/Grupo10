@@ -30,6 +30,7 @@ public class Action {
         frame.setLocation(0,0);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(screenSize.width, screenSize.height-100);
+        frame.setVisible(true);
 
         for (String s : user_git_info) {
             System.out.println(s);

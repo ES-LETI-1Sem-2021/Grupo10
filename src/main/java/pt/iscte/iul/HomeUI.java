@@ -36,7 +36,7 @@ public class HomeUI implements ActionListener {
        this.label_git_repo = new JLabel("Please the repository name in the box below:");
 
        this.label_trello_logo = new JLabel("Please insert your Trello token in the box below:");
-       this.label_trello_user = new JLabel("Please insert your Trello username in the box below:");
+       this.label_trello_user = new JLabel("Please insert your Trello's board name  in the box below:");
        this.label_trello_key = new JLabel("Please insert your Trello key in the box below:");
 
        this.git_token = new JTextField();
@@ -162,37 +162,17 @@ public class HomeUI implements ActionListener {
             }
         }
 
+        int opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
+                "Warning?", JOptionPane.YES_NO_OPTION);
 
-        // TODO TENTAR QUE SEJA OBRIGATÓRIO INSERIR O NOME DO BOARD
+        if(opc == JOptionPane.YES_OPTION && i == 0){
+            System.out.println("YESSS");
+            Action.save_data(user_git_info, user_trello_info);
+            Action.do_action(this.frame, user_git_info, user_trello_info);
 
-        //TODO DEPOIS DESTA POPOUP METER UMA POPUP NOVA SO COM SIM OU NAO A PERGUNTAR SE PRETENDE GUARDAR OD DADOS
-
-        //TODO PASSAR OS DADOS A UMA FUNÇÃO DA CLASSE ACTION QUE OS VAI ESCREVER NUM FICHEIRO DE TEXTO
-
-        //String board_name = "null";
-        //try {
-
-          //  do{
-          //      board_name = JOptionPane.showInputDialog("Please write your terello board's name. ");
-          //      System.out.println(board_name);
-          //      System.out.println(board_name.getClass());
-          //
-          //  }while ((board_name == "") || (board_name == "null"));
-
-
-        //}
-        //catch (Exception e1){
-
-        //}
-
-        //board_name.
-
-
-
-
-        if(i == 0 ){
-               Action.do_action(this.frame, user_git_info, user_trello_info);
+        }else if (opc == JOptionPane.NO_OPTION && i == 0 ){
+            System.out.println("NOOO");
+            Action.do_action(this.frame, user_git_info, user_trello_info);
         }
-
     }
 }

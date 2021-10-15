@@ -39,4 +39,8 @@ public class Action {
         }
 
     }
+
+    public static void save_data(String[] user_git_info, String[] user_trello_info) {
+        //TODO chamar uma classe para escrever os dados
+    }
 }

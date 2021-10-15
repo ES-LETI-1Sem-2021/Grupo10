@@ -105,42 +105,43 @@ public class TrelloApi {
         return mapper.readValue(response.body().string(), Board[].class);
     }
 
-    // Function to return the Board that the user specified at login
-    public Board getBoard(String boardId) throws IOException {
+    // Function for HTTP request for components
+    private Response HTTPRequest(String component, String componentId) throws IOException {
         //HTTP request to access the board
         Request request = new Request.Builder()
                 .header("Accept", "application/json")
-                .url(this.boardURL + boardId + "?key=" + apiKey + "&token=" + apiToken).build();
+                .url(this.boardURL + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
 
         Response response = this.httpClient.newCall(request).execute();
-        // Print response url
         System.out.println(response);
+        return response;
+    }
 
+    // Function to return the Board that the user specified at login
+    public Board getBoard(String boardId) throws IOException {
+        //HTTP request to access the board
+        Response response = HTTPRequest("", boardId);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
+        // map http response to the class Board
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-        // map http response to the class Board
+
         return mapper.readValue(response.body().string(), Board.class);
     }
 
     // Function to return all the lists in the board
     public List[] getBoardLists(String boardId) throws IOException {
         //HTTP request to access the board
-        Request request = new Request.Builder()
-                .header("Accept", "application/json")
-                .url(this.boardURL + boardId + "/lists?key=" + apiKey + "&token=" + apiToken).build();
-
-        Response response = this.httpClient.newCall(request).execute();
-        // Print response url
-        System.out.println(response);
-
+        Response response = HTTPRequest("lists", boardId);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
+        // map http response to the class Board
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
         // map http response to the class Board
         return mapper.readValue(response.body().string(), List[].class);
     }
@@ -148,16 +149,10 @@ public class TrelloApi {
     // Function to return all the lists in the board
     public Card[] getBoardCards(String boardId) throws IOException {
         //HTTP request to access the board
-        Request request = new Request.Builder()
-                .header("Accept", "application/json")
-                .url(this.boardURL + boardId + "/cards?key=" + apiKey + "&token=" + apiToken).build();
-
-        Response response = this.httpClient.newCall(request).execute();
-        // Print response url
-        System.out.println(response);
-
+        Response response = HTTPRequest("cards", boardId);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
+        // map http response to the class Board
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
@@ -192,6 +187,4 @@ public class TrelloApi {
             System.out.println(info.getName());
         }
     }
-
-
 }

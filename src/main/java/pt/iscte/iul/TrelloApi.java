@@ -23,6 +23,7 @@ public class TrelloApi {
         this.apiToken = apiToken;
         this.boarName = boardName;
 
+        //TODO: Function to get the id of the board giving the name of the board
         this.baseAPIUrl = "https://api.trello.com/1/boards/614df1d076293f6b763c1c9c?key=" + apiKey + "&token=" + apiToken;
 
         this.httpClient = new OkHttpClient();
@@ -61,7 +62,7 @@ public class TrelloApi {
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-
+        // map http response to the class Board
         return mapper.readValue(resp.body().string(), Board.class);
     }
 

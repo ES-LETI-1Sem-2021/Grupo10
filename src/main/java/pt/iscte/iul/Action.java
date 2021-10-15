@@ -1,6 +1,5 @@
 package pt.iscte.iul;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;

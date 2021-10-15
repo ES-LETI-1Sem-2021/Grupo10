@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.*;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class TrelloApi {
@@ -16,36 +18,35 @@ public class TrelloApi {
     private final OkHttpClient httpClient;
     private final String boardId = "614df1d076293f6b763c1c9c";
 
-    //TODO: Implement getter for this class
     public TrelloApi(String boardName, String apiKey, String apiToken) {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
         this.boarName = boardName;
 
-        this.baseAPIUrl = "https://api.trello.com/1/members/me/boards?key=" + apiKey + "&token=" + apiToken;
+        this.baseAPIUrl = "https://api.trello.com/1/boards/614df1d076293f6b763c1c9c?key=" + apiKey + "&token=" + apiToken;
 
         this.httpClient = new OkHttpClient();
     }
 
-    public static class Cards {
-        private String login;
-        private String user_url;
-        private String html_url;
+    public static class Board {
+        private String name;
+        private String id;
+        private String url;
 
         public String getName() {
-            return this.login;
+            return this.name;
         }
 
-        public String getUser() {
-            return this.user_url;
+        public String getId() {
+            return this.id;
         }
 
-        public String getProfile() {
-            return this.html_url;
+        public String getUrl() {
+            return this.url;
         }
     }
 
-    public Cards[] getCards() throws IOException {
+    public Board getBoard() throws IOException {
         //HTTP request to acess every user's boards
         Request request = new Request.Builder()
                 .header("Accept", "application/json")
@@ -61,13 +62,15 @@ public class TrelloApi {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-        return mapper.readValue(resp.body().string(), Cards[].class);
+        return mapper.readValue(resp.body().string(), Board.class);
     }
 
     public static void get_info(String[] user_git_info, String[] user_trello_info) throws IOException {
         TrelloApi trello = new TrelloApi(user_trello_info[0], user_trello_info[1], user_trello_info[2]);
-        trello.getCards();
-        //TODO: With the board name, try to get all lists in the board
+        var a = trello.getBoard();
+        System.out.println(a.id);
+        System.out.println(a.name);
+        System.out.println(a.url);
     }
 
 

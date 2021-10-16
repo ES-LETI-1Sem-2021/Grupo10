@@ -9,10 +9,12 @@ public class Action {
 
     /**
      *
+     * Function that does everything.
+     * Connects the UI's to the api's.
+     *
      * @param  user_git_info String array with[git_owner, git_repo, git_token,]
-     *
      * @param user_trello_info String array with [trello_user, trello_key, trello_token]
-     *
+     * @author Rodrigo Guerreiro
      *
      */
 
@@ -40,6 +42,15 @@ public class Action {
         }
 
     }
+
+    /***
+     *
+     * Function that calls another function in order to save the user data in a .txt file
+     *
+     * @param user_git_info info needed for git api.
+     * @param user_trello_info info needed for trello api.
+     * @author Rodrigo Guerreiro
+     */
 
     public static void save_data(String[] user_git_info, String[] user_trello_info) {
         DataSaver.save(user_git_info,user_trello_info);

@@ -76,10 +76,16 @@ public class HomeUI implements ActionListener {
 
     }
 
+    /**
+     * Displays a pop-up window on the screen.
+     *
+     * @return opc the value (int) of the option chosen by the user
+     * @author Rodrigo Guerreiro
+     */
+
     public static int pop(){
-        int opc = JOptionPane.showConfirmDialog(null, "Would you like to load with the saved informations?",
+        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved information's?",
                 "Warning?", JOptionPane.YES_NO_OPTION);
-        return opc;
     }
 
     private void add_inboxes() {
@@ -103,7 +109,12 @@ public class HomeUI implements ActionListener {
 
 
     }
-
+    /***
+    *Displays a frame on the screen.
+    *
+    * @param frame receives a frame and displays it on the screen
+    * @author Rodrigo Guerreiro
+     */
     public static void show_frame(JFrame frame){
 
         frame.setTitle("DashboardScrum");
@@ -140,8 +151,15 @@ public class HomeUI implements ActionListener {
 
     /***
      *
+     * Action preformed when the search button is pressed.
+     * Creates a pop-up window with a yes/no question and based on the answer
+     * saves the data and calls do_action or only calls do_action
+     *
+     *
      * user_git_info[git_owner, git_repo, git_token,]
      * user_trello_info[trello_user, trello_key, trello_token]
+     *
+     * @author Rodrigo Guerreiro
      *
      ***/
 

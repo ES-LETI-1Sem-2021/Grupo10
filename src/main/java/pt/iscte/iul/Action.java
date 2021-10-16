@@ -43,7 +43,7 @@ public class Action {
 
     }
 
-    /***
+    /**
      *
      * Function that calls another function in order to save the user data in a .txt file
      *

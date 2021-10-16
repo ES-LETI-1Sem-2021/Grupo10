@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class DataReader {
 
-    /***
+    /**
      *  This function reads the data saved in the .txt file regarding the trello api.
      *  And returns an array with that data.
      *
@@ -33,7 +33,7 @@ public class DataReader {
     }
 
 
-    /***
+    /**
      *
      *  This function reads the data saved in the .txt file regarding the GitHub api.
      *  And returns an array with that data.

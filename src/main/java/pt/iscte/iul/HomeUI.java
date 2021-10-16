@@ -109,7 +109,7 @@ public class HomeUI implements ActionListener {
 
 
     }
-    /***
+    /**
     *Displays a frame on the screen.
     *
     * @param frame receives a frame and displays it on the screen
@@ -149,7 +149,7 @@ public class HomeUI implements ActionListener {
         this.frame.add(label_git_logo);
     }
 
-    /***
+    /**
      *
      * Action preformed when the search button is pressed.
      * Creates a pop-up window with a yes/no question and based on the answer
@@ -161,7 +161,7 @@ public class HomeUI implements ActionListener {
      *
      * @author Rodrigo Guerreiro
      *
-     ***/
+     */
 
     @Override
     public void actionPerformed(ActionEvent e) {

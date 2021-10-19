@@ -1,6 +1,5 @@
 package pt.iscte.iul;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
 import javax.swing.*;
 import java.awt.*;
 
@@ -8,22 +7,10 @@ import java.awt.*;
 public class Action {
 
     /**
-     *
      * @param  user_git_info String array with[git_owner, git_repo, git_token,]
-     *
      * @param user_trello_info String array with [trello_user, trello_key, trello_token]
-     *
-     *
      */
-
     public static void do_action(JFrame frame, String[] user_git_info, String[] user_trello_info){
-
-        try {
-            TrelloApi.get_info(user_git_info,user_trello_info);
-        } catch (UnirestException ex){
-            ex.printStackTrace();
-        }
-
         frame.getContentPane().removeAll();
         frame.revalidate();
         frame.repaint();

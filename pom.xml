@@ -20,6 +20,12 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.rjeschke/txtmark -->
+        <dependency>
+            <groupId>com.github.rjeschke</groupId>
+            <artifactId>txtmark</artifactId>
+            <version>0.13</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>

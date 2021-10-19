@@ -49,10 +49,14 @@ public class HomeUI implements ActionListener {
 
        this.search_button = new JButton("Search");
 
-       show_frame();
+       show_frame(frame);
        add_images();
        add_inboxes();
        add_labels();
+
+       this.search_button.setBounds(SCREEN_WIDTH/2-57, SCREEN_HEIGHT - 100, 150,50);
+       this.search_button.addActionListener(this);
+       this.frame.add(this.search_button);
 
        this.frame.setVisible(true);
     }
@@ -72,6 +76,17 @@ public class HomeUI implements ActionListener {
 
     }
 
+    /**
+     * Displays a pop-up window on the screen.
+     *
+     * @return opc the value (int) of the option chosen by the user
+     * @author Rodrigo Guerreiro
+     */
+
+    public static int pop(){
+        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved information's?",
+                "Warning?", JOptionPane.YES_NO_OPTION);
+    }
 
     private void add_inboxes() {
 
@@ -92,22 +107,23 @@ public class HomeUI implements ActionListener {
         this.frame.add(git_repo);
         this.frame.add(git_token);
 
+
     }
+    /**
+    *Displays a frame on the screen.
+    *
+    * @param frame receives a frame and displays it on the screen
+    * @author Rodrigo Guerreiro
+     */
+    public static void show_frame(JFrame frame){
 
-    private void show_frame(){
-
-        this.frame.setTitle("DashboardScrum");
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setLocationRelativeTo(null);
-        this.frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        this.frame.setResizable(false);
-        this.frame.setLayout(null);
-        this.frame.getContentPane().setBackground(Color.WHITE);
-
-
-        this.search_button.setBounds(SCREEN_WIDTH/2-57, SCREEN_HEIGHT - 100, 150,50);
-        this.search_button.addActionListener(this);
-        this.frame.add(this.search_button);
+        frame.setTitle("DashboardScrum");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        frame.setResizable(false);
+        frame.setLayout(null);
+        frame.getContentPane().setBackground(Color.WHITE);
 
     }
 
@@ -133,12 +149,19 @@ public class HomeUI implements ActionListener {
         this.frame.add(label_git_logo);
     }
 
-    /***
+    /**
+     *
+     * Action preformed when the search button is pressed.
+     * Creates a pop-up window with a yes/no question and based on the answer
+     * saves the data and calls do_action or only calls do_action
+     *
      *
      * user_git_info[git_owner, git_repo, git_token,]
      * user_trello_info[trello_user, trello_key, trello_token]
      *
-     ***/
+     * @author Rodrigo Guerreiro
+     *
+     */
 
     @Override
     public void actionPerformed(ActionEvent e) {

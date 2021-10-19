@@ -14,6 +14,7 @@ import java.io.IOException;
 public class GitHubAPI {
     private final String apiKey;
     private final String baseAPIUrl;
+    private final String baseRawUrl;
     private final OkHttpClient httpClient;
 
     /**
@@ -26,6 +27,7 @@ public class GitHubAPI {
         this.apiKey = apiKey;
 
         this.baseAPIUrl = "https://api.github.com/repos/" + repoOwner + "/" + projectName;
+        this.baseRawUrl = "https://raw.githubusercontent.com/" + repoOwner + "/" + projectName;
 
         this.httpClient = new OkHttpClient();
     }
@@ -50,7 +52,7 @@ public class GitHubAPI {
 
     /**
      * @return A list of collaborators.
-     * @throws IOException
+     * @throws IOException If the request fails.
      */
     public Collaborators[] getCollaborators() throws IOException {
         Request request = new Request.Builder()
@@ -65,5 +67,21 @@ public class GitHubAPI {
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
         return mapper.readValue(resp.body().string(), Collaborators[].class);
+    }
+
+    /**
+     * @param branch Branch name.
+     * @param path Path of file(from root) in the branch.
+     * @return File contents if it exists, otherwise '404: Not Found'.
+     * @throws IOException If the request fails.
+     */
+    public String getFile(String branch, String path) throws IOException {
+        Request request = new Request.Builder()
+                .addHeader("Authorization", "Bearer " + apiKey)
+                .url(this.baseRawUrl + "/" + branch + path).build();
+
+        Response resp = this.httpClient.newCall(request).execute();
+
+        return resp.body().string();
     }
 }

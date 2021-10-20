@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class TrelloApi {
+public class TrelloAPI {
     private final String apiKey;
     private final String apiToken;
     private final String boarName;
@@ -19,7 +19,7 @@ public class TrelloApi {
     private final String boardURL = "https://api.trello.com/1/boards/";
     private final String boardId = "614df1d076293f6b763c1c9c";
 
-    public TrelloApi(String boardName, String apiKey, String apiToken) {
+    public TrelloAPI(String boardName, String apiKey, String apiToken) {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
         this.boarName = boardName;
@@ -87,14 +87,12 @@ public class TrelloApi {
 
     // Function to access every user's boards
     public Board[] getBoards() throws IOException {
-        //HTTP request to acess every user's boards
+        //HTTP request to access every user's boards
         Request request = new Request.Builder()
                 .header("Accept", "application/json")
                 .url(this.baseAPIUrl).build();
 
         Response response = this.httpClient.newCall(request).execute();
-        // Print response url
-        System.out.println(response);
 
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
@@ -158,33 +156,5 @@ public class TrelloApi {
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
         // map http response to the class Board
         return mapper.readValue(response.body().string(), Card[].class);
-    }
-
-
-    public static void get_info(String[] user_git_info, String[] user_trello_info) throws IOException {
-        TrelloApi trello = new TrelloApi(user_trello_info[0], user_trello_info[1], user_trello_info[2]);
-        //get all boards from the user
-        var boards = trello.getBoards();
-        String boardId = null;
-        // Iterate over all boards to find the one with the same name as prompted at login
-        for (Board info : boards) {
-            if (info.name.equals(user_trello_info[0])) {
-                // If the key name is the same, get the id of the board
-                boardId = info.id;
-            }
-        }
-        // Board Specified by user at Login
-        Board board = trello.getBoard(boardId);
-        System.out.println(board.getName());
-        //iterate over all lists and print everyone to check if it's correct
-        var lists = trello.getBoardLists(boardId);
-        for (List info: lists){
-            System.out.println(info.getName());
-        }
-        //iterate over all cards on the board
-        var cards = trello.getBoardCards(boardId);
-        for (Card info: cards){
-            System.out.println(info.getName());
-        }
     }
 }

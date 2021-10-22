@@ -21,9 +21,9 @@ public class DataReader {
         try {
             File file = new File("data/user_data.txt");
             Scanner sc = new Scanner(file);
-            user_git_info[0] = sc.nextLine();
-            user_git_info[1] = sc.nextLine();
-            user_git_info[2] = sc.nextLine();
+            user_git_info[0] = Encoding.Decode(sc.nextLine());
+            user_git_info[1] = Encoding.Decode(sc.nextLine());
+            user_git_info[2] = Encoding.Decode(sc.nextLine());
             sc.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -52,9 +52,9 @@ public class DataReader {
             String foo = sc.nextLine();
             foo = sc.nextLine();
             foo = sc.nextLine();
-            user_trello_info[0] = sc.nextLine();
-            user_trello_info[1] = sc.nextLine();
-            user_trello_info[2] = sc.nextLine();
+            user_trello_info[0] = Encoding.Decode(sc.nextLine());
+            user_trello_info[1] = Encoding.Decode(sc.nextLine());
+            user_trello_info[2] = Encoding.Decode(sc.nextLine());
             sc.close();
 
         } catch (FileNotFoundException e) {

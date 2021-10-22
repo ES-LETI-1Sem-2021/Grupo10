@@ -50,11 +50,11 @@ public class DataSaver {
         try {
             FileWriter fileWriter = new FileWriter(file);
             for (String g : user_git_info)
-                fileWriter.write(g + "\n");
+                fileWriter.write(Encoding.Encode(g) + "\n");
 
 
             for (String t : user_trello_info)
-                fileWriter.write(t + "\n");
+                fileWriter.write(Encoding.Encode(t) + "\n");
 
             fileWriter.close();
         }catch (IOException e){

@@ -3,8 +3,6 @@ package pt.iscte.iul;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import com.github.rjeschke.txtmark.*;
-
 
 public class Action {
 

@@ -32,6 +32,54 @@ public class GitHubAPI {
         this.httpClient = new OkHttpClient();
     }
 
+    public static class Date {
+        private String year;
+        private String month;
+        private String day;
+
+        public Date(String y, String m, String d) {
+            this.year = y;
+            this.month = m;
+            this.day = d;
+        }
+
+        public String getYear() {
+            return this.year;
+        }
+
+        public String getMonth() {
+            return this.month;
+        }
+
+        public String getDay() {
+            return this.day;
+        }
+    }
+    public static class Repo {
+        private String created_at;
+
+        public String getCreatedAt() {
+            return this.created_at;
+        }
+    }
+    public Date getStartTime() throws IOException {
+        var request = new Request.Builder()
+                .addHeader("Authorization", "Bearer " + apiKey)
+                .url(this.baseAPIUrl).build();
+
+        var resp = this.httpClient.newCall(request).execute();
+
+        var mapper = new ObjectMapper();
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+        var mapped = mapper.readValue(resp.body().string(), Repo.class);
+        var data = mapped.getCreatedAt().split("T")[0].split("-");
+
+        return new Date(data[0], data[1], data[2]);
+    }
+
     public static class Collaborators {
         private String login;
         private String avatar_url;
@@ -55,13 +103,13 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public Collaborators[] getCollaborators() throws IOException {
-        Request request = new Request.Builder()
+        var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseAPIUrl + "/collaborators").build();
 
-        Response resp = this.httpClient.newCall(request).execute();
+        var resp = this.httpClient.newCall(request).execute();
 
-        ObjectMapper mapper = new ObjectMapper();
+        var mapper = new ObjectMapper();
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));

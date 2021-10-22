@@ -1,7 +1,7 @@
 package pt.iscte.iul;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 public class GitHubAPITests {
     private GitHubAPI api;
 
-    @Before
+    @BeforeEach
     public void once() throws IOException {
         this.api = new GitHubAPI(
                 "Roguezilla",
@@ -20,7 +20,7 @@ public class GitHubAPITests {
 
     @Test
     public void numberOfCollaborators() throws IOException {
-        Assert.assertEquals(4, api.getCollaborators().length);
+        Assertions.assertEquals(4, api.getCollaborators().length);
     }
 
     @Test
@@ -36,11 +36,19 @@ public class GitHubAPITests {
                   - Oleksandr Kobelyuk, nº 92402
                   - Rodrigo Guerreiro, nº 92388
                 """;
-        Assert.assertEquals(readme, this.api.getFile("master","/README.md"));
+        Assertions.assertEquals(readme, this.api.getFile("master","/README.md"));
     }
 
     @Test
     public void noFileTest() throws IOException {
-        Assert.assertEquals("404: Not Found", this.api.getFile("master","/a/README.md"));
+        Assertions.assertEquals("404: Not Found", this.api.getFile("master","/a/README.md"));
+    }
+
+    @Test
+    public void dateTest() throws IOException {
+        var date = this.api.getStartTime();
+        Assertions.assertEquals("2021", date.getYear());
+        Assertions.assertEquals("10", date.getMonth());
+        Assertions.assertEquals("08", date.getDay());
     }
 }

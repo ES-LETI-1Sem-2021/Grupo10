@@ -43,4 +43,12 @@ public class GitHubAPITests {
     public void noFileTest() throws IOException {
         Assertions.assertEquals("404: Not Found", this.api.getFile("master","/a/README.md"));
     }
+
+    @Test
+    public void dateTest() throws IOException {
+        var date = this.api.getStartTime();
+        Assertions.assertEquals("2021", date.getYear());
+        Assertions.assertEquals("10", date.getMonth());
+        Assertions.assertEquals("08", date.getDay());
+    }
 }

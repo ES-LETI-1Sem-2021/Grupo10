@@ -6,14 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.*;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 public class TrelloAPI {
     private final String apiKey;
     private final String apiToken;
-    private final String boarName;
+    private final String boardName;
     private final String baseAPIUrl;
     private final OkHttpClient httpClient;
     private final String boardURL = "https://api.trello.com/1/boards/";
@@ -22,7 +20,7 @@ public class TrelloAPI {
     public TrelloAPI(String boardName, String apiKey, String apiToken) {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
-        this.boarName = boardName;
+        this.boardName = boardName;
 
         //TODO: Function to get the id of the board giving the name of the board
         this.baseAPIUrl = "https://api.trello.com/1/members/me/boards?key=" + apiKey + "&token=" + apiToken;
@@ -70,7 +68,7 @@ public class TrelloAPI {
     public static class Card {
         private String name;
         private String id;
-        private String url;
+        private String due;
 
         public String getName() {
             return this.name;
@@ -81,7 +79,7 @@ public class TrelloAPI {
         }
 
         public String getUrl() {
-            return this.url;
+            return this.due;
         }
     }
 

@@ -1,7 +1,7 @@
 package pt.iscte.iul;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
 public class TrelloAPITests {
     private TrelloAPI api;
 
-    @Before
+    @BeforeEach
     public void once() throws IOException {
         var lines = FileUtils.readLines(new File("tokens.txt"), Charset.defaultCharset());
 
@@ -22,6 +22,6 @@ public class TrelloAPITests {
 
     @Test
     public void numberOfBoards() throws IOException {
-        Assert.assertEquals(2, this.api.getBoards().length);
+        Assertions.assertEquals(2, this.api.getBoards().length);
     }
 }

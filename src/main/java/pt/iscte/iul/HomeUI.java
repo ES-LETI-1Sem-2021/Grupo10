@@ -84,7 +84,7 @@ public class HomeUI implements ActionListener {
      */
 
     public static int pop(){
-        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved information's?",
+        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved informations?",
                 "Warning?", JOptionPane.YES_NO_OPTION);
     }
 
@@ -189,12 +189,10 @@ public class HomeUI implements ActionListener {
                 "Warning?", JOptionPane.YES_NO_OPTION);
 
         if(opc == JOptionPane.YES_OPTION && i == 0){
-            System.out.println("YESSS");
             Action.save_data(user_git_info, user_trello_info);
             Action.do_action(this.frame, user_git_info, user_trello_info);
 
         }else if (opc == JOptionPane.NO_OPTION && i == 0 ){
-            System.out.println("NOOO");
             Action.do_action(this.frame, user_git_info, user_trello_info);
         }
     }

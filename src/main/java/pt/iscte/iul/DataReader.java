@@ -16,10 +16,10 @@ public class DataReader {
      *
      */
 
-    public static String[] getUserGitData() {
+    public static String[] getUserGitData(String data) {
         String[] user_git_info = {"", "", ""};
         try {
-            File file = new File("data/user_data.txt");
+            File file = new File(data);
             Scanner sc = new Scanner(file);
             user_git_info[0] = Encoding.Decode(sc.nextLine());
             user_git_info[1] = Encoding.Decode(sc.nextLine());
@@ -43,10 +43,10 @@ public class DataReader {
      * @author Rodrigo Guerreiro
      *
      */
-    public static String[] getUserTrelloData() {
+    public static String[] getUserTrelloData(String data) {
         String[] user_trello_info = {"", "", ""};
         try {
-            File file = new File("data/user_data.txt");
+            File file = new File(data);
             Scanner sc = new Scanner(file);
 
             String foo = sc.nextLine();

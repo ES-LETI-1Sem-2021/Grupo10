@@ -18,9 +18,10 @@ public class Main {
      */
     public static void main(String[] args) {
         JFrame frame = new JFrame();
-        if (DataSaver.exists(new File("data/user_data.txt"))){
-            String[] trello = DataReader.getUserTrelloData();
-            String[] git = DataReader.getUserGitData();
+        String data = "data/user_data.txt";
+        if (DataSaver.exists(new File(data))){
+            String[] trello = DataReader.getUserTrelloData(data);
+            String[] git = DataReader.getUserGitData(data);
             int opc = HomeUI.pop();
             if (opc ==JOptionPane.YES_OPTION){
                 HomeUI.show_frame(frame);

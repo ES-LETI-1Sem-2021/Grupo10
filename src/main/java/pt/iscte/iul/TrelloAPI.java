@@ -155,4 +155,36 @@ public class TrelloAPI {
         // map http response to the class Board
         return mapper.readValue(response.body().string(), Card[].class);
     }
+
+    public static void main(String[] args) throws IOException {
+        TrelloAPI trello = new TrelloAPI("ES-LETI-1Sem-2021-Grupo10",
+                "71ba1d885267584d4febd7880c3074cc",
+                "e2c0eeb43d666b0a273e87946fa5b7d825b659861be9a2e500a908d839a7fd0e");
+
+        String projectId = null;
+        var boards = trello.getBoards(); //get all boards
+
+        // search for the project board
+        for (Board b: boards){
+            if (b.name.equals(trello.boardName)){
+                projectId = b.id; // board ID
+            }
+        }
+
+        String cardId = null;
+        String cardDate = null;
+        // get all board cards
+        // TODO: Access this specific card base on a specific list to reduce search time
+        var cards = trello.getBoardCards(projectId);
+        for (Card c: cards){
+            if (c.name.equals("Sprint Planning - Sprint 1")){ // search for sprint 1
+                cardId = c.id;
+                cardDate = c.due.split("T")[0]; // split by delimiter T
+                System.out.println(cardDate); // print sprint 1 start date
+                break;
+            }
+        }
+
+
+    }
 }

@@ -64,7 +64,7 @@ public class TrelloAPI {
         }
     }
 
-    // TODO: The class Card need more attributes for the rest of the project
+    // TODO: The class Card needs more attributes for the rest of the project
     public static class Card {
         private String name;
         private String id;
@@ -78,7 +78,7 @@ public class TrelloAPI {
             return this.id;
         }
 
-        public String getUrl() {
+        public String getDueDate() {
             return this.due;
         }
     }
@@ -171,20 +171,43 @@ public class TrelloAPI {
             }
         }
 
-        String cardId = null;
-        String cardDate = null;
+        // TODO: Replace "sprintNum" with an iterator to apply to all sprints
+        int sprintNum = 1;
+        String sprintStartDate, sprintEndDate;
         // get all board cards
-        // TODO: Access this specific card base on a specific list to reduce search time
+        // TODO: Access specific cards based on a specific list to reduce search time
         var cards = trello.getBoardCards(projectId);
         for (Card c: cards){
-            if (c.name.equals("Sprint Planning - Sprint 1")){ // search for sprint 1
-                cardId = c.id;
-                cardDate = c.due.split("T")[0]; // split by delimiter T
-                System.out.println(cardDate); // print sprint 1 start date
-                break;
+            if (c.name.equals("Sprint Planning - Sprint " + sprintNum)) { // search for sprint 1
+                sprintStartDate = c.due.split("T")[0]; // split by delimiter T
+                System.out.println("Sprint " + sprintNum + " (Start Date) - " + sprintStartDate); // print sprint 1 start date
+            }
+            if (c.name.equals("Sprint Review - Sprint " + sprintNum)) { // search for sprint 1
+                sprintEndDate = c.due.split("T")[0]; // split by delimiter T
+                System.out.println("Sprint " + sprintNum + " (End Date) - " + sprintEndDate); // print sprint 1 end date
+                break; // Stop searching after all dates are presented
             }
         }
 
+        /*
+        // get all board lists
+        // TODO: Access specific cards based on a specific list to reduce search time
+        var lists = trello.getBoardLists(projectId);
+        for (List l: lists) {
+            if (l.name.equals("Sprint Ceremonies")) // search for sprint ceremonies
+                // TODO: Implement a function that returns the cards on a list
+                for (Card c: l.getCards()) {
+                    if (c.name.equals("Sprint Planning - Sprint " + sprintNum)) { // search for sprint 1
+                        sprintStartDate = c.due.split("T")[0]; // split by delimiter T
+                        System.out.println("Sprint " + sprintNum + " (Start Date) - " + sprintStartDate); // print sprint 1 start date
+                    }
+                    if (c.name.equals("Sprint Review - Sprint " + sprintNum)) { // search for sprint 1
+                        sprintEndDate = c.due.split("T")][0]; // split by delimiter T
+                        System.out.println("Sprint " + sprintNum + " (End Date) - " + sprintEndDate); // print sprint 1 end date
+                    }
+                }
+        }
+        */
 
     }
 }

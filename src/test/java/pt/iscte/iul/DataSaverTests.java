@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 public class DataSaverTests {
-
     @Test
     public void TestSave(){
         String[] str = {"str_line1","str_line2","str_line3"};

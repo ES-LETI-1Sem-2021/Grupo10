@@ -89,6 +89,6 @@ public class Action {
      */
 
     public static void save_data(String[] user_git_info, String[] user_trello_info) {
-        DataSaver.save(user_git_info,user_trello_info);
+        DataSaver.save(user_git_info,user_trello_info, "data/user_data.txt");
     }
 }

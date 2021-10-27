@@ -19,14 +19,11 @@ public class DataSaver {
 
 
 
-    public static void save(String[] user_git_info, String[] user_trello_info) {
+    public static void save(String[] user_git_info, String[] user_trello_info, String filename) {
 
         try{
-        File file = new File("data/user_data.txt");
-        if(file.exists()){
-            System.out.println("yay");
-        }else {
-            System.out.println("nay");
+        File file = new File(filename);
+        if(!file.exists()){
             file.createNewFile();
         }
             write(user_git_info,user_trello_info,file);
@@ -46,20 +43,17 @@ public class DataSaver {
      *
      */
 
-    private static void write(String[] user_git_info, String[] user_trello_info, File file ){
-        try {
+    private static void write(String[] user_git_info, String[] user_trello_info, File file ) throws IOException{
+
             FileWriter fileWriter = new FileWriter(file);
             for (String g : user_git_info)
                 fileWriter.write(Encoding.Encode(g) + "\n");
-
 
             for (String t : user_trello_info)
                 fileWriter.write(Encoding.Encode(t) + "\n");
 
             fileWriter.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+
     }
 
     /**

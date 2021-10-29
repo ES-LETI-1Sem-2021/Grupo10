@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"pt.iscte.iul","l":"GitHubAPI.Collaborators"},{"p":"pt.iscte.iul","l":"GitHubAPI.Date"},{"p":"pt.iscte.iul","l":"GitHubAPI"}];updateSearchResults();

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
 
@@ -32,36 +34,68 @@ public class GitHubAPI {
         this.httpClient = new OkHttpClient();
     }
 
+    /**
+     * Simple datetime object.
+     */
     public static class Date {
-        private String year;
-        private String month;
-        private String day;
+        private final String formatted;
+        private final String year;
+        private final String month;
+        private final String day;
 
-        public Date(String y, String m, String d) {
-            this.year = y;
-            this.month = m;
-            this.day = d;
+        /**
+         * @param raw The raw date string YYYY-MM-DD-Thh-mm-ssZ.
+         */
+        public Date(String raw) {
+            this.formatted = raw.split("T")[0];
+            var data = this.formatted.split("-");
+
+            this.year = data[0];
+            this.month = data[1];
+            this.day = data[2];
         }
 
+        /**
+         * @return A YYYY-MM-DD formatted string.
+         */
+        public String getFormatted() {
+            return formatted;
+        }
+
+        /**
+         * @return The year.
+         */
         public String getYear() {
             return this.year;
         }
 
+        /**
+         * @return The month.
+         */
         public String getMonth() {
             return this.month;
         }
 
+        /**
+         * @return The day.
+         */
         public String getDay() {
             return this.day;
         }
     }
-    public static class Repo {
+
+    private static class Repo {
         private String created_at;
 
         public String getCreatedAt() {
             return this.created_at;
         }
     }
+
+    /**
+     * @return A date object, more specifically the date when the repository was created.
+     * @throws IOException If the request fails.
+     */
     public Date getStartTime() throws IOException {
         var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
@@ -75,24 +109,35 @@ public class GitHubAPI {
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
         var mapped = mapper.readValue(resp.body().string(), Repo.class);
-        var data = mapped.getCreatedAt().split("T")[0].split("-");
 
-        return new Date(data[0], data[1], data[2]);
+        return new Date(mapped.getCreatedAt());
     }
 
+    /**
+     * Contains relevant information about a collaborator.
+     */
     public static class Collaborators {
         private String login;
         private String avatar_url;
         private String html_url;
 
+        /**
+         * @return The collaborator's name.
+         */
         public String getName() {
             return this.login;
         }
 
+        /**
+         * @return The url to the collaborator's avatar.
+         */
         public String getAvatar() {
             return this.avatar_url;
         }
 
+        /**
+         * @return The url to the collaborator's github page.
+         */
         public String getProfile() {
             return this.html_url;
         }

@@ -25,7 +25,7 @@ public class Main {
             int opc = HomeUI.pop();
             if (opc ==JOptionPane.YES_OPTION){
                 HomeUI.show_frame(frame);
-                Action.do_action(frame, git, trello);
+                Action.do_action(frame, git, trello, 1);
             }else if(opc == JOptionPane.NO_OPTION){
                 new HomeUI();
 

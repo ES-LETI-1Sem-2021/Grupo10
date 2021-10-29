@@ -191,10 +191,10 @@ public class HomeUI implements ActionListener {
 
         if(opc == JOptionPane.YES_OPTION && i == 0){
             Action.save_data(user_git_info, user_trello_info);
-            Action.do_action(this.frame, user_git_info, user_trello_info);
+            Action.do_action(this.frame, user_git_info, user_trello_info,1);
 
         }else if (opc == JOptionPane.NO_OPTION && i == 0 ){
-            Action.do_action(this.frame, user_git_info, user_trello_info);
+            Action.do_action(this.frame, user_git_info, user_trello_info,1);
         }
     }
 }

@@ -15,13 +15,13 @@ public class Action {
      * Function that does everything.
      * Connects the UI's to the api's.
      *
+     *
      * @param  user_git_info String array with[git_owner, git_repo, git_token,]
      * @param user_trello_info String array with [trello_user, trello_key, trello_token]
      * @author Rodrigo Guerreiro
      *
      */
-
-    public static void do_action(JFrame frame, String[] user_git_info, String[] user_trello_info){
+    public static void do_action(JFrame frame, String[] user_git_info, String[] user_trello_info, int flag){
 
         var gitApi = new GitHubAPI(user_git_info[0],user_git_info[1],user_git_info[2]);
         String readme= null;
@@ -34,33 +34,34 @@ public class Action {
             GitHubAPI.Date dataInicio = gitApi.getStartTime();
             dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
 
-
             //username dos colaboradores
             for (GitHubAPI.Collaborators col : cols) System.out.println(col.getName());
-
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Limpa o ecra
-        frame.getContentPane().removeAll();
-        frame.revalidate();
-        frame.repaint();
+        clearFrame(frame);
 
         // aumenta o tamanho do ecra
-        frame.setLocation(0,0);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setSize(screenSize.width, screenSize.height-100);
-
+        if(flag ==1) {
+            frame.setLocation(0, 0);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            frame.setSize(screenSize.width, screenSize.height - 100);
+        }
 
         //Label com a data de inicio do trabalho
-        JLabel labelData = new JLabel("Project's start date: "+dataInicio_toLabel);
+        JLabel labelData = new JLabel("Project's start date: " + dataInicio_toLabel);
         labelData.setBounds(100,50,250,30);
         frame.add(labelData);
 
+        //Label com o nome do projeto (nome do repo)
+        JLabel labelProjName = new JLabel("Project's name: " + user_git_info[1]);
+        labelProjName.setBounds(400, 50 , 300, 30);
+        frame.add(labelProjName);
 
-        //Print doo readme no ecrã
+
+        //Print do readme no ecrã
         JEditorPane edt = new JEditorPane();
         edt.setContentType("text/html");
         edt.setText(convertMarkdownToHTML(readme));
@@ -93,5 +94,19 @@ public class Action {
         HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
         return htmlRenderer.render(document);
     }
+
+    /**
+     * Function that clear every thing that is on the frame at the moment
+     *
+     * @author Rodrigo Guerreiro
+     * @param frame the Jframe that the project is based on
+     */
+
+    public static void clearFrame(JFrame frame){
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
+    }
+
 
 }

@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+
 public class Action {
 
     /**
@@ -31,44 +35,25 @@ public class Action {
         System.out.println(readme);
 
 
-
+        // Limpa o ecra
         frame.getContentPane().removeAll();
         frame.revalidate();
         frame.repaint();
+
+        // aumenta o tamanho do ecra
         frame.setLocation(0,0);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(screenSize.width, screenSize.height-100);
 
+        //Print doo readme no ecrã
         JEditorPane edt = new JEditorPane();
         edt.setContentType("text/html");
-        edt.setText(readme);
+        edt.setText(convertMarkdownToHTML(readme));
         edt.setEditable(false);
         edt.setVisible(true);
         edt.setBounds(100,100,500,300);
         frame.add(edt);
         frame.setVisible(true);
-
-        /*
-        JFrame jframe = new JFrame();
-
-
-        JEditorPane editorPane = new JEditorPane();
-        editorPane.setEditable(false);
-        editorPane.setContentType("text/html"); */
-        //editorPane.setText(/*txtmark.Processor.process(readme)*/readme);
-       /* editorPane.setVisible(true);
-
-
-        jframe.add(editorPane);
-        
-
-        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jframe.setSize(1000,1000);
-
-        jframe.setVisible(true);
-        */
-
-        
 
         for (String s : user_git_info) {
             System.out.println(s);
@@ -91,4 +76,13 @@ public class Action {
     public static void save_data(String[] user_git_info, String[] user_trello_info) {
         DataSaver.save(user_git_info,user_trello_info, "data/user_data.txt");
     }
+
+    //função da net que transforma md para html
+    public static String convertMarkdownToHTML(String markdown) {
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(markdown);
+        HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
+        return htmlRenderer.render(document);
+    }
+
 }

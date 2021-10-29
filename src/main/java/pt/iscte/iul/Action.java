@@ -25,15 +25,23 @@ public class Action {
 
         var gitApi = new GitHubAPI(user_git_info[0],user_git_info[1],user_git_info[2]);
         String readme= null;
+        String dataInicio_toLabel = "";
         try {
             readme = gitApi.getFile("master","/README.md");
-            //gitApi.getCollaborators();
+
+            GitHubAPI.Collaborators[] cols = gitApi.getCollaborators();
+
+            GitHubAPI.Date dataInicio = gitApi.getStartTime();
+            dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
+
+
+            //username dos colaboradores
+            for (GitHubAPI.Collaborators col : cols) System.out.println(col.getName());
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(readme);
-
 
         // Limpa o ecra
         frame.getContentPane().removeAll();
@@ -45,6 +53,13 @@ public class Action {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(screenSize.width, screenSize.height-100);
 
+
+        //Label com a data de inicio do trabalho
+        JLabel labelData = new JLabel("Project's start date: "+dataInicio_toLabel);
+        labelData.setBounds(100,50,250,30);
+        frame.add(labelData);
+
+
         //Print doo readme no ecrã
         JEditorPane edt = new JEditorPane();
         edt.setContentType("text/html");
@@ -52,15 +67,9 @@ public class Action {
         edt.setEditable(false);
         edt.setVisible(true);
         edt.setBounds(100,100,500,300);
+
         frame.add(edt);
         frame.setVisible(true);
-
-        for (String s : user_git_info) {
-            System.out.println(s);
-        }
-        for(String s : user_trello_info){
-            System.out.println(s);
-        }
 
     }
 

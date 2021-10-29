@@ -18,11 +18,11 @@ public class HomeUI implements ActionListener {
     private final JLabel label_git_repo;
     private final JLabel label_trello_logo;
     private final JLabel label_trello_key;
-    private final JLabel label_trello_user;
+    private final JLabel label_trello_board_name;
     private final JTextField git_token;
     private final JTextField trello_token;
     private final JTextField git_owner;
-    private final JTextField trello_user;
+    private final JTextField trello_board_name;
     private final JTextField git_repo;
     private final JTextField trello_key;
     private final JButton search_button;
@@ -36,7 +36,8 @@ public class HomeUI implements ActionListener {
        this.label_git_repo = new JLabel("Please the repository name in the box below:");
 
        this.label_trello_logo = new JLabel("Please insert your Trello token in the box below:");
-       this.label_trello_user = new JLabel("Please insert your Trello's board name  in the box below:");
+       this.label_trello_board_name = new JLabel("Please insert your Trello's board name in the box below:");
+
        this.label_trello_key = new JLabel("Please insert your Trello key in the box below:");
 
        this.git_token = new JTextField();
@@ -44,7 +45,7 @@ public class HomeUI implements ActionListener {
        this.git_repo = new JTextField();
 
        this.trello_token = new JTextField();
-       this.trello_user = new JTextField();
+       this.trello_board_name = new JTextField();
        this.trello_key = new JTextField();
 
        this.search_button = new JButton("Search");
@@ -69,10 +70,10 @@ public class HomeUI implements ActionListener {
         this.frame.add(this.label_git_repo);
 
         this.label_trello_key.setBounds(SCREEN_WIDTH-400, 350, 330, 50);
-        this.label_trello_user.setBounds(SCREEN_WIDTH-400, 435, 330, 50);
+        this.label_trello_board_name.setBounds(SCREEN_WIDTH-400, 435, 370, 50);
 
         this.frame.add(label_trello_key);
-        this.frame.add(label_trello_user);
+        this.frame.add(label_trello_board_name);
 
     }
 
@@ -97,11 +98,11 @@ public class HomeUI implements ActionListener {
         this.trello_key.setBounds(SCREEN_WIDTH-400,400, 300,30);
 
         this.git_repo.setBounds(100,485, 330,30);
-        this.trello_user.setBounds(SCREEN_WIDTH-400,485, 300,30);
+        this.trello_board_name.setBounds(SCREEN_WIDTH-400,485, 300,30);
 
 
         this.frame.add(trello_key);
-        this.frame.add(trello_user);
+        this.frame.add(trello_board_name);
         this.frame.add(trello_token);
         this.frame.add(git_owner);
         this.frame.add(git_repo);
@@ -167,7 +168,7 @@ public class HomeUI implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         String[] user_git_info = {this.git_owner.getText(), this.git_repo.getText(), this.git_token.getText()};
-        String[] user_trello_info = {this.trello_user.getText(), this.trello_key.getText(), this.trello_token.getText()};
+        String[] user_trello_info = {this.trello_board_name.getText(), this.trello_key.getText(), this.trello_token.getText()};
 
         int i = 0;
 

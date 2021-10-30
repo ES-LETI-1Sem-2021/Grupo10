@@ -29,9 +29,7 @@ public class Main {
                 Action.do_action(frame, git, trello, 1);
             }else if(opc == JOptionPane.NO_OPTION){
                 new HomeUI();
-
             }
-
         }else
         new HomeUI();
     }

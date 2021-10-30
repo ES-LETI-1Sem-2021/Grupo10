@@ -31,7 +31,7 @@ public class Action {
         try {
             readme = gitApi.getFile("master","/README.md");
 
-           cols = gitApi.getCollaborators();
+            cols = gitApi.getCollaborators();
 
             GitHubAPI.Date dataInicio = gitApi.getStartTime();
             dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();

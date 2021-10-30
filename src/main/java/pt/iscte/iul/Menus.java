@@ -1,8 +1,12 @@
 package pt.iscte.iul;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +43,18 @@ public  class Menus  implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         for (Map.Entry<String, JMenuItem> entry : mapa.entrySet()) {
-            if(e.getSource().equals(entry.getValue()))
+            if(e.getSource().equals(entry.getValue())){
                 System.out.println(entry.getKey());
+                for (GitHubAPI.Collaborators col : this.cols){
+                    if(entry.getKey()==col.getName()){
+                        try {
+                            Desktop.getDesktop().browse(new URL(col.getProfile()).toURI());
+                        } catch (IOException | URISyntaxException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
     }
 

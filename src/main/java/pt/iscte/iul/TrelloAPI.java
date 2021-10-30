@@ -161,8 +161,11 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), Card[].class);
     }
 
+    // Function to get start and end date of a specific sprint
     public String[] getSprintDate(int SprintNumber) throws IOException {
+        // flag to see if we've found the start date
         boolean startDateFound = false;
+        // initialize list of dates
         String[] dates = new String[2];
 
         var cards = this.getBoardCards(this.boardId);
@@ -176,9 +179,12 @@ public class TrelloAPI {
             // search for due date in Sprint Review that is equal to Sprint end date
             if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) {
                 dates[1] = c.due.split("T")[0]; // split by delimiter T
-                if (startDateFound) break;
+                if (startDateFound) break; // if start date found, we can break the for loop
             }
         }
+        // return dates list
+        // dates[0] -> Sprint start date
+        // dates[1] -> Sprint end date
         return dates;
     }
 
@@ -198,7 +204,6 @@ public class TrelloAPI {
             }
         }
 
-        // TODO: Replace "sprintNum" with an iterator to apply to all sprints
         int sprintNum = 1;
         String sprintStartDate, sprintEndDate;
         // get all board cards
@@ -220,26 +225,6 @@ public class TrelloAPI {
         }
 
          */
-
-        /*
-        // get all board lists
-        // TODO: Access specific cards based on a specific list to reduce search time
-        var lists = trello.getBoardLists(projectId);
-        for (List l: lists) {
-            if (l.name.equals("Sprint Ceremonies")) // search for sprint ceremonies
-                // TODO: Implement a function that returns the cards on a list
-                for (Card c: l.getCards()) {
-                    if (c.name.equals("Sprint Planning - Sprint " + sprintNum)) { // search for sprint 1
-                        sprintStartDate = c.due.split("T")[0]; // split by delimiter T
-                        System.out.println("Sprint " + sprintNum + " (Start Date) - " + sprintStartDate); // print sprint 1 start date
-                    }
-                    if (c.name.equals("Sprint Review - Sprint " + sprintNum)) { // search for sprint 1
-                        sprintEndDate = c.due.split("T")][0]; // split by delimiter T
-                        System.out.println("Sprint " + sprintNum + " (End Date) - " + sprintEndDate); // print sprint 1 end date
-                    }
-                }
-        }
-        */
 
     }
 }

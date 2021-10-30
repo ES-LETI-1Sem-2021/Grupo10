@@ -10,8 +10,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public  class Menus  implements ActionListener {
-    private static Map<String, JMenuItem> mapa;
+public  class Menus implements ActionListener {
+    private static Map<GitHubAPI.Collaborators, JMenuItem> mapa;
     private final JFrame frame;
     private final GitHubAPI.Collaborators[] cols;
 
@@ -29,7 +29,7 @@ public  class Menus  implements ActionListener {
         for (GitHubAPI.Collaborators col : this.cols) {
 
             JMenuItem item = new JMenuItem(col.getName());
-            mapa.put(col.getName(), item);
+            mapa.put(col, item);
 
             item.addActionListener(this);
             colabs.add(item);
@@ -42,17 +42,12 @@ public  class Menus  implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        for (Map.Entry<String, JMenuItem> entry : mapa.entrySet()) {
+        for (Map.Entry<GitHubAPI.Collaborators, JMenuItem> entry : mapa.entrySet()) {
             if(e.getSource().equals(entry.getValue())){
-                System.out.println(entry.getKey());
-                for (GitHubAPI.Collaborators col : this.cols){
-                    if(entry.getKey()==col.getName()){
                         try {
-                            Desktop.getDesktop().browse(new URL(col.getProfile()).toURI());
+                            Desktop.getDesktop().browse(new URL(entry.getKey().getProfile()).toURI());
                         } catch (IOException | URISyntaxException ex) {
                             ex.printStackTrace();
-                        }
-                    }
                 }
             }
         }

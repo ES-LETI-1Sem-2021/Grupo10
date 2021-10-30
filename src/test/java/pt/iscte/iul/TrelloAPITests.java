@@ -48,7 +48,7 @@ public class TrelloAPITests {
     }
 
     @Test
-    public void ListAttributes() throws IOException {
+    public void listAttributes() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
         TrelloAPI.List list = this.api.getBoardLists(boardId)[0];
         Assertions.assertEquals("Product Backlog", list.getName());
@@ -56,7 +56,7 @@ public class TrelloAPITests {
     }
 
     @Test
-    public void CardAttributes() throws IOException {
+    public void cardAttributes() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
         String Id = "6161b8f50e32ff864a928bd6";
         String cardName = "";

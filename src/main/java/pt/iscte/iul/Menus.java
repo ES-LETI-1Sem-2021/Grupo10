@@ -13,7 +13,7 @@ public  class Menus  implements ActionListener {
 
 
     public Menus(JFrame frame, GitHubAPI.Collaborators[] cols){
-        this.mapa = new HashMap<>();
+        mapa = new HashMap<>();
         this.frame = frame;
         this.cols = cols;
         addMenus();
@@ -25,7 +25,7 @@ public  class Menus  implements ActionListener {
         for (GitHubAPI.Collaborators col : this.cols) {
 
             JMenuItem item = new JMenuItem(col.getName());
-            this.mapa.put(col.getName(), item);
+            mapa.put(col.getName(), item);
 
             item.addActionListener(this);
             colabs.add(item);

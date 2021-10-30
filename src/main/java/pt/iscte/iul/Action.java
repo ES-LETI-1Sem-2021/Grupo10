@@ -44,6 +44,7 @@ public class Action {
         }
 
         clearFrame(frame);
+        //Adiciona o menu com os colaboradores
         new Menus(frame, cols);
 
         // aumenta o tamanho do ecra apenas usado a primeira vez que esta função é executada

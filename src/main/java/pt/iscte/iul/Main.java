@@ -12,6 +12,7 @@ public class Main {
      * If answer == yes loads the app with the saved data.
      * If answer == no proceed with the standard load.
      * If there is no data file also does the standard load.
+     * If flag==1 then it will scale the main frame.
      *
      * @param args nothing.
      * @author Rodrigo Guerreiro

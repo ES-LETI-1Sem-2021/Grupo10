@@ -104,7 +104,6 @@ public class TrelloAPI {
                 .url(this.boardURL + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
 
         Response response = this.httpClient.newCall(request).execute();
-        System.out.println(response);
         return response;
     }
 

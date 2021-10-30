@@ -1,7 +1,9 @@
 package pt.iscte.iul;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +22,14 @@ public class GitHubAPITests {
 
     @Test
     public void numberOfCollaborators() throws IOException {
-        Assertions.assertEquals(4, api.getCollaborators().length);
+        var c = api.getCollaborators();
+
+        Assertions.assertEquals(4, c.length);
+
+        var names = new String[] {"Olek", "Duarte", "Miguel", "Rodrigo Guerreiro"};
+        for (int i = 0; i < c.length; i++) {
+            Assertions.assertEquals(names[i], c[i].getName());
+        }
     }
 
     @Test
@@ -47,6 +56,7 @@ public class GitHubAPITests {
     @Test
     public void dateTest() throws IOException {
         var date = this.api.getStartTime();
+        Assertions.assertEquals("2021-10-08", date.getFormatted());
         Assertions.assertEquals("2021", date.getYear());
         Assertions.assertEquals("10", date.getMonth());
         Assertions.assertEquals("08", date.getDay());

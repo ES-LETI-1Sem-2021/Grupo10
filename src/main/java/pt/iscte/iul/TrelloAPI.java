@@ -187,44 +187,5 @@ public class TrelloAPI {
         // dates[1] -> Sprint end date
         return dates;
     }
-
-    public static void main(String[] args) throws IOException {
-        TrelloAPI trello = new TrelloAPI("ES-LETI-1Sem-2021-Grupo10",
-                "71ba1d885267584d4febd7880c3074cc",
-                "e2c0eeb43d666b0a273e87946fa5b7d825b659861be9a2e500a908d839a7fd0e");
-
-        String projectId = null;
-        var boards = trello.getBoards(); //get all boards
-
-        // search for the project board
-        for (Board b: boards){
-            if (b.name.equals(trello.boardName)){
-                System.out.println("URL: " + b.getUrl());
-                projectId = b.id; // board ID
-            }
-        }
-
-        int sprintNum = 1;
-        String sprintStartDate, sprintEndDate;
-        // get all board cards
-        // TODO: Access specific cards based on a specific list to reduce search time
-        var cards = trello.getBoardCards(projectId);
-        /*
-        for (Card c: cards){
-            if (c.name.equals("Sprint Planning - Sprint " + sprintNum)) { // search for sprint 1
-                sprintStartDate = c.due.split("T")[0]; // split by delimiter T
-                System.out.println("Sprint " + sprintNum + " (Start Date) - " + sprintStartDate); // print sprint 1 start date
-                System.out.println(c.id);
-                System.out.println(c.url);
-            }
-            if (c.name.equals("Sprint Review - Sprint " + sprintNum)) { // search for sprint 1
-                sprintEndDate = c.due.split("T")[0]; // split by delimiter T
-                System.out.println("Sprint " + sprintNum + " (End Date) - " + sprintEndDate); // print sprint 1 end date
-                break; // Stop searching after all dates are presented
-            }
-        }
-
-         */
-
-    }
+    // TODO: Access specific cards based on a specific list to reduce search time
 }

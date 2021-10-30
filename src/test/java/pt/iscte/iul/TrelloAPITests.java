@@ -24,4 +24,16 @@ public class TrelloAPITests {
     public void numberOfBoards() throws IOException {
         Assertions.assertEquals(2, this.api.getBoards().length);
     }
+
+    @Test
+    public void SprintStartDate() throws IOException {
+        String[] dates = {"2021-10-09", "2021-10-30"};
+        Assertions.assertArrayEquals(dates, this.api.getSprintDate(1));
+    }
+
+    @Test
+    public void numberOfLists() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        Assertions.assertEquals(5, this.api.getBoardLists(boardId).length);
+    }
 }

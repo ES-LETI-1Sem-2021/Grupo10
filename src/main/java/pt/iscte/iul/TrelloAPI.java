@@ -49,7 +49,6 @@ public class TrelloAPI {
     public static class List {
         private String name;
         private String id;
-        private String url;
 
         public String getName() {
             return this.name;
@@ -58,10 +57,6 @@ public class TrelloAPI {
         public String getId() {
             return this.id;
         }
-
-        public String getUrl() {
-            return this.url;
-        }
     }
 
     // TODO: The class Card needs more attributes for the rest of the project
@@ -69,7 +64,6 @@ public class TrelloAPI {
         private String name;
         private String id;
         private String due;
-        private String url;
 
         public String getName() {
             return this.name;
@@ -80,11 +74,7 @@ public class TrelloAPI {
         }
 
         public String getDueDate() {
-            return this.due;
-        }
-
-        public String getCardURL() {
-            return this.url;
+            return this.due.split("T")[0];
         }
     }
 
@@ -173,12 +163,12 @@ public class TrelloAPI {
         for (Card c : cards) {
             // search for due date in Sprint Review that is equal to Sprint end date
             if (c.name.equals("Sprint Planning - Sprint " + SprintNumber)) {
-                dates[0] = c.due.split("T")[0]; // split by delimiter T
+                dates[0] = c.getDueDate(); // split by delimiter T
                 startDateFound = true;
             }
             // search for due date in Sprint Review that is equal to Sprint end date
             if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) {
-                dates[1] = c.due.split("T")[0]; // split by delimiter T
+                dates[1] = c.getDueDate(); // split by delimiter T
                 if (startDateFound) break; // if start date found, we can break the for loop
             }
         }

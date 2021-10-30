@@ -69,6 +69,7 @@ public class TrelloAPI {
         private String name;
         private String id;
         private String due;
+        private String url;
 
         public String getName() {
             return this.name;
@@ -80,6 +81,10 @@ public class TrelloAPI {
 
         public String getDueDate() {
             return this.due;
+        }
+
+        public String getCardURL() {
+            return this.url;
         }
     }
 
@@ -156,6 +161,27 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), Card[].class);
     }
 
+    public String[] getSprintDate(int SprintNumber) throws IOException {
+        boolean startDateFound = false;
+        String[] dates = new String[2];
+
+        var cards = this.getBoardCards(this.boardId);
+        // Iterate over all cards
+        for (Card c : cards) {
+            // search for due date in Sprint Review that is equal to Sprint end date
+            if (c.name.equals("Sprint Planning - Sprint " + SprintNumber)) {
+                dates[0] = c.due.split("T")[0]; // split by delimiter T
+                startDateFound = true;
+            }
+            // search for due date in Sprint Review that is equal to Sprint end date
+            if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) {
+                dates[1] = c.due.split("T")[0]; // split by delimiter T
+                if (startDateFound) break;
+            }
+        }
+        return dates;
+    }
+
     public static void main(String[] args) throws IOException {
         TrelloAPI trello = new TrelloAPI("ES-LETI-1Sem-2021-Grupo10",
                 "71ba1d885267584d4febd7880c3074cc",
@@ -167,6 +193,7 @@ public class TrelloAPI {
         // search for the project board
         for (Board b: boards){
             if (b.name.equals(trello.boardName)){
+                System.out.println("URL: " + b.getUrl());
                 projectId = b.id; // board ID
             }
         }
@@ -177,10 +204,13 @@ public class TrelloAPI {
         // get all board cards
         // TODO: Access specific cards based on a specific list to reduce search time
         var cards = trello.getBoardCards(projectId);
+        /*
         for (Card c: cards){
             if (c.name.equals("Sprint Planning - Sprint " + sprintNum)) { // search for sprint 1
                 sprintStartDate = c.due.split("T")[0]; // split by delimiter T
                 System.out.println("Sprint " + sprintNum + " (Start Date) - " + sprintStartDate); // print sprint 1 start date
+                System.out.println(c.id);
+                System.out.println(c.url);
             }
             if (c.name.equals("Sprint Review - Sprint " + sprintNum)) { // search for sprint 1
                 sprintEndDate = c.due.split("T")[0]; // split by delimiter T
@@ -188,6 +218,8 @@ public class TrelloAPI {
                 break; // Stop searching after all dates are presented
             }
         }
+
+         */
 
         /*
         // get all board lists

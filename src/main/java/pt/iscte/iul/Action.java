@@ -27,10 +27,11 @@ public class Action {
         var gitApi = new GitHubAPI(user_git_info[0],user_git_info[1],user_git_info[2]);
         String readme= null;
         String dataInicio_toLabel = "";
+        GitHubAPI.Collaborators[] cols = new GitHubAPI.Collaborators[0];
         try {
             readme = gitApi.getFile("master","/README.md");
 
-            GitHubAPI.Collaborators[] cols = gitApi.getCollaborators();
+           cols = gitApi.getCollaborators();
 
             GitHubAPI.Date dataInicio = gitApi.getStartTime();
             dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
@@ -43,8 +44,9 @@ public class Action {
         }
 
         clearFrame(frame);
+        new Menus(frame, cols);
 
-        // aumenta o tamanho do ecra
+        // aumenta o tamanho do ecra apenas usado a primeira vez que esta função é executada
         if(flag ==1) {
             frame.setLocation(0, 0);
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -102,7 +104,7 @@ public class Action {
      * Function that clear every thing that is on the frame at the moment
      *
      * @author Rodrigo Guerreiro
-     * @param frame the Jframe that the project is based on
+     * @param frame the JFrame that the project is based on
      */
 
     public static void clearFrame(JFrame frame){

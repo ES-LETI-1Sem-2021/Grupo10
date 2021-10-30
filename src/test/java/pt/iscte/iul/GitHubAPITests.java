@@ -22,7 +22,14 @@ public class GitHubAPITests {
 
     @Test
     public void numberOfCollaborators() throws IOException {
-        Assertions.assertEquals(4, api.getCollaborators().length);
+        var c = api.getCollaborators();
+
+        Assertions.assertEquals(4, c.length);
+
+        var names = new String[] {"Olek", "Duarte", "Miguel", "Rodrigo Guerreiro"};
+        for (int i = 0; i < c.length; i++) {
+            Assertions.assertEquals(names[i], c[i].getName());
+        }
     }
 
     @Test

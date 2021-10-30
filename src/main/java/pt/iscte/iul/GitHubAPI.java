@@ -18,6 +18,7 @@ public class GitHubAPI {
     private final String baseAPIUrl;
     private final String baseRawUrl;
     private final OkHttpClient httpClient;
+    private final ObjectMapper mapper;
 
     /**
      * Base class for requesting information from the GitHub API.
@@ -32,6 +33,11 @@ public class GitHubAPI {
         this.baseRawUrl = "https://raw.githubusercontent.com/" + repoOwner + "/" + projectName;
 
         this.httpClient = new OkHttpClient();
+
+        this.mapper = new ObjectMapper();
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
     }
 
     /**
@@ -103,16 +109,20 @@ public class GitHubAPI {
 
         var resp = this.httpClient.newCall(request).execute();
 
-        var mapper = new ObjectMapper();
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-
-        var mapped = mapper.readValue(resp.body().string(), Repo.class);
-
+        var mapped = this.mapper.readValue(resp.body().string(), Repo.class);
         return new Date(mapped.getCreatedAt());
     }
 
+    private static class User {
+        private String name;
+
+        /**
+         * @return The collaborator's name.
+         */
+        public String getName() {
+            return this.name;
+        }
+    }
     /**
      * Contains relevant information about a collaborator.
      */
@@ -121,10 +131,12 @@ public class GitHubAPI {
         private String avatar_url;
         private String html_url;
 
+        private String name;
+
         /**
-         * @return The collaborator's name.
+         * @return The collaborator's login.
          */
-        public String getName() {
+        public String getLogin() {
             return this.login;
         }
 
@@ -141,6 +153,17 @@ public class GitHubAPI {
         public String getProfile() {
             return this.html_url;
         }
+
+        protected void setName(String name) {
+            this.name = name;
+        }
+
+        /**
+         * @return The collaborator's name.
+         */
+        public String getName() {
+            return name;
+        }
     }
 
     /**
@@ -154,12 +177,18 @@ public class GitHubAPI {
 
         var resp = this.httpClient.newCall(request).execute();
 
-        var mapper = new ObjectMapper();
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+        var ret = this.mapper.readValue(resp.body().string(), Collaborators[].class);
+        for (int i = 0; i < ret.length; i++) {
+            resp = this.httpClient.newCall(
+                    new Request.Builder().url("https://api.github.com/users/" + ret[i].login).build()
+            ).execute();
 
-        return mapper.readValue(resp.body().string(), Collaborators[].class);
+            var mapper2 = this.mapper.readValue(resp.body().string(), User.class);
+
+            ret[i].setName(mapper2.getName());
+        }
+
+        return ret;
     }
 
     /**

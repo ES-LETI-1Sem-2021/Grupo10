@@ -10,6 +10,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Rodrigo Guerreiro.
+ */
+
 public  class Menus implements ActionListener {
     private static Map<GitHubAPI.Collaborators, JMenuItem> mapa;
     private final JFrame frame;

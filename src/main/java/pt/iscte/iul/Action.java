@@ -8,6 +8,10 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
+
+/**
+ * @author Rodrigo Guerreiro.
+ */
 public class Action {
 
     /**
@@ -73,7 +77,7 @@ public class Action {
         edt.setText(convertMarkdownToHTML(readme));
         edt.setEditable(false);
         edt.setVisible(true);
-        edt.setBounds(100,100,500,300);
+        edt.setBounds(100,100,500,600);
 
         frame.add(edt);
         frame.setVisible(true);

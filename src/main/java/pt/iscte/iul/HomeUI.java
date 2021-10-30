@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
+/**
+ * @author Rodrigo Guerreiro.
+ */
+
 public class HomeUI implements ActionListener {
 
     private static final int SCREEN_WIDTH = 1000;

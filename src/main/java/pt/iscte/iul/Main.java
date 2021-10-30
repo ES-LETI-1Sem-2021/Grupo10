@@ -3,6 +3,9 @@ package pt.iscte.iul;
 import javax.swing.*;
 import java.io.File;
 
+/**
+ * @author Rodrigo Guerreiro.
+ */
 public class Main {
 
     /**

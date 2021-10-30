@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+
+/**
+ * @author Rodrigo Guerreiro.
+ */
+
 public class DataSaver {
 
     /**

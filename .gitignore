@@ -1,3 +1,4 @@
 .idea
 /target
-*.txt
+token.txt
+tokens.txt

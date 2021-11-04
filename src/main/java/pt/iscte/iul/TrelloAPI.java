@@ -64,6 +64,7 @@ public class TrelloAPI {
         private String name;
         private String id;
         private String due;
+        private String desc;
 
         public String getName() {
             return this.name;
@@ -74,7 +75,11 @@ public class TrelloAPI {
         }
 
         public String getDueDate() {
-            return this.due.split("T")[0];
+            return this.due.split("T")[0]; // split by delimiter T
+        }
+
+        public String desc() {
+            return this.desc;
         }
     }
 
@@ -151,7 +156,8 @@ public class TrelloAPI {
     }
 
     // Function to get start and end date of a specific sprint
-    public String[] getSprintDate(int SprintNumber) throws IOException {
+    // TODO: Access specific cards based on a specific list to reduce search time
+    public String[] getSprintDates(int SprintNumber) throws IOException {
         // flag to see if we've found the start date
         boolean startDateFound = false;
         // initialize list of dates
@@ -160,21 +166,53 @@ public class TrelloAPI {
         var cards = this.getBoardCards(this.boardId);
         // Iterate over all cards
         for (Card c : cards) {
-            // search for due date in Sprint Review that is equal to Sprint end date
+            // search for due date of Sprint Planning that is equal to Sprint start date
             if (c.name.equals("Sprint Planning - Sprint " + SprintNumber)) {
-                dates[0] = c.getDueDate(); // split by delimiter T
+                dates[0] = c.getDueDate();
                 startDateFound = true;
             }
-            // search for due date in Sprint Review that is equal to Sprint end date
-            if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) {
-                dates[1] = c.getDueDate(); // split by delimiter T
-                if (startDateFound) break; // if start date found, we can break the for loop
+            // search for due date of Sprint Retrospective that is equal to Sprint end date
+            else if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) {
+                dates[1] = c.getDueDate();
+                if (startDateFound) break; // if start date is found, we can break the for loop
             }
         }
-        // return dates list
+        // Returns dates list
         // dates[0] -> Sprint start date
         // dates[1] -> Sprint end date
         return dates;
     }
+
+    // Function to get the descriptions of the Sprint Ceremonies of a specific sprint
     // TODO: Access specific cards based on a specific list to reduce search time
+    public void /*String[]*/ getCeremoniesDescription(int SprintNumber) throws IOException {
+        // initialize list of descriptions
+        String[] descriptions = new String[3];
+
+        var cards = this.getBoardCards(this.boardId);
+        // Iterate over all cards
+        for (Card c : cards) {
+            // get the Sprint Planning description
+            if (c.name.equals("Sprint Planning - Sprint " + SprintNumber)) descriptions[0] = c.desc();
+            /*
+                // get the Sprint Review description
+            else if (c.name.equals("Sprint Review - Sprint " + SprintNumber)) descriptions[1] = c.desc();
+                // get the Sprint Retrospective description
+            else if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) descriptions[2] = c.desc();
+            */
+        }
+        System.out.println("Description of Sprint Planning \n" + descriptions[0]);
+
+        // Returns descriptions list
+        // descriptions[0] -> Sprint Planning Description
+        // descriptions[1] -> Sprint Review Description
+        // descriptions[2] -> Sprint Retrospective Description
+        //return descriptions;
+    }
+
+    public void main(String[] args) throws IOException {
+
+        this.getCeremoniesDescription(1);
+
+    }
 }

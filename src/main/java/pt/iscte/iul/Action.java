@@ -10,6 +10,8 @@ import org.commonmark.renderer.html.HtmlRenderer;
 
 
 /**
+ * Classe where all the magic happens.
+ *
  * @author Rodrigo Guerreiro.
  */
 public class Action {

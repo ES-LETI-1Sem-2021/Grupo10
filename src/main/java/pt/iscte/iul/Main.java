@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.io.File;
 
 /**
+ * Just the main class.
+ *
  * @author Rodrigo Guerreiro.
  */
 public class Main {

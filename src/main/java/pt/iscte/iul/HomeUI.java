@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 
 
 /**
+ * The basic 'Home Screen' where the user inputs his information.
+ * Also has pop-ups!
+ *
  * @author Rodrigo Guerreiro.
  */
 

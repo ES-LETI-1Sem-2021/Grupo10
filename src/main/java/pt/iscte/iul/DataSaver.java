@@ -6,6 +6,8 @@ import java.io.IOException;
 
 
 /**
+ * Class to save and encode (BASE64) the user information on a .txt file.
+ *
  * @author Rodrigo Guerreiro.
  */
 

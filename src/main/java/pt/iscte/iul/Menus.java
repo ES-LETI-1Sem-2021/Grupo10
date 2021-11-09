@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Classe that creates the menus to be added onto the frame.
+ *
  * @author Rodrigo Guerreiro.
  */
 

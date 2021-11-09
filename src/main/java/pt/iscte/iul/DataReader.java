@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 
 /**
+ * Class to Read and decode the user information stored on a .txt file
+ *
  * @author Rodrigo Guerreiro.
  */
 public class DataReader {

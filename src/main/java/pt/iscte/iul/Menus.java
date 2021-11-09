@@ -15,8 +15,8 @@ import java.util.Map;
  */
 
 public class Menus implements ActionListener {
-    private static Map<TrelloAPI.List, JMenuItem> mapa_lists;
-    private static Map<GitHubAPI.Collaborators, JMenuItem> mapa_cols;
+    private final Map<TrelloAPI.List, JMenuItem> mapa_lists;
+    private final Map<GitHubAPI.Collaborators, JMenuItem> mapa_cols;
     private final JFrame frame;
     private final GitHubAPI.Collaborators[] cols;
     private final JMenuBar mb;
@@ -98,6 +98,7 @@ public class Menus implements ActionListener {
                 mapa_lists.put(l, item);
 
                 // TODO CRIAR UM SUBMENU EM CADA LISTA COM OS CARTOES TODOS (VER JAMBOARD PAG 16)
+                //TODO PASSAR LOGO OS OBJETOS (API's) CRIADOS ???
 
                 item.addActionListener(this);
                 listas.add(item);

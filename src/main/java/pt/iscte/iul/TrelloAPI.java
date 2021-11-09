@@ -258,7 +258,7 @@ public class TrelloAPI {
         // get all cards from the list
         var cards = this.getListCards(list.getId(), boardId);
         for (Card card: cards){
-            doneItems.add(card.desc);
+            doneItems.add(card.name);
         }
         return doneItems;
     }

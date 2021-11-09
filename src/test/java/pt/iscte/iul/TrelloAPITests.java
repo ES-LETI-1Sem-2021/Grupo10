@@ -6,6 +6,8 @@ import org.junit.jupiter.api.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TrelloAPITests {
     private TrelloAPI api;
@@ -74,6 +76,19 @@ public class TrelloAPITests {
         Assertions.assertEquals("Sprint Planning - Sprint 1", cardName);
         Assertions.assertEquals("6161b8f50e32ff864a928bd6", cardId);
         Assertions.assertEquals("2021-10-09", cardDue);
+    }
+
+    @Test
+    public void doneProductBacklog() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        ArrayList<String> backlogProducts = new ArrayList<String>(
+                Arrays.asList("APIs - Sprint 1", "Home UI - Sprint 1", "12. Descrição do projeto - Sprint 1",
+                        "1. Identificação do Projeto - Sprint 1", "3. Início do projeto - Sprint 1",
+                        "Organização do Trello - Sprint 1", "4. Datas dos Sprints - Sprint 1",
+                        "2. Elementos da equipa - Sprint 1")
+        );
+        var doneProducts = this.api.getDoneProductBacklog(boardId, 1);
+        Assertions.assertEquals(backlogProducts, doneProducts);
     }
 
 

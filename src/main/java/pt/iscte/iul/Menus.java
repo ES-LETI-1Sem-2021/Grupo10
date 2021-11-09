@@ -31,8 +31,8 @@ public class Menus implements ActionListener {
      * @author Rodrigo Guerreiro
      * @param frame The frame where the menus will be attached on
      * @param cols  The list of collaborators
-     * @param user_trello_info
-     * @param user_git_info
+     * @param user_trello_info String array with [trello_name, trello_key, trello_token]
+     * @param user_git_info String array with[git_owner, git_repo, git_token]
      */
 
     public Menus(JFrame frame, GitHubAPI.Collaborators[] cols, String boardId, String[] user_trello_info, String[] user_git_info){
@@ -45,7 +45,7 @@ public class Menus implements ActionListener {
         this.user_trello_info=user_trello_info;
         this.user_git_info = user_git_info;
         gitMenus();
-        defaultMenus();
+        listsMenus();
 
         this.frame.setJMenuBar(mb);
     }
@@ -72,7 +72,16 @@ public class Menus implements ActionListener {
 
     }
 
-    private void defaultMenus(){
+    /**
+     *
+     * Function that creates a menu item for each list in the board.
+     * Also creates a submenu on each item, regarding the cards on that list.
+     *
+     * @author Rodrigo Guerreiro
+     *
+     */
+
+    private void listsMenus(){
         JMenu listas = new JMenu("Listas");
         TrelloAPI tapi = new TrelloAPI(this.user_trello_info[0], this.user_trello_info[1], this.user_trello_info[2]);
         TrelloAPI.List[] Lists=null;
@@ -83,22 +92,25 @@ public class Menus implements ActionListener {
             e.printStackTrace();
         }
 
-        for(TrelloAPI.List l : Lists){
-            JMenuItem item = new JMenuItem(l.getName());
-            mapa_lists.put(l, item);
-            item.addActionListener(this);
-            listas.add(item);
-        }
+        if (Lists != null) {
+            for(TrelloAPI.List l : Lists){
+                JMenuItem item = new JMenuItem(l.getName());
+                mapa_lists.put(l, item);
+
+                // TODO CRIAR UM SUBMENU EM CADA LISTA COM OS CARTOES TODOS (VER JAMBOARD PAG 16)
+
+                item.addActionListener(this);
+                listas.add(item);
+            }
+
         mb.add(listas);
-
+        }
     }
-
 
 
     /**
      *
      * Performs an action based on which menu item was clicked.
-     *
      *
      * @author Rodrigo Guerreiro
      * @param e the events that happens when the user clicks on a collaborator name.
@@ -108,6 +120,7 @@ public class Menus implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        //redirect for the GitHub page
         for (Map.Entry<GitHubAPI.Collaborators, JMenuItem> entry : mapa_cols.entrySet()) {
             if(e.getSource().equals(entry.getValue())){
                         try {
@@ -118,12 +131,13 @@ public class Menus implements ActionListener {
             }
         }
 
+        //action for the lists
         for (Map.Entry<TrelloAPI.List, JMenuItem> l : mapa_lists.entrySet()) {
+            //Action.clearFrame(this.frame);
             if(e.getSource().equals(l.getValue())){
                 System.out.println(l.getKey().getName());
             }
         }
-
     }
 
 }

@@ -21,7 +21,7 @@ public class Action {
      *
      *
      * @param  user_git_info String array with[git_owner, git_repo, git_token,]
-     * @param user_trello_info String array with [trello_user, trello_key, trello_token]
+     * @param user_trello_info String array with [trello_name, trello_key, trello_token]
      * @param flag flag == 1 if it is needed to scale the window size, any number otherwise.
      * @author Rodrigo Guerreiro
      *
@@ -29,10 +29,23 @@ public class Action {
     public static void do_action(JFrame frame, String[] user_git_info, String[] user_trello_info, int flag){
 
         var gitApi = new GitHubAPI(user_git_info[0],user_git_info[1],user_git_info[2]);
+        var trelloAPI = new TrelloAPI(user_trello_info[0],user_trello_info[1],user_trello_info[2]);
+
         String readme= null;
         String dataInicio_toLabel = "";
         GitHubAPI.Collaborators[] cols = new GitHubAPI.Collaborators[0];
+        String boardID = null;
         try {
+
+            TrelloAPI.Board[] boards = trelloAPI.getBoards();
+            for (TrelloAPI.Board b: boards) {
+                if(b.getName().equals(user_trello_info[0])){
+                    System.out.println(b.getName());
+                    System.out.println(b.getId());
+                    boardID = b.getId();
+                }
+            }
+
             readme = gitApi.getFile("master","/README.md");
 
             cols = gitApi.getCollaborators();
@@ -49,7 +62,7 @@ public class Action {
 
         clearFrame(frame);
         //Adiciona o menu com os colaboradores
-        new Menus(frame, cols);
+        new Menus(frame, cols, boardID, user_trello_info, user_git_info);
 
         // aumenta o tamanho do ecra apenas usado a primeira vez que esta função é executada
         if(flag ==1) {

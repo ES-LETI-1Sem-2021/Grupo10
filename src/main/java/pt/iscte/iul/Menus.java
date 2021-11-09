@@ -15,9 +15,14 @@ import java.util.Map;
  */
 
 public class Menus implements ActionListener {
-    private static Map<GitHubAPI.Collaborators, JMenuItem> mapa;
+    private static Map<TrelloAPI.List, JMenuItem> mapa_lists;
+    private static Map<GitHubAPI.Collaborators, JMenuItem> mapa_cols;
     private final JFrame frame;
     private final GitHubAPI.Collaborators[] cols;
+    private final JMenuBar mb;
+    private final String boardID;
+    private final String[] user_trello_info;
+    private final String[] user_git_info;
 
 
     /**
@@ -26,41 +31,74 @@ public class Menus implements ActionListener {
      * @author Rodrigo Guerreiro
      * @param frame The frame where the menus will be attached on
      * @param cols  The list of collaborators
+     * @param user_trello_info
+     * @param user_git_info
      */
 
-    public Menus(JFrame frame, GitHubAPI.Collaborators[] cols){
-        mapa = new HashMap<>();
+    public Menus(JFrame frame, GitHubAPI.Collaborators[] cols, String boardId, String[] user_trello_info, String[] user_git_info){
+        this.mapa_cols = new HashMap<>();
+        this.mapa_lists = new HashMap<>();
         this.frame = frame;
         this.cols = cols;
-        addMenus();
+        this.boardID= boardId;
+        this.mb = new JMenuBar();
+        this.user_trello_info=user_trello_info;
+        this.user_git_info = user_git_info;
+        gitMenus();
+        defaultMenus();
+
+        this.frame.setJMenuBar(mb);
     }
 
     /**
-     * Function that creates the menus and menu bars and attaches it to the frame.
+     * Function that creates the menus, regarding the collaborators and menu bars and attaches it to the frame.
      * Uses a map to store the different menus (one for each collaborator).
      *
      * @author Rodrigo Guerreiro
      */
-    public void addMenus(){
-        JMenuBar mb = new JMenuBar();
+    public void gitMenus(){
         JMenu colabs = new JMenu("Collaborators");
 
         for (GitHubAPI.Collaborators col : this.cols) {
 
             JMenuItem item = new JMenuItem(col.getName());
-            mapa.put(col, item);
+            mapa_cols.put(col, item);
 
             item.addActionListener(this);
             colabs.add(item);
         }
 
         mb.add(colabs);
-        this.frame.setJMenuBar(mb);
+
     }
+
+    private void defaultMenus(){
+        JMenu listas = new JMenu("Listas");
+        TrelloAPI tapi = new TrelloAPI(this.user_trello_info[0], this.user_trello_info[1], this.user_trello_info[2]);
+        TrelloAPI.List[] Lists=null;
+
+        try {
+            Lists = tapi.getBoardLists(boardID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(TrelloAPI.List l : Lists){
+            JMenuItem item = new JMenuItem(l.getName());
+            mapa_lists.put(l, item);
+            item.addActionListener(this);
+            listas.add(item);
+        }
+        mb.add(listas);
+
+    }
+
+
 
     /**
      *
-     * Sees witch menu was clicked and redirects the user to the menu 'owner' GitHub page.
+     * Performs an action based on which menu item was clicked.
+     *
      *
      * @author Rodrigo Guerreiro
      * @param e the events that happens when the user clicks on a collaborator name.
@@ -70,7 +108,7 @@ public class Menus implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        for (Map.Entry<GitHubAPI.Collaborators, JMenuItem> entry : mapa.entrySet()) {
+        for (Map.Entry<GitHubAPI.Collaborators, JMenuItem> entry : mapa_cols.entrySet()) {
             if(e.getSource().equals(entry.getValue())){
                         try {
                             Desktop.getDesktop().browse(new URL(entry.getKey().getProfile()).toURI());
@@ -79,6 +117,13 @@ public class Menus implements ActionListener {
                 }
             }
         }
+
+        for (Map.Entry<TrelloAPI.List, JMenuItem> l : mapa_lists.entrySet()) {
+            if(e.getSource().equals(l.getValue())){
+                System.out.println(l.getKey().getName());
+            }
+        }
+
     }
 
 }

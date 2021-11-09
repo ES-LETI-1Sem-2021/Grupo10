@@ -22,8 +22,6 @@ public class DataSaver {
      *
      */
 
-
-
     public static void save(String[] user_git_info, String[] user_trello_info, String filename) {
 
         try{
@@ -67,7 +65,6 @@ public class DataSaver {
      * @return True if the file exists.
      * @author Rodrigo Guerreiro
      */
-
 
     public static boolean exists(File file){
         return file.exists();

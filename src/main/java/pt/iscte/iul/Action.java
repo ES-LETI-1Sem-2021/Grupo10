@@ -97,7 +97,13 @@ public class Action {
         DataSaver.save(user_git_info,user_trello_info, "data/user_data.txt");
     }
 
-    //função da net que transforma md para html
+    /**
+     * Function that converts a give string (in markdown) to the same string formatted in html.
+     *
+     * @param markdown the string in markdown
+     * @return the string 'markdown' converted for html
+     */
+
     public static String convertMarkdownToHTML(String markdown) {
         Parser parser = Parser.builder().build();
         Node document = parser.parse(markdown);
@@ -117,6 +123,4 @@ public class Action {
         frame.revalidate();
         frame.repaint();
     }
-
-
 }

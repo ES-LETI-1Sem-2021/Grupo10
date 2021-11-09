@@ -31,6 +31,13 @@ public class HomeUI implements ActionListener {
     private final JTextField trello_key;
     private final JButton search_button;
 
+    /**
+     *
+     * Constructor method that initialize the variables in order for the frame to be created.
+     *
+     * @author Rodrigo Guerreiro
+     */
+
 
     public HomeUI() {
        this.frame = new JFrame();
@@ -66,6 +73,13 @@ public class HomeUI implements ActionListener {
        this.frame.setVisible(true);
     }
 
+    /**
+     *
+     * Function that add the labels on the screen to show the user where to put each credential.
+     *
+     * @author Rodrigo Guerreiro
+     */
+
     private void add_labels() {
         this.label_git_owner.setBounds(100, 350, 330, 50);
         this.label_git_repo.setBounds(100, 435, 330, 50);
@@ -92,6 +106,14 @@ public class HomeUI implements ActionListener {
         return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved informations?",
                 "Warning?", JOptionPane.YES_NO_OPTION);
     }
+
+    /**
+     *
+     *Function that add the input boxes to the frame for the user input his credentials.
+     *
+     * @author Rodrigo Guerreiro
+     */
+
 
     private void add_inboxes() {
 
@@ -131,6 +153,11 @@ public class HomeUI implements ActionListener {
         frame.getContentPane().setBackground(Color.WHITE);
 
     }
+
+    /**
+     * Function that displays on the frame the two images (git and trello).
+     * @author Rodrigo Guerreiro
+     */
 
     private void add_images(){
 

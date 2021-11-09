@@ -38,13 +38,13 @@ public class TrelloAPITests {
     @Test
     public void SprintStartDate() throws IOException {
         String[] dates = {"2021-10-09", "2021-10-30"};
-        Assertions.assertArrayEquals(dates, this.api.getSprintDate(1));
+        Assertions.assertArrayEquals(dates, this.api.getSprintDates(1, "614df1d076293f6b763c1c9c"));
     }
 
     @Test
     public void numberOfLists() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
-        Assertions.assertEquals(5, this.api.getBoardLists(boardId).length);
+        Assertions.assertEquals(6, this.api.getBoardLists(boardId).length);
     }
 
     @Test
@@ -75,6 +75,7 @@ public class TrelloAPITests {
         Assertions.assertEquals("6161b8f50e32ff864a928bd6", cardId);
         Assertions.assertEquals("2021-10-09", cardDue);
     }
+
 
 
 }

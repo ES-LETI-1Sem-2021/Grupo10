@@ -6,7 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.*;
 
+import javax.swing.text.TabExpander;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrelloAPI {
     private final String apiKey;
@@ -15,7 +19,8 @@ public class TrelloAPI {
     private final String baseAPIUrl;
     private final OkHttpClient httpClient;
     private final String boardURL = "https://api.trello.com/1/boards/";
-    private final String boardId = "614df1d076293f6b763c1c9c";
+    private final String listURL = "https://api.trello.com/1/lists/";
+    //private final String boardId = "614df1d076293f6b763c1c9c";
 
     public TrelloAPI(String boardName, String apiKey, String apiToken) {
         this.apiKey = apiKey;
@@ -102,11 +107,11 @@ public class TrelloAPI {
     }
 
     // Function for HTTP request for components
-    private Response HTTPRequest(String component, String componentId) throws IOException {
+    private Response HTTPRequest(String component, String componentId, String url) throws IOException {
         //HTTP request to access the board
         Request request = new Request.Builder()
                 .header("Accept", "application/json")
-                .url(this.boardURL + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
+                .url(url + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
 
         Response response = this.httpClient.newCall(request).execute();
         return response;
@@ -115,7 +120,7 @@ public class TrelloAPI {
     // Function to return the Board that the user specified at login
     public Board getBoard(String boardId) throws IOException {
         //HTTP request to access the board
-        Response response = HTTPRequest("", boardId);
+        Response response = HTTPRequest("", boardId, boardURL);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
         // map http response to the class Board
@@ -129,7 +134,7 @@ public class TrelloAPI {
     // Function to return all the lists in the board
     public List[] getBoardLists(String boardId) throws IOException {
         //HTTP request to access the board
-        Response response = HTTPRequest("lists", boardId);
+        Response response = HTTPRequest("lists", boardId, boardURL);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
         // map http response to the class Board
@@ -141,10 +146,21 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), List[].class);
     }
 
+    // Function to return a specific List in the board
+    public List getList(String listName, String boardID) throws IOException {
+        var lists = this.getBoardLists(boardID);
+        for (List list: lists){
+            if (list.getName().equals(listName)){
+                return list;
+            }
+        }
+        return null;
+    }
+
     // Function to return all the lists in the board
     public Card[] getBoardCards(String boardId) throws IOException {
         //HTTP request to access the board
-        Response response = HTTPRequest("cards", boardId);
+        Response response = HTTPRequest("cards", boardId, boardURL);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
         // map http response to the class Board
@@ -155,15 +171,33 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), Card[].class);
     }
 
-    // Function to get start and end date of a specific sprint
-    // TODO: Access specific cards based on a specific list to reduce search time
-    public String[] getSprintDates(int SprintNumber) throws IOException {
+    // Function to return all the card in a specific list
+    public Card[] getListCards(String listID, String boardId) throws IOException {
+        //HTTP request to access the board
+        Response response = HTTPRequest("cards", listID, this.listURL);
+
+        // Build ObjectMapper
+        ObjectMapper mapper = new ObjectMapper();
+        // map http response to the class Board
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+        // map http response to the class Board
+        return mapper.readValue(response.body().string(), Card[].class);
+    }
+
+
+    public String[] getSprintDates(int SprintNumber, String boardID) throws IOException {
         // flag to see if we've found the start date
         boolean startDateFound = false;
         // initialize list of dates
         String[] dates = new String[2];
+        String listName = "Sprint Ceremonies";
 
-        var cards = this.getBoardCards(this.boardId);
+        // get the list of all ceremonies
+        var list = this.getList(listName, boardID);
+        var cards = this.getListCards(list.getId(), boardID);
+
         // Iterate over all cards
         for (Card c : cards) {
             // search for due date of Sprint Planning that is equal to Sprint start date
@@ -185,15 +219,17 @@ public class TrelloAPI {
 
     // Function to get the descriptions of the Sprint Ceremonies of a specific sprint
     // TODO: Access specific cards based on a specific list to reduce search time
-    public void /*String[]*/ getCeremoniesDescription(int SprintNumber) throws IOException {
+    public String getCeremoniesDescription(String boardId, String sprintType, int SprintNumber) throws IOException {
         // initialize list of descriptions
-        String[] descriptions = new String[3];
+        //String[] descriptions = new String[3];
 
-        var cards = this.getBoardCards(this.boardId);
+        var cards = this.getBoardCards(boardId);
         // Iterate over all cards
         for (Card c : cards) {
             // get the Sprint Planning description
-            if (c.name.equals("Sprint Planning - Sprint " + SprintNumber)) descriptions[0] = c.desc();
+            if (c.name.equals("Sprint " + sprintType + " - Sprint " + SprintNumber)){
+                return c.desc;
+            }
             /*
                 // get the Sprint Review description
             else if (c.name.equals("Sprint Review - Sprint " + SprintNumber)) descriptions[1] = c.desc();
@@ -201,18 +237,30 @@ public class TrelloAPI {
             else if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) descriptions[2] = c.desc();
             */
         }
-        System.out.println("Description of Sprint Planning \n" + descriptions[0]);
+        //System.out.println("Description of Sprint Planning \n" + descriptions[0]);
 
         // Returns descriptions list
         // descriptions[0] -> Sprint Planning Description
         // descriptions[1] -> Sprint Review Description
         // descriptions[2] -> Sprint Retrospective Description
         //return descriptions;
+        return "";
     }
 
-    public void main(String[] args) throws IOException {
+    // Function to get product backlog items already done
+    public ArrayList<String> getDoneProductBacklog(String boardId, int sprintNumber) throws IOException {
+        var doneItems = new ArrayList<String>();
 
-        this.getCeremoniesDescription(1);
+        String listName = "Done - Sprint " + sprintNumber;
 
+        // get specific list
+        var list = this.getList(listName, boardId);
+        // get all cards from the list
+        var cards = this.getListCards(list.getId(), boardId);
+        for (Card card: cards){
+            doneItems.add(card.desc);
+        }
+        return doneItems;
     }
+
 }

@@ -28,7 +28,7 @@ public class TrelloAPITests {
         Assertions.assertEquals("ES-LETI-1Sem-2021-Grupo10", this.api.getBoard(boardId).getName());
         Assertions.assertEquals("614df1d076293f6b763c1c9c", this.api.getBoard(boardId).getId());
         Assertions.assertEquals("https://trello.com/b/lzp7YmaF/es-leti-1sem-2021-grupo10",
-                this.api.getBoard(boardId).getUrl());
+        this.api.getBoard(boardId).getUrl());
     }
 
 

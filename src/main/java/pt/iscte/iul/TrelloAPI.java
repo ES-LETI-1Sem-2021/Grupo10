@@ -166,8 +166,7 @@ public class TrelloAPI {
                 .header("Accept", "application/json")
                 .url(url + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
 
-        Response response = this.httpClient.newCall(request).execute();
-        return response;
+        return this.httpClient.newCall(request).execute();
     }
 
     /**
@@ -246,12 +245,11 @@ public class TrelloAPI {
 
     /**
      * @param listId id of the list.
-     * @param boardId id of the board.
      * @return all cards in the list identified by the list id.
      * @throws IOException If the request fails.
      */
     // Function to return all the card in a specific list
-    public Card[] getListCards(String listId, String boardId) throws IOException {
+    public Card[] getListCards(String listId) throws IOException {
         //HTTP request to access the board
         Response response = HTTPRequest("cards", listId, this.listURL);
 
@@ -280,7 +278,7 @@ public class TrelloAPI {
 
         // get the list of all ceremonies
         var list = this.getList(listName, boardId);
-        var cards = this.getListCards(list.getId(), boardId);
+        var cards = this.getListCards(list.getId());
 
         // Iterate over all cards
         for (Card c : cards) {
@@ -346,7 +344,7 @@ public class TrelloAPI {
         // get specific list
         var list = this.getList(listName, boardId);
         // get all cards from the list
-        var cards = this.getListCards(list.getId(), boardId);
+        var cards = this.getListCards(list.getId());
         for (Card card: cards){
             doneItems.add(card.name);
         }

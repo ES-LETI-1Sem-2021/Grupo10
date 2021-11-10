@@ -23,7 +23,6 @@ public class TrelloAPI {
     private final OkHttpClient httpClient;
     private final String boardURL = "https://api.trello.com/1/boards/";
     private final String listURL = "https://api.trello.com/1/lists/";
-    //private final String boardId = "614df1d076293f6b763c1c9c";
 
     /**
      * Base class for requesting information from the Trello API.
@@ -156,6 +155,9 @@ public class TrelloAPI {
     }
 
     /**
+     * @param component component that we want to access ("list, card, board, etc").
+     * @param componentId id of the component that we want to access.
+     * @param url url of the component (board url, list url, etc).
      * @return the http response.
      * @throws IOException If the request fails.
      */

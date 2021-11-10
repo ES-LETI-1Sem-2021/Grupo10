@@ -26,9 +26,10 @@ public class TrelloAPI {
 
     /**
      * Base class for requesting information from the Trello API.
+     *
      * @param boardName Name of the board.
-     * @param apiKey Trello API access key.
-     * @param apiToken Trello API access token.
+     * @param apiKey    Trello API access key.
+     * @param apiToken  Trello API access token.
      */
     public TrelloAPI(String boardName, String apiKey, String apiToken) {
         this.apiKey = apiKey;
@@ -94,6 +95,7 @@ public class TrelloAPI {
     }
 
     // TODO: The class Card needs more attributes for the rest of the project
+
     /**
      * Card object.
      */
@@ -155,9 +157,9 @@ public class TrelloAPI {
     }
 
     /**
-     * @param component component that we want to access ("list, card, board, etc").
+     * @param component   component that we want to access ("list, card, board, etc").
      * @param componentId id of the component that we want to access.
-     * @param url url of the component (board url, list url, etc).
+     * @param url         url of the component (board url, list url, etc).
      * @return the http response.
      * @throws IOException If the request fails.
      */
@@ -212,14 +214,14 @@ public class TrelloAPI {
 
     /**
      * @param listName name of the list.
-     * @param boardId board id.
+     * @param boardId  board id.
      * @return the list in the board identified by the board id.
      */
-    // Function to return a specific List in the board
+    // Function to return a specific list in the board
     public List getList(String listName, String boardId) throws IOException {
         var lists = this.getBoardLists(boardId);
-        for (List list: lists){
-            if (list.getName().equals(listName)){
+        for (List list : lists) {
+            if (list.getName().equals(listName)) {
                 return list;
             }
         }
@@ -250,7 +252,7 @@ public class TrelloAPI {
      * @return all cards in the list identified by the list id.
      * @throws IOException If the request fails.
      */
-    // Function to return all the card in a specific list
+    // Function to return all the cards in a specific list
     public Card[] getListCards(String listId) throws IOException {
         //HTTP request to access the board
         Response response = HTTPRequest("cards", listId, this.listURL);
@@ -267,11 +269,12 @@ public class TrelloAPI {
 
     /**
      * @param sprintNumber number of the sprint.
-     * @param boardId id of the board.
-     * @return an array with the start date and the end date.
+     * @param boardId      id of the board.
+     * @return an array with the start date and the end date of the specific sprint..
      * @throws IOException If the request fails.
      */
-    public String[] getSprintDates(int sprintNumber, String boardId) throws IOException {
+    // Function to return the start and end dates of a specific sprint
+    public String[] getSprintDates(String boardId, int sprintNumber) throws IOException {
         // flag to see if we've found the start date
         boolean startDateFound = false;
         // initialize list of dates
@@ -282,7 +285,7 @@ public class TrelloAPI {
         var list = this.getList(listName, boardId);
         var cards = this.getListCards(list.getId());
 
-        // Iterate over all cards
+        // Iterate over all cards in the list
         for (Card c : cards) {
             // search for due date of Sprint Planning that is equal to Sprint start date
             if (c.name.equals("Sprint Planning - Sprint " + sprintNumber)) {
@@ -301,38 +304,33 @@ public class TrelloAPI {
         return dates;
     }
 
-    // Function to get the descriptions of the Sprint Ceremonies of a specific sprint
-    // TODO: Access specific cards based on a specific list to reduce search time
-    public String getCeremoniesDescription(String boardId, String sprintType, int SprintNumber) throws IOException {
-        // initialize list of descriptions
-        //String[] descriptions = new String[3];
+    /**
+     * @param boardId      id of the board.
+     * @param sprintType   ceremony of the sprint.
+     * @param sprintNumber number of the sprint.
+     * @return a String with the description of the Sprint Ceremony in the specific sprint.
+     * @throws IOException If the request fails.
+     * @author Miguel Romana.
+     */
+    // Function to get the description of a Sprint Ceremony of a specific sprint
+    public String getCeremonyDescription(String boardId, String sprintType, int sprintNumber) throws IOException {
 
-        var cards = this.getBoardCards(boardId);
-        // Iterate over all cards
-        for (Card c : cards) {
-            // get the Sprint Planning description
-            if (c.name.equals("Sprint " + sprintType + " - Sprint " + SprintNumber)){
+        String listName = "Sprint Ceremonies";
+
+        // get the list of all ceremonies
+        var list = this.getList(listName, boardId);
+        var cards = this.getListCards(list.getId());
+
+        // Iterate over all cards in the list
+        for (Card c : cards)
+            // get the Sprint sprintType's description
+            if (c.name.equals("Sprint " + sprintType + " - Sprint " + sprintNumber))
                 return c.getDesc();
-            }
-            /*
-                // get the Sprint Review description
-            else if (c.name.equals("Sprint Review - Sprint " + SprintNumber)) descriptions[1] = c.desc();
-                // get the Sprint Retrospective description
-            else if (c.name.equals("Sprint Retrospective - Sprint " + SprintNumber)) descriptions[2] = c.desc();
-            */
-        }
-        //System.out.println("Description of Sprint Planning \n" + descriptions[0]);
-
-        // Returns descriptions list
-        // descriptions[0] -> Sprint Planning Description
-        // descriptions[1] -> Sprint Review Description
-        // descriptions[2] -> Sprint Retrospective Description
-        //return descriptions;
-        return "";
+        return ""; // If the description doesn't exist returns a null String
     }
 
     /**
-     * @param boardId id of the board.
+     * @param boardId      id of the board.
      * @param sprintNumber number of the sprint.
      * @return an ArrayList of all the products already done in the specific sprint.
      * @throws IOException If the request fails.
@@ -347,10 +345,9 @@ public class TrelloAPI {
         var list = this.getList(listName, boardId);
         // get all cards from the list
         var cards = this.getListCards(list.getId());
-        for (Card card: cards){
+        for (Card card : cards) {
             doneItems.add(card.name);
         }
         return doneItems;
     }
-
 }

@@ -17,7 +17,7 @@ import java.util.Map;
  */
 
 public class Menus implements ActionListener {
-    private final Map<TrelloAPI.List, JMenuItem> mapa_lists;
+    private final Map<TrelloAPI.Card,JMenuItem> mapCards;
     private final Map<GitHubAPI.Collaborators, JMenuItem> mapa_cols;
     private final JFrame frame;
     private final GitHubAPI.Collaborators[] cols;
@@ -39,7 +39,8 @@ public class Menus implements ActionListener {
 
     public Menus(JFrame frame, GitHubAPI.Collaborators[] cols, String boardId, String[] user_trello_info, String[] user_git_info){
         this.mapa_cols = new HashMap<>();
-        this.mapa_lists = new HashMap<>();
+        this.mapCards = new HashMap<>();
+
         this.frame = frame;
         this.cols = cols;
         this.boardID= boardId;
@@ -47,8 +48,11 @@ public class Menus implements ActionListener {
         this.user_trello_info=user_trello_info;
         this.user_git_info = user_git_info;
         gitMenus();
-        listsMenus();
-
+       try{
+           listsMenus();
+       }catch (IOException e){
+           e.printStackTrace();
+       }
         this.frame.setJMenuBar(mb);
     }
 
@@ -60,7 +64,6 @@ public class Menus implements ActionListener {
      */
     public void gitMenus(){
         JMenu colabs = new JMenu("Collaborators");
-
         for (GitHubAPI.Collaborators col : this.cols) {
 
             JMenuItem item = new JMenuItem(col.getName());
@@ -69,9 +72,7 @@ public class Menus implements ActionListener {
             item.addActionListener(this);
             colabs.add(item);
         }
-
         mb.add(colabs);
-
     }
 
     /**
@@ -83,29 +84,29 @@ public class Menus implements ActionListener {
      *
      */
 
-    private void listsMenus(){
+    private void listsMenus() throws IOException{
         JMenu listas = new JMenu("Listas");
         TrelloAPI tapi = new TrelloAPI(this.user_trello_info[0], this.user_trello_info[1], this.user_trello_info[2]);
-        TrelloAPI.List[] Lists=null;
+        TrelloAPI.List[] Lists;
+        TrelloAPI.Card[] cards;
 
-        try {
-            Lists = tapi.getBoardLists(boardID);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Lists = tapi.getBoardLists(boardID);
 
         if (Lists != null) {
             for(TrelloAPI.List l : Lists){
-                JMenuItem item = new JMenuItem(l.getName());
-                mapa_lists.put(l, item);
+                JMenu listMenu = new JMenu(l.getName());
 
-                // TODO CRIAR UM SUBMENU EM CADA LISTA COM OS CARTOES TODOS (VER JAMBOARD PAG 16)
-                //TODO PASSAR LOGO OS OBJETOS (API's) CRIADOS ???
+                cards = tapi.getListCards(l.getId());
 
-                item.addActionListener(this);
-                listas.add(item);
+                for (TrelloAPI.Card c : cards) {
+                    JMenuItem item2 = new JMenuItem(c.getName());
+                        mapCards.put(c,item2);
+                        item2.addActionListener(this);
+                        listMenu.add(item2);
+                }
+                listMenu.addActionListener(this);
+                listas.add(listMenu);
             }
-
         mb.add(listas);
         }
     }
@@ -135,10 +136,10 @@ public class Menus implements ActionListener {
         }
 
         //action for the lists
-        for (Map.Entry<TrelloAPI.List, JMenuItem> l : mapa_lists.entrySet()) {
+        for (Map.Entry<TrelloAPI.Card, JMenuItem> c : mapCards.entrySet()) {
             //Action.clearFrame(this.frame);
-            if(e.getSource().equals(l.getValue())){
-                System.out.println(l.getKey().getName());
+            if(e.getSource().equals(c.getValue())){
+                System.out.println(c.getKey().getName());
             }
         }
     }

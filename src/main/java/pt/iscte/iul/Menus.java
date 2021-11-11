@@ -67,9 +67,15 @@ public class Menus implements ActionListener {
     public void gitMenus() throws IOException{
         JMenu colabs = new JMenu("Collaborators");
         GitHubAPI.Collaborators[] cols = gapi.getCollaborators();
-
+        JMenuItem item;
         for (GitHubAPI.Collaborators col : cols) {
-            JMenuItem item = new JMenuItem(col.getName());
+            if(col.getName() == null){
+                item = new JMenuItem(col.getLogin());
+            }
+            else{
+                item = new JMenuItem(col.getName());
+            }
+
             mapa_cols.put(col, item);
 
             item.addActionListener(this);

@@ -17,41 +17,41 @@ import java.util.Map;
  */
 
 public class Menus implements ActionListener {
+
     private final Map<TrelloAPI.Card,JMenuItem> mapCards;
     private final Map<GitHubAPI.Collaborators, JMenuItem> mapa_cols;
     private final JFrame frame;
-    private final GitHubAPI.Collaborators[] cols;
-    private final JMenuBar mb;
     private final String boardID;
-    private final String[] user_trello_info;
-    private final String[] user_git_info;
-
+    private final JMenuBar mb;
+    private final GitHubAPI gapi;
+    private final TrelloAPI tapi;
 
     /**
      * Constructor method to inicialize the variables in order to create the menus.
      *
      * @author Rodrigo Guerreiro
-     * @param frame The frame where the menus will be attached on
-     * @param cols  The list of collaborators
-     * @param user_trello_info String array with [trello_name, trello_key, trello_token]
-     * @param user_git_info String array with[git_owner, git_repo, git_token]
+     * @param frame The frame where the menus will be attached on.
+     * @param gapi Instance of GitHub Api.
+     * @param tapi Instance of Trello Api.
+     * @param boardID The ID of the board to get the lists and cards.
      */
 
-    public Menus(JFrame frame, GitHubAPI.Collaborators[] cols, String boardId, String[] user_trello_info, String[] user_git_info){
+    public Menus(JFrame frame, GitHubAPI gapi, TrelloAPI tapi, String boardID) {
 
         this.mapa_cols = new HashMap<>();
         this.mapCards = new HashMap<>();
 
         this.frame = frame;
-        this.cols = cols;
-        this.boardID= boardId;
+        this.gapi = gapi;
+        this.tapi = tapi;
+
+        this.boardID = boardID;
+
         this.mb = new JMenuBar();
-        this.user_trello_info=user_trello_info;
-        this.user_git_info = user_git_info;
-        gitMenus();
 
         try{
-           listsMenus();
+            gitMenus();
+            listsMenus();
        }catch (IOException e){
            e.printStackTrace();
        }
@@ -64,10 +64,11 @@ public class Menus implements ActionListener {
      *
      * @author Rodrigo Guerreiro
      */
-    public void gitMenus(){
+    public void gitMenus() throws IOException{
         JMenu colabs = new JMenu("Collaborators");
-        for (GitHubAPI.Collaborators col : this.cols) {
+        GitHubAPI.Collaborators[] cols = gapi.getCollaborators();
 
+        for (GitHubAPI.Collaborators col : cols) {
             JMenuItem item = new JMenuItem(col.getName());
             mapa_cols.put(col, item);
 
@@ -88,7 +89,7 @@ public class Menus implements ActionListener {
 
     private void listsMenus() throws IOException{
         JMenu listas = new JMenu("Listas");
-        TrelloAPI tapi = new TrelloAPI(this.user_trello_info[0], this.user_trello_info[1], this.user_trello_info[2]);
+        //TrelloAPI tapi = new TrelloAPI(this.user_trello_info[0], this.user_trello_info[1], this.user_trello_info[2]);
         TrelloAPI.List[] Lists;
         TrelloAPI.Card[] cards;
 
@@ -102,11 +103,10 @@ public class Menus implements ActionListener {
 
                 for (TrelloAPI.Card c : cards) {
                     JMenuItem item2 = new JMenuItem(c.getName());
-                        mapCards.put(c,item2);
-                        item2.addActionListener(this);
-                        listMenu.add(item2);
+                    mapCards.put(c,item2);
+                    item2.addActionListener(this);
+                    listMenu.add(item2);
                 }
-                listMenu.addActionListener(this);
                 listas.add(listMenu);
             }
         mb.add(listas);
@@ -138,7 +138,7 @@ public class Menus implements ActionListener {
             }
         }
 
-        //action for the lists based om the card clicked
+        //action for the lists based on the card clicked
         for (Map.Entry<TrelloAPI.Card, JMenuItem> c : mapCards.entrySet()) {
             //Action.clearFrame(this.frame);
             if(e.getSource().equals(c.getValue())){

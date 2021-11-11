@@ -35,36 +35,28 @@ public class Action {
 
         String readme= null;
         String dataInicio_toLabel = "";
-        GitHubAPI.Collaborators[] cols = new GitHubAPI.Collaborators[0];
         String boardID = null;
         try {
 
             TrelloAPI.Board[] boards = trelloAPI.getBoards();
             for (TrelloAPI.Board b: boards) {
                 if(b.getName().equals(user_trello_info[0])){
-                    System.out.println(b.getName());
-                    System.out.println(b.getId());
                     boardID = b.getId();
                 }
             }
 
             readme = gitApi.getFile("master","/README.md");
 
-            cols = gitApi.getCollaborators();
-
             GitHubAPI.Date dataInicio = gitApi.getStartTime();
             dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
-
-            //username dos colaboradores
-            for (GitHubAPI.Collaborators col : cols) System.out.println(col.getName());
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         clearFrame(frame);
-        //Adiciona o menu com os colaboradores
-        new Menus(frame, cols, boardID, user_trello_info, user_git_info);
+        //Adiciona os menus
+        new Menus(frame, gitApi, trelloAPI, boardID);
 
         // aumenta o tamanho do ecra apenas usado a primeira vez que esta função é executada
         if(flag ==1) {
@@ -72,7 +64,6 @@ public class Action {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             frame.setSize(screenSize.width, screenSize.height - 100);
         }
-
 
 
         //Label com a data de inicio do trabalho
@@ -96,7 +87,6 @@ public class Action {
 
         frame.add(edt);
         frame.setVisible(true);
-
     }
 
     /**

@@ -59,7 +59,7 @@ public class Action {
         new Menus(frame, gitApi, trelloAPI, boardID);
 
         // aumenta o tamanho do ecra apenas usado a primeira vez que esta função é executada
-        if(flag ==1) {
+        if(flag == 1) {
             frame.setLocation(0, 0);
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             frame.setSize(screenSize.width, screenSize.height - 100);

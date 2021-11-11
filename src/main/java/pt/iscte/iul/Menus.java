@@ -140,10 +140,8 @@ public class Menus implements ActionListener {
 
         //action for the lists based on the card clicked
         for (Map.Entry<TrelloAPI.Card, JMenuItem> c : mapCards.entrySet()) {
-            //Action.clearFrame(this.frame);
             if(e.getSource().equals(c.getValue())){
-                //System.out.println(c.getKey().getName());
-                System.out.println(c.getKey().getDesc());
+                new CardUI(c.getKey(), this.frame);
             }
         }
     }

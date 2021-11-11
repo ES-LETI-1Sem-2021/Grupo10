@@ -133,4 +133,17 @@ public class TrelloAPITests {
                 this.api.getCeremonyDescription("614df1d076293f6b763c1c9c", "Retrospective", 1));
     }
 
+    @Test
+    public void totalNumberOfCeremonies() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        int totalNumberOfCeremonies = this.api.getTotalNumberOfCeremonies(boardId);
+        Assertions.assertEquals(10, totalNumberOfCeremonies);
+    }
+
+    @Test
+    public void totalNumberOfCeremoniesPerSprint() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        int totalNumberOfCeremonies = this.api.getTotalNumberOfCeremoniesPerSprint(boardId, 2);
+        Assertions.assertEquals(3, totalNumberOfCeremonies);
+    }
 }

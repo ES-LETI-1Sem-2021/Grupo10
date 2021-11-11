@@ -350,4 +350,41 @@ public class TrelloAPI {
         }
         return doneItems;
     }
+
+    /**
+     * @param boardId id of the board.
+     * @return the total number of cerimonies that have been done.
+     * @throws IOException If the request fails.
+     */
+    // function to get the total number of ceremonies
+    public int getTotalNumberOfCeremonies(String boardId) throws IOException {
+        int numberOfCeremonies = 0;
+        var lists = this.getBoardLists(boardId);
+        for (List ceremoniesList: lists) {
+            if (ceremoniesList.getName().startsWith("Ceremonies")) {
+                var ceremoniesListCards = this.getListCards(ceremoniesList.id);
+                numberOfCeremonies += ceremoniesListCards.length;
+            }
+        }
+        return numberOfCeremonies;
+    }
+
+    /**
+     * @param boardId id of the board.
+     * @param sprintNumber number of the sprint.
+     * @return the total number of ceremonies that have been done.
+     * @throws IOException If the request fails.
+     */
+    // function to get the total number of ceremonies in a specific sprint
+    public int getTotalNumberOfCeremoniesPerSprint(String boardId, int sprintNumber) throws IOException {
+        var lists = this.getBoardLists(boardId);
+        for (List ceremoniesList: lists) {
+            if (ceremoniesList.getName().equals("Ceremonies - Sprint " + sprintNumber)) {
+                var ceremoniesListCards = this.getListCards(ceremoniesList.id);
+                return ceremoniesListCards.length;
+            }
+        }
+        return 0;
+    }
+
 }

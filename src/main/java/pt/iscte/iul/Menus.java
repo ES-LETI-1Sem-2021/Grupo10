@@ -38,6 +38,7 @@ public class Menus implements ActionListener {
      */
 
     public Menus(JFrame frame, GitHubAPI.Collaborators[] cols, String boardId, String[] user_trello_info, String[] user_git_info){
+
         this.mapa_cols = new HashMap<>();
         this.mapCards = new HashMap<>();
 
@@ -48,7 +49,8 @@ public class Menus implements ActionListener {
         this.user_trello_info=user_trello_info;
         this.user_git_info = user_git_info;
         gitMenus();
-       try{
+
+        try{
            listsMenus();
        }catch (IOException e){
            e.printStackTrace();
@@ -111,15 +113,16 @@ public class Menus implements ActionListener {
         }
     }
 
-
     /**
      *
      * Performs an action based on which menu item was clicked.
+     * If the user clicks on a collaborator item it will redirect to the GitHub page.
+     * If the user clicks on the Lists menus it will show all the lists. Each list is a submenu,
+     * On each submenu it will show all the cards from that list.
      *
      * @author Rodrigo Guerreiro
      * @param e the events that happens when the user clicks on a collaborator name.
      */
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -127,19 +130,20 @@ public class Menus implements ActionListener {
         //redirect for the GitHub page
         for (Map.Entry<GitHubAPI.Collaborators, JMenuItem> entry : mapa_cols.entrySet()) {
             if(e.getSource().equals(entry.getValue())){
-                        try {
-                            Desktop.getDesktop().browse(new URL(entry.getKey().getProfile()).toURI());
-                        } catch (IOException | URISyntaxException ex) {
-                            ex.printStackTrace();
+                try {
+                    Desktop.getDesktop().browse(new URL(entry.getKey().getProfile()).toURI());
+                } catch (IOException | URISyntaxException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
 
-        //action for the lists
+        //action for the lists based om the card clicked
         for (Map.Entry<TrelloAPI.Card, JMenuItem> c : mapCards.entrySet()) {
             //Action.clearFrame(this.frame);
             if(e.getSource().equals(c.getValue())){
-                System.out.println(c.getKey().getName());
+                //System.out.println(c.getKey().getName());
+                System.out.println(c.getKey().getDesc());
             }
         }
     }

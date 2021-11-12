@@ -1,5 +1,6 @@
 package pt.iscte.iul;
 
+import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -67,12 +68,7 @@ public class Menus implements ActionListener {
         JMenuItem item;
 
         for (GitHubAPI.Collaborators col : cols) {
-            if(col.getName() == null){
-                item = new JMenuItem(col.getLogin());
-            }
-            else{
-                item = new JMenuItem(col.getName());
-            }
+            item = getjMenuItem(col);
 
             item.addActionListener(this);
             colabs.add(item);
@@ -81,6 +77,24 @@ public class Menus implements ActionListener {
 
         }
         mb.add(colabs);
+    }
+
+    /**
+     * Creates an item associated with a collaborator.
+     *
+     * @param col the collaborator
+     * @return the item associated with the collaborator
+     */
+    @NotNull
+    private JMenuItem getjMenuItem(GitHubAPI.Collaborators col) {
+        JMenuItem item;
+        if(col.getName() == null){
+            item = new JMenuItem(col.getLogin());
+        }
+        else{
+            item = new JMenuItem(col.getName());
+        }
+        return item;
     }
 
     /**

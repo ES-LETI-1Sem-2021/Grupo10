@@ -204,6 +204,30 @@ public class HomeUI implements ActionListener {
 
         int i = 0;
 
+        i = allFieldsFull(user_git_info, user_trello_info, i);
+
+        int opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
+                "Warning?", JOptionPane.YES_NO_OPTION);
+
+        if(opc == JOptionPane.YES_OPTION && i == 0){
+            Action.save_data(user_git_info, user_trello_info);
+            Action.do_action(this.frame, user_git_info, user_trello_info,1);
+
+        }else if (opc == JOptionPane.NO_OPTION && i == 0 ){
+            Action.do_action(this.frame, user_git_info, user_trello_info,1);
+        }
+    }
+
+    /**
+     *
+     * Checks if all fields are full or not.
+     *
+     * @param user_git_info user info
+     * @param user_trello_info user info
+     * @param i a value
+     * @return the value 1 if is empty, 0 otherwise.
+     */
+    private int allFieldsFull(String[] user_git_info, String[] user_trello_info, int i) {
         for(String s: user_git_info){
             if(s.isEmpty()){
                 i = 1;
@@ -217,16 +241,6 @@ public class HomeUI implements ActionListener {
                 break;
             }
         }
-
-        int opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
-                "Warning?", JOptionPane.YES_NO_OPTION);
-
-        if(opc == JOptionPane.YES_OPTION && i == 0){
-            Action.save_data(user_git_info, user_trello_info);
-            Action.do_action(this.frame, user_git_info, user_trello_info,1);
-
-        }else if (opc == JOptionPane.NO_OPTION && i == 0 ){
-            Action.do_action(this.frame, user_git_info, user_trello_info,1);
-        }
+        return i;
     }
 }

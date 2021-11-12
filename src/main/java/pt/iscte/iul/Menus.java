@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe that creates the menus to be added onto the frame.
@@ -18,13 +18,14 @@ import java.util.Map;
 
 public class Menus implements ActionListener {
 
-    private final Map<TrelloAPI.Card,JMenuItem> mapCards;
-    private final Map<GitHubAPI.Collaborators, JMenuItem> mapa_cols;
     private final JFrame frame;
     private final String boardID;
     private final JMenuBar mb;
     private final GitHubAPI gapi;
     private final TrelloAPI tapi;
+    private final List<itemCard<TrelloAPI.Card>> arrayCards= new ArrayList<>();
+    private final List<itemCard<GitHubAPI.Collaborators>> arraycolabs= new ArrayList<>();
+
 
     /**
      * Constructor method to inicialize the variables in order to create the menus.
@@ -37,10 +38,6 @@ public class Menus implements ActionListener {
      */
 
     public Menus(JFrame frame, GitHubAPI gapi, TrelloAPI tapi, String boardID) {
-
-        this.mapa_cols = new HashMap<>();
-        this.mapCards = new HashMap<>();
-
         this.frame = frame;
         this.gapi = gapi;
         this.tapi = tapi;
@@ -60,7 +57,7 @@ public class Menus implements ActionListener {
 
     /**
      * Function that creates the menus, regarding the collaborators and menu bars and attaches it to the frame.
-     * Uses a map to store the different menus (one for each collaborator).
+     *
      * @throws IOException exception.
      * @author Rodrigo Guerreiro
      */
@@ -68,6 +65,7 @@ public class Menus implements ActionListener {
         JMenu colabs = new JMenu("Collaborators");
         GitHubAPI.Collaborators[] cols = gapi.getCollaborators();
         JMenuItem item;
+
         for (GitHubAPI.Collaborators col : cols) {
             if(col.getName() == null){
                 item = new JMenuItem(col.getLogin());
@@ -76,13 +74,43 @@ public class Menus implements ActionListener {
                 item = new JMenuItem(col.getName());
             }
 
-            mapa_cols.put(col, item);
-
             item.addActionListener(this);
             colabs.add(item);
+            arraycolabs.add(new itemCard<>(col,item));
+            //mapa_cols.put(col, item);
+
         }
         mb.add(colabs);
     }
+
+    /**
+     * Um record que associa um objeto a um menuItem.
+     *
+     * @param object the object to associate to the menu item.
+     * @param item the item to associate to the object.
+     * @param <T> The type of object to associate to an item.
+     */
+
+    private record itemCard<T>(T object, JMenuItem item) {
+
+        /**
+         * Getter for the menuItem.
+         *
+         * @return item --> The menu item to be returned.
+         */
+        public JMenuItem getItem() {
+            return item;
+        }
+
+        /**
+         *
+         * @return object --> The object to be returned.
+         */
+        public T getObject() {
+            return object;
+        }
+    }
+
 
     /**
      *
@@ -96,7 +124,7 @@ public class Menus implements ActionListener {
 
     private void listsMenus() throws IOException{
         JMenu listas = new JMenu("Listas");
-        //TrelloAPI tapi = new TrelloAPI(this.user_trello_info[0], this.user_trello_info[1], this.user_trello_info[2]);
+
         TrelloAPI.List[] Lists;
         TrelloAPI.Card[] cards;
 
@@ -105,12 +133,11 @@ public class Menus implements ActionListener {
         if (Lists != null) {
             for(TrelloAPI.List l : Lists){
                 JMenu listMenu = new JMenu(l.getName());
-
                 cards = tapi.getListCards(l.getId());
 
                 for (TrelloAPI.Card c : cards) {
                     JMenuItem item2 = new JMenuItem(c.getName());
-                    mapCards.put(c,item2);
+                    arrayCards.add(new itemCard<>(c,item2));
                     item2.addActionListener(this);
                     listMenu.add(item2);
                 }
@@ -135,22 +162,23 @@ public class Menus implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         //redirect for the GitHub page
-        for (Map.Entry<GitHubAPI.Collaborators, JMenuItem> entry : mapa_cols.entrySet()) {
-            if(e.getSource().equals(entry.getValue())){
+        this.arraycolabs.forEach(collaboratorsitem ->{
+            if(e.getSource()==collaboratorsitem.getItem()){
                 try {
-                    Desktop.getDesktop().browse(new URL(entry.getKey().getProfile()).toURI());
+                    Desktop.getDesktop().browse(new URL(collaboratorsitem.getObject().getProfile()).toURI());
                 } catch (IOException | URISyntaxException ex) {
                     ex.printStackTrace();
                 }
             }
-        }
+        } );
 
-        //action for the lists based on the card clicked
-        for (Map.Entry<TrelloAPI.Card, JMenuItem> c : mapCards.entrySet()) {
-            if(e.getSource().equals(c.getValue())){
-                new CardUI(c.getKey(), this.frame);
+        //action for the clicks on a card from a list
+        this.arrayCards.forEach(carditemCard-> {
+            if(e.getSource() == carditemCard.getItem()){
+                new CardUI(carditemCard.getObject(), this.frame);
             }
-        }
+        });
+
     }
 
 }

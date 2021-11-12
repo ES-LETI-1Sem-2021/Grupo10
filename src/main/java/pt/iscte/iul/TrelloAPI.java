@@ -290,8 +290,13 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), Card[].class);
     }
 
+    /**
+     * @param cardId id of the card.
+     * @return all actions in the card identified by the card id.
+     * @throws IOException If the request fails.
+     */
     // Function to get actions from a specific card
-    public Action[] getActionsInCard(String boardId, String cardId) throws IOException {
+    public Action[] getActionsInCard(String cardId) throws IOException {
         //HTTP request to access the board
         Response response = HTTPRequest("actions", cardId, cardURL);
         // Build ObjectMapper

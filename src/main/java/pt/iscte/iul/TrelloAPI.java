@@ -6,11 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.*;
 
-import javax.swing.text.TabExpander;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * @author Duarte Casaleiro.
@@ -131,6 +129,53 @@ public class TrelloAPI {
          */
         public String getDesc() {
             return this.desc;
+        }
+    }
+
+    /**
+     * Member object.
+     */
+    public static class Member {
+        private String name;
+        private String id;
+        // DRAFT: Hours are just for testing
+        private int estimatedHours;
+        private int onGoingHours;
+        private int concludedHours;
+
+        /**
+         * @return The name.
+         */
+        public String getName() {
+            return this.name;
+        }
+
+        /**
+         * @return The ID.
+         */
+        public String getId() {
+            return this.id;
+        }
+
+        /**
+         * @return The estimated hours.
+         */
+        public int getEstimatedHours() {
+            return 2;
+        }
+
+        /**
+         * @return The on going hours.
+         */
+        public int getOnGoingHours() {
+            return 4;
+        }
+
+        /**
+         * @return The concluded hours.
+         */
+        public int getConcludedHours() {
+            return 3;
         }
     }
 
@@ -279,7 +324,7 @@ public class TrelloAPI {
         boolean startDateFound = false;
         // initialize list of dates
         String[] dates = new String[2];
-        String listName = "Sprint Ceremonies";
+        String listName = "Ceremonies - Sprint " + sprintNumber;
 
         // get the list of all ceremonies
         var list = this.getList(listName, boardId);
@@ -315,7 +360,7 @@ public class TrelloAPI {
     // Function to get the description of a Sprint Ceremony of a specific sprint
     public String getCeremonyDescription(String boardId, String sprintType, int sprintNumber) throws IOException {
 
-        String listName = "Sprint Ceremonies";
+        String listName = "Ceremonies - Sprint " + sprintNumber;
 
         // get the list of all ceremonies
         var list = this.getList(listName, boardId);

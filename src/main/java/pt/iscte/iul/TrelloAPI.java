@@ -1,17 +1,13 @@
 package pt.iscte.iul;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.*;
 
-import javax.swing.text.TabExpander;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Duarte Casaleiro.
@@ -421,7 +417,7 @@ public class TrelloAPI {
 
     /**
      * @param boardId id of the board.
-     * @return the total number of cerimonies that have been done.
+     * @return the total number of ceremonies that have been done.
      * @throws IOException If the request fails.
      */
     // function to get the total number of ceremonies

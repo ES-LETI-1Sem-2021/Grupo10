@@ -85,14 +85,15 @@ public class GitHubAPITests {
     public void commitTest() throws IOException {
         var commits = api.getCommits("ui_test", "Roguezilla");
 
-        System.out.println("Committer: " + commits.getCommitter());
-        System.out.println("Numer of commits: " + commits.getCommitData().size());
-        System.out.println("First commit: " + commits.getCommitData().get(0).getMessage());
-        System.out.println("First commit date: " + commits.getCommitData().get(0).getDate());
-        System.out.println("Lastest commit: " + commits.getCommitData().get(commits.getCommitData().size()-1).getMessage());
-        System.out.println("Lastest commit date: " + commits.getCommitData().get(commits.getCommitData().size()-1).getDate());
+        Assertions.assertFalse(commits.getCommitList().isEmpty());
 
-        Assertions.assertNotEquals(0, commits.getCommitData().size());
-        commits.getCommitData().forEach(commitData -> Assertions.assertNotEquals(null, commitData.getMessage()));
+        System.out.println("Committer: " + commits.getCommitter());
+        System.out.println("Number of commits: " + commits.getCommitList().size());
+        System.out.println("First commit: " + commits.getCommitList().get(0).getMessage());
+        System.out.println("First commit date: " + commits.getCommitList().get(0).getDate());
+        System.out.println("Lastest commit: " + commits.getCommitList().get(commits.getCommitList().size()-1).getMessage());
+        System.out.println("Lastest commit date: " + commits.getCommitList().get(commits.getCommitList().size()-1).getDate());
+
+        commits.getCommitList().forEach(commitData -> Assertions.assertNotEquals(null, commitData.getMessage()));
     }
 }

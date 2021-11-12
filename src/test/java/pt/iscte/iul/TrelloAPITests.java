@@ -150,6 +150,7 @@ public class TrelloAPITests {
     @Test
     public void numberOfActionsInCard() throws IOException {
         String cardId = "617d6dad687e4e3dc1fb3a50";
+        System.out.println(this.api.getActionsInCard(cardId)[0].getData().getText());
         Assertions.assertEquals(1, this.api.getActionsInCard(cardId).length);
     }
 }

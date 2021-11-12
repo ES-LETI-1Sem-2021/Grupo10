@@ -135,12 +135,29 @@ public class TrelloAPI {
         }
     }
 
+    // TODO: With this Data class it's possible to access the component card, board and list.
+    //  Might be good to reduce code.
+    /**
+     * Data object.
+     */
+    public static class Data {
+        private String text;
+
+        /**
+         * @return The text.
+         */
+        public String getText() {
+            return this.text;
+        }
+    }
+
     /**
      * Action object.
      */
     public static class Action {
         private String id;
         private String text;
+        private Data data;
 
         /**
          * @return The id.
@@ -154,6 +171,13 @@ public class TrelloAPI {
          */
         public String getText() {
             return this.text;
+        }
+
+        /**
+         * @return The Data.
+         */
+        public Data getData() {
+            return this.data;
         }
     }
 
@@ -182,7 +206,7 @@ public class TrelloAPI {
     /**
      * @param component   component that we want to access ("list, card, board, etc").
      * @param componentId id of the component that we want to access.
-     * @param url         url of the component (board url, list url, etc).
+     * @param url url of the component (board url, list url, etc).
      * @return the http response.
      * @throws IOException If the request fails.
      */
@@ -300,7 +324,6 @@ public class TrelloAPI {
         //HTTP request to access the board
         Response response = HTTPRequest("actions", cardId, cardURL);
         // Build ObjectMapper
-        System.out.println(response);
         ObjectMapper mapper = new ObjectMapper();
         // map http response to the class Board
         // https://stackoverflow.com/a/26371693

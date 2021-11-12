@@ -22,6 +22,7 @@ public class TrelloAPI {
     private final String baseAPIUrl;
     private final OkHttpClient httpClient;
     private final String boardURL = "https://api.trello.com/1/boards/";
+    private final String cardURL = "https://api.trello.com/1/cards/";
     private final String listURL = "https://api.trello.com/1/lists/";
 
     /**
@@ -131,6 +132,28 @@ public class TrelloAPI {
          */
         public String getDesc() {
             return this.desc;
+        }
+    }
+
+    /**
+     * Action object.
+     */
+    public static class Action {
+        private String id;
+        private String text;
+
+        /**
+         * @return The id.
+         */
+        public String getId() {
+            return this.id;
+        }
+
+        /**
+         * @return The text.
+         */
+        public String getText() {
+            return this.text;
         }
     }
 
@@ -267,9 +290,25 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), Card[].class);
     }
 
+    // Function to get actions from a specific card
+    public Action[] getActionsInCard(String boardId, String cardId) throws IOException {
+        //HTTP request to access the board
+        Response response = HTTPRequest("actions", cardId, cardURL);
+        // Build ObjectMapper
+        System.out.println(response);
+        ObjectMapper mapper = new ObjectMapper();
+        // map http response to the class Board
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+        // map http response to the class Board
+        return mapper.readValue(response.body().string(), Action[].class);
+    }
+
     /**
      * @param sprintNumber number of the sprint.
-     * @param boardId      id of the board.
+     * @param boardId id of the board.
      * @return an array with the start date and the end date of the specific sprint..
      * @throws IOException If the request fails.
      */

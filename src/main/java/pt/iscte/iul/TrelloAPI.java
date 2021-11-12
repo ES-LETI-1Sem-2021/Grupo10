@@ -1,6 +1,7 @@
 package pt.iscte.iul;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
@@ -452,6 +453,35 @@ public class TrelloAPI {
             }
         }
         return 0;
+    }
+
+    /**
+     * @param boardId id of the board.
+     * @return the total hours spent by the team in ceremonies.
+     * @throws IOException If the request fails.
+     */
+    // function to get the total number of ceremonies in a specific sprint
+    public double getTotalHoursCeremony(String boardId) throws IOException {
+        int totalOfHours = 0;
+        var lists = this.getBoardLists(boardId);
+        for (List ceremoniesList: lists) {
+            if (ceremoniesList.getName().startsWith("Ceremonies")) {
+                var ceremoniesListCards = this.getListCards(ceremoniesList.id);
+                for (Card card: ceremoniesListCards) {
+                    var cardActions = this.getActionsInCard(card.getId());
+                    for (Action action: cardActions) {
+                        if (action.getData().getText() != null && action.getData().getText().startsWith("plus! @global")) {
+                            String spentEstimatedTime = action.getData().getText().split(" ")[2];
+                            System.out.println(spentEstimatedTime);
+                            double hoursSpent = Double.parseDouble(String.valueOf(spentEstimatedTime.split("/")[0]));
+                            System.out.println(hoursSpent);
+                            totalOfHours += hoursSpent;
+                        }
+                    }
+                }
+            }
+        }
+        return totalOfHours;
     }
 
 }

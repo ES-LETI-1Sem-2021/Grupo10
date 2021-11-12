@@ -153,4 +153,11 @@ public class TrelloAPITests {
         System.out.println(this.api.getActionsInCard(cardId)[0].getData().getText());
         Assertions.assertEquals(1, this.api.getActionsInCard(cardId).length);
     }
+
+    @Test
+    public void numberOfHoursCeremony() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        String cardId = "617d6dad687e4e3dc1fb3a50";
+        Assertions.assertEquals(7.25, this.api.getTotalHoursCeremony(boardId));
+    }
 }

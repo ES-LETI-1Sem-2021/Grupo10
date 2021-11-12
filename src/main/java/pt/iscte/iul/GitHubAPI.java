@@ -127,7 +127,7 @@ public class GitHubAPI {
         }
     }
     /**
-     * Contains relevant information about a collaborator.
+     * Stores relevant information about a collaborator.
      */
     public static class Collaborators {
         private String login;
@@ -318,7 +318,7 @@ public class GitHubAPI {
     }
 
     /**
-     * Retrieves commits per branch per user, if "user" is empty then it retrieves all the commits in the branch.
+     * Retrieves commits per branch per user, if "user" is empty retrieves all the commits in the branch.
      * @param branch Branch name.
      * @param user The username of the user in question, can be empty.
      * @return A {@link Commits} object.

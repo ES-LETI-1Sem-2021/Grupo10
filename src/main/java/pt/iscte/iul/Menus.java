@@ -82,8 +82,8 @@ public class Menus implements ActionListener {
     /**
      * Creates an item associated with a collaborator.
      *
-     * @param col the collaborator
-     * @return the item associated with the collaborator
+     * @param col the collaborator.
+     * @return the item associated with the collaborator.
      */
     @NotNull
     private JMenuItem getjMenuItem(GitHubAPI.Collaborators col) {

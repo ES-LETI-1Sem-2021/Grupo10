@@ -116,8 +116,6 @@ public class HomeUI implements ActionListener {
      *
      * @author Rodrigo Guerreiro
      */
-
-
     private void add_inboxes() {
 
         this.git_token.setBounds(100,315, 330,30);

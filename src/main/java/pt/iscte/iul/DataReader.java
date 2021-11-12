@@ -16,8 +16,8 @@ public class DataReader {
      *  This function reads the data saved in the .txt file regarding the GitHub api.
      *  And returns an array with that data.
      *
+     * @param data the name of the file to read the info.
      * @return user_git_info. An array with the data saved in the .txt file, regarding the GitHUb api.
-     * @throws FileNotFoundException  if there is no file to read
      * @author Rodrigo Guerreiro
      *
      */
@@ -44,9 +44,9 @@ public class DataReader {
      *  This function reads the data saved in the .txt file regarding the Trello api.
      *  And returns an array with that data.
      *
-     * @return user_trello_info. An array with the data saved in the .txt file, regarding the Trello api.
-     * @throws FileNotFoundException  if there is no file to read
-     * @author Rodrigo Guerreiro
+     *  @param data the name of the file to read the info.
+     *  @return user_trello_info. An array with the data saved in the .txt file, regarding the Trello api.
+     *  @author Rodrigo Guerreiro
      *
      */
     public static String[] getUserTrelloData(String data) {

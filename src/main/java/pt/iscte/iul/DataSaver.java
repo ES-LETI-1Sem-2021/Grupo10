@@ -19,6 +19,7 @@ public class DataSaver {
      *
      * @param user_git_info an array with data so save in a .txt file regarding GitHub api.
      * @param user_trello_info an array with data so save in a .txt file regarding trello api.
+     * @param filename the name of the file to save the info.
      * @throws IOException if it can't create the file.
      * @author Rodrigo Guerreiro
      *

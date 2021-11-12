@@ -61,7 +61,7 @@ public class Menus implements ActionListener {
     /**
      * Function that creates the menus, regarding the collaborators and menu bars and attaches it to the frame.
      * Uses a map to store the different menus (one for each collaborator).
-     *
+     * @throws IOException exception.
      * @author Rodrigo Guerreiro
      */
     public void gitMenus() throws IOException{
@@ -89,6 +89,7 @@ public class Menus implements ActionListener {
      * Function that creates a menu item for each list in the board.
      * Also creates a submenu on each item, regarding the cards on that list.
      *
+     * @throws IOException exception.
      * @author Rodrigo Guerreiro
      *
      */

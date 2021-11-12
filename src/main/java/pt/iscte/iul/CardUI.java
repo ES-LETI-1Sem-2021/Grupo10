@@ -52,7 +52,7 @@ public class CardUI {
         edt.setText(Action.convertMarkdownToHTML(card.getDesc()));
         edt.setEditable(false);
         edt.setVisible(true);
-        edt.setBounds(75,100,500,300);
+        edt.setBounds(75,100,500,600);
 
         this.frame.add(edt);
     }

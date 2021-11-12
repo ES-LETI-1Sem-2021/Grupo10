@@ -21,7 +21,7 @@ public class Action {
      * Function that does everything.
      * Connects the UI's to the api's.
      *
-     *
+     * @param frame The frame to attach the info.
      * @param  user_git_info String array with[git_owner, git_repo, git_token]
      * @param user_trello_info String array with [trello_name, trello_key, trello_token]
      * @param flag flag == 1 if it is needed to scale the window size, any number otherwise.

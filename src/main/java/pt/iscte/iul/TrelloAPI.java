@@ -138,7 +138,7 @@ public class TrelloAPI {
     public static class Member {
         private String name;
         private String id;
-        // DRAFT: Hours are just for testing
+        // DRAFT: Hours defined for testing
         private int estimatedHours;
         private int onGoingHours;
         private int concludedHours;
@@ -395,4 +395,40 @@ public class TrelloAPI {
         }
         return doneItems;
     }
+
+    /**
+     * @param boardId    id of the board.
+     * @param sprintNumber number of the sprint.
+     * @param memberName name of the member.
+     * @return an array with the hours of a specific member in a specific sprint.
+     * @throws IOException If the request fails.
+     */
+    /*
+    // Function to return the hours (estimated, concluded and ongoing) of a specific member in a specific sprint
+    public int[] getMemberHours(String boardId, int sprintNumber, String memberName) throws IOException {
+        // hours[0] - Estimated hours
+        // hours[1] - Ongoing hours
+        // hours[2] - Concluded hours
+        int[] hours = new int[3];
+
+        // TODO: Get the members of a board (including global)
+        //var members = this.getMembers(boardId);
+        //Member[] members = {"Alexandre", "Dudu", "Rodrigo Guerreyro ou Manel", "Miguel"};
+
+        // Iterate over all members
+        for (Member m : members) {
+            if (m.name.equals(memberName)) {
+                hours[0] = m.getEstimatedHours();
+                hours[1] = m.getOnGoingHours();
+                hours[2] = m.getConcludedHours();
+                break;
+            }
+        }
+
+        // Returns hours list
+        return hours;
+    }
+    */
+
+
 }

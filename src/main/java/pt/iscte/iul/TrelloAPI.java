@@ -468,9 +468,7 @@ public class TrelloAPI {
                     for (Action action: cardActions) {
                         if (action.getData().getText() != null && action.getData().getText().startsWith("plus! @global")) {
                             String spentEstimatedTime = action.getData().getText().split(" ")[2];
-                            System.out.println(spentEstimatedTime);
                             double hoursSpent = Double.parseDouble(String.valueOf(spentEstimatedTime.split("/")[0]));
-                            System.out.println(hoursSpent);
                             totalOfHours += hoursSpent;
                         }
                     }

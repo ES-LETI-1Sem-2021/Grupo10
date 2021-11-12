@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
@@ -112,7 +114,7 @@ public class GitHubAPI {
 
         var resp = this.httpClient.newCall(request).execute();
 
-        var mapped = this.mapper.readValue(resp.body().string(), Repo.class);
+        var mapped = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Repo.class);
         return new Date(mapped.getCreatedAt());
     }
 
@@ -137,29 +139,30 @@ public class GitHubAPI {
         private String name;
 
         /**
-         * @return The collaborator's login.
+         * @return The github handle.
          */
         public String getLogin() {
             return this.login;
         }
 
         /**
-         * @return The url to the collaborator's avatar.
+         * @return The profile picture url.
          */
         public String getAvatar() {
             return this.avatar_url;
         }
 
         /**
-         * @return The url to the collaborator's github page.
+         * @return The github profile url.
          */
         public String getProfile() {
             return this.html_url;
         }
 
         /**
-         * @return The collaborator's name.
+         * @return The name.
          */
+        @Nullable
         public String getName() {
             return name;
         }
@@ -176,17 +179,22 @@ public class GitHubAPI {
 
         var resp = this.httpClient.newCall(request).execute();
 
-        var ret = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Collaborators[].class);
-        for (int i = 0; i < ret.length; i++) {
+        var mapped = this.mapper.readValue(
+                Objects.requireNonNull(resp.body()).string(),
+                Collaborators[].class
+        );
+        for (var collaborator : mapped) {
             resp = this.httpClient.newCall(
-                    new Request.Builder().url("https://api.github.com/users/" + ret[i].login).build()
+                    new Request.Builder().url("https://api.github.com/users/" + collaborator.login).build()
             ).execute();
 
-            var mapper2 = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), User.class);
-            ret[i].name = mapper2.getName();
+            collaborator.name = this.mapper.readValue(
+                    Objects.requireNonNull(resp.body()).string(),
+                    User.class
+            ).getName();
         }
 
-        return ret;
+        return mapped;
     }
 
     /**
@@ -218,12 +226,17 @@ public class GitHubAPI {
         public String getName() {
             return name;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof Branch && Objects.equals(this.name, ((Branch) o).name);
+        }
     }
 
     /**
      * Function that retrieves all the repository branches.
      * @return An array of {@link Branch} objects.
-     * @throws IOException
+     * @throws IOException If the request fails.
      */
     public Branch[] getBranches() throws IOException {
         var request = new Request.Builder()
@@ -231,21 +244,13 @@ public class GitHubAPI {
                 .url(this.baseAPIUrl + "/branches").build();
 
         Response resp = this.httpClient.newCall(request).execute();
-        return this.mapper.readValue(resp.body().string(), Branch[].class);
+        return this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Branch[].class);
     }
 
     /**
      * Stores imporant data about a commit.
      */
-    public static class CommitData {
-        private Date date;
-        private String description;
-
-        public CommitData(Date date, String description) {
-            this.date = date;
-            this.description = description;
-        }
-
+    public record CommitData(Date date, String description) {
         /**
          * @return Commit date in a {@link Date} object.
          */
@@ -268,7 +273,7 @@ public class GitHubAPI {
         private final String user;
         private final List<CommitData> commitData = new ArrayList<>();
 
-        public Commits(String user, List<Commit> commits) {
+        private Commits(String user, List<Commit> commits) {
             this.user = user;
 
             for (var commit : commits) {
@@ -291,7 +296,10 @@ public class GitHubAPI {
             return this.user;
         }
 
-        public List<CommitData> getCommitData() {
+        /**
+         * @return A list of {@link CommitData}.
+         */
+        public List<CommitData> getCommitList() {
             return commitData;
         }
     }
@@ -318,15 +326,21 @@ public class GitHubAPI {
     }
 
     /**
-     * Retrieves commits per branch per user, if "user" is empty retrieves all the commits in the branch.
+     * Retrieves commits per branch per user.
+     * <ul>
+     *     <li>If "user" is empty, retrieves all the commits in the branch.</li>
+     *     <li>If both parameters are empty, branchName defaults to the main branch.</li>
+     *     <li>If anything fails, a {@link Commits} object with no commits is returned.</li>
+     * </ul>
      * @param branch Branch name.
      * @param user The username of the user in question, can be empty.
      * @return A {@link Commits} object.
-     * @throws IOException
+     * @throws IOException If the request fails.
      */
     public Commits getCommits(String branch, String user) throws IOException {
-        var currentPage = 1;
         List<Commit> commitBuffer = new ArrayList<>();
+
+        var currentPage = 1;
         // this way we can easily set the page number
         var formattableUrl = this.baseAPIUrl + "/commits?" + (Objects.equals(user, "") ? "" : "&author=" + user) + "&sha=" + branch + "&page=%d";
 
@@ -337,14 +351,18 @@ public class GitHubAPI {
 
             Response resp = this.httpClient.newCall(request).execute();
 
-            var ret = Arrays.asList(
-                    this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Commit[].class)
-            );
-            if (ret.isEmpty()) {
+            try {
+                var ret = this.mapper.readValue(
+                        Objects.requireNonNull(resp.body()).string(),
+                        Commit[].class
+                );
+
+                if (ret.length == 0) break;
+
+                commitBuffer.addAll(Arrays.asList(ret));
+            } catch (MismatchedInputException e) {
                 break;
             }
-
-            commitBuffer.addAll(ret);
         }
 
         return new Commits(user, commitBuffer);

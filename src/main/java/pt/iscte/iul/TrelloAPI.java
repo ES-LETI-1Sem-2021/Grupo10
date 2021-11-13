@@ -134,6 +134,7 @@ public class TrelloAPI {
 
     // TODO: With this Data class it's possible to access the component card, board and list.
     //  Might be good to reduce code.
+
     /**
      * Data object.
      */
@@ -203,7 +204,7 @@ public class TrelloAPI {
     /**
      * @param component   component that we want to access ("list, card, board, etc").
      * @param componentId id of the component that we want to access.
-     * @param url url of the component (board url, list url, etc).
+     * @param url         url of the component (board url, list url, etc).
      * @return the http response.
      * @throws IOException If the request fails.
      */
@@ -333,7 +334,7 @@ public class TrelloAPI {
 
     /**
      * @param sprintNumber number of the sprint.
-     * @param boardId id of the board.
+     * @param boardId      id of the board.
      * @return an array with the start date and the end date of the specific sprint..
      * @throws IOException If the request fails.
      */
@@ -346,7 +347,7 @@ public class TrelloAPI {
         String listName = "Sprint Ceremonies";
 
         // get the list of all ceremonies
-        var list = this.getList(listName, boardId);
+        var list = this.getList("Sprint Ceremonies", boardId);
         var cards = this.getListCards(list.getId());
 
         // Iterate over all cards in the list
@@ -424,7 +425,7 @@ public class TrelloAPI {
     public int getTotalNumberOfCeremonies(String boardId) throws IOException {
         int numberOfCeremonies = 0;
         var lists = this.getBoardLists(boardId);
-        for (List ceremoniesList: lists) {
+        for (List ceremoniesList : lists) {
             if (ceremoniesList.getName().startsWith("Ceremonies")) {
                 var ceremoniesListCards = this.getListCards(ceremoniesList.id);
                 numberOfCeremonies += ceremoniesListCards.length;
@@ -434,7 +435,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId id of the board.
+     * @param boardId      id of the board.
      * @param sprintNumber number of the sprint.
      * @return the total number of ceremonies that have been done.
      * @throws IOException If the request fails.
@@ -442,7 +443,7 @@ public class TrelloAPI {
     // function to get the total number of ceremonies in a specific sprint
     public int getTotalNumberOfCeremoniesPerSprint(String boardId, int sprintNumber) throws IOException {
         var lists = this.getBoardLists(boardId);
-        for (List ceremoniesList: lists) {
+        for (List ceremoniesList : lists) {
             if (ceremoniesList.getName().equals("Ceremonies - Sprint " + sprintNumber)) {
                 var ceremoniesListCards = this.getListCards(ceremoniesList.id);
                 return ceremoniesListCards.length;
@@ -453,26 +454,50 @@ public class TrelloAPI {
 
     /**
      * @param boardId id of the board.
+     * @param startsWith id of the board.
+     * @return an array of all the lists when the name starts with a specific string.
+     * @throws IOException If the request fails.
+     */
+    public ArrayList<List> getListThatStartsWith(String boardId, String startsWith) throws IOException {
+        var allLists = this.getBoardLists(boardId);
+        var listsThatStartWith = new ArrayList<List>();
+        for (List list : allLists) {
+            if (list.getName().startsWith(startsWith)) {
+                listsThatStartWith.add(list);
+            }
+        }
+        return listsThatStartWith;
+    }
+
+    /**
+     * @param actionsInCard all actions in the card.
+     * @return the total hours spent by the team in the ceremony.
+     * @throws IOException If the request fails.
+     */
+    public double calculateTotalHoursPerCard(Action[] actionsInCard) {
+        double totalHours = 0;
+        for (Action action: actionsInCard) {
+            if (action.getData().getText() != null && action.getData().getText().startsWith("plus! @global")) {
+                String spentEstimatedTime = action.getData().getText().split(" ")[2];
+                double hoursSpent = Double.parseDouble(String.valueOf(spentEstimatedTime.split("/")[0]));
+                totalHours += hoursSpent;
+            }
+        }
+        return totalHours;
+    }
+
+    /**
+     * @param boardId id of the board.
      * @return the total hours spent by the team in ceremonies.
      * @throws IOException If the request fails.
      */
-    // function to get the total number of ceremonies in a specific sprint
+    // TODO: Remove unnecessary comments in trello
     public double getTotalHoursCeremony(String boardId) throws IOException {
-        int totalOfHours = 0;
-        var lists = this.getBoardLists(boardId);
-        for (List ceremoniesList: lists) {
-            if (ceremoniesList.getName().startsWith("Ceremonies")) {
-                var ceremoniesListCards = this.getListCards(ceremoniesList.id);
-                for (Card card: ceremoniesListCards) {
-                    var cardActions = this.getActionsInCard(card.getId());
-                    for (Action action: cardActions) {
-                        if (action.getData().getText() != null && action.getData().getText().startsWith("plus! @global")) {
-                            String spentEstimatedTime = action.getData().getText().split(" ")[2];
-                            double hoursSpent = Double.parseDouble(String.valueOf(spentEstimatedTime.split("/")[0]));
-                            totalOfHours += hoursSpent;
-                        }
-                    }
-                }
+        double totalOfHours = 0;
+        ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Ceremonies");
+        for (List list: listOfCeremonies){
+            for (Card card: this.getListCards(list.getId())) {
+                totalOfHours += calculateTotalHoursPerCard(this.getActionsInCard(card.getId()));
             }
         }
         return totalOfHours;

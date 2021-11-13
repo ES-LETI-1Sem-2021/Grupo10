@@ -105,7 +105,8 @@ public class TrelloAPITests {
         Assertions.assertEquals(planningDescription,
                 this.api.getCeremonyDescription("614df1d076293f6b763c1c9c", "Planning", 1));
 
-        String reviewDescription = "Todos os objetivos (Goals) propostos no Sprint Planning foram implementados com sucesso. Daqui saiu a versão 0.1 do trabalho.\n" +
+        String reviewDescription = "Todos os objetivos (Goals) propostos no Sprint Planning foram implementados com " +
+                "sucesso. Daqui saiu a versão 0.1 do trabalho.\n" +
                 "## Este Sprint teve como resultados:\n" +
                 "- Uma GUI funcional, onde é possivel observar:\n" +
                 "> - O ficheiro ([README.md](https://github.com/Roguezilla/ES-LETI-1Sem-2021-Grupo10#readme))\n" +
@@ -152,6 +153,16 @@ public class TrelloAPITests {
         String cardId = "617d6dad687e4e3dc1fb3a50";
         System.out.println(this.api.getActionsInCard(cardId)[0].getData().getText());
         Assertions.assertEquals(1, this.api.getActionsInCard(cardId).length);
+    }
+
+    @Test
+    public void listsThatStartWith() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+
+        var listsOfCeremonies = this.api.getListThatStartsWith(boardId, "Ceremonies");
+        Assertions.assertEquals(2, listsOfCeremonies.size());
+        Assertions.assertEquals("Ceremonies - Sprint 2", listsOfCeremonies.get(0).getName());
+        Assertions.assertEquals("Ceremonies - Sprint 1", listsOfCeremonies.get(1).getName());
     }
 
     @Test

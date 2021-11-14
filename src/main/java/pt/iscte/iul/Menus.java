@@ -206,55 +206,77 @@ public class Menus implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         //redirect for the GitHub page
-        this.arrayColabs.forEach(collaboratorsitem ->{
-            if(e.getSource()==collaboratorsitem.getItem()){
-                try {
-                    Desktop.getDesktop().browse(new URL(collaboratorsitem.getObject().getProfile()).toURI());
-                } catch (IOException | URISyntaxException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } );
+        gitActionPerformed(e);
 
         //action for the clicks on a card from a list
-        this.arrayCards.forEach(carditemCard-> {
-            if(e.getSource() == carditemCard.getItem()){
-                new CardUI(carditemCard.getObject(), this.frame);
-            }
-        });
+        listsActionPerformed(e);
 
         //Options menus
         for (JMenuItem opm : optionsMenus) {
             if(e.getSource()==opm){
-
-                switch(opm.getText()){
-                    case "Home Screen":
-                       Action.clearFrame(frame);
-                       Action.homeScreen(this.frame, this.gapi, this.tapi);
-                       break;
-                    case "Clear data file" :
-                        try {
-                            clearTheFile("data/user_data.txt");
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "Logout":
-                        try {
-                            clearTheFile("data/user_data.txt");
-                            this.frame.dispose();
-                            new HomeUI();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        break;
-                    default: break;
-                }
+                optionsActionPerformed(opm);
             }
         }
 
+    }
+    /**
+     * Method that based on which menu item was clicked performs an action.
+     *
+     * @author Rodrigo Guerreiro
+     * @param opm the JMenuItem that was clicked.
+     */
+    private void optionsActionPerformed(@NotNull JMenuItem opm){
+        switch(opm.getText()){
+            case "Home Screen":
+                Action.clearFrame(frame);
+                Action.homeScreen(this.frame, this.gapi, this.tapi);
+                break;
+            case "Clear data file" :
+                try {
+                    clearTheFile("data/user_data.txt");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Logout":
+                try {
+                    clearTheFile("data/user_data.txt");
+                    this.frame.dispose();
+                    new HomeUI();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            default: break;
+        }
+    }
+
+
+    /**
+     * Method that based on which menu item was clicked show the trello card on the frame.
+     *
+     * @author Rodrigo Guerreiro
+     * @param e action event.
+     */
+    private void listsActionPerformed(ActionEvent e){
+        this.arrayCards.stream().filter(carditemCard -> e.getSource() == carditemCard.getItem()).forEach(carditemCard -> new CardUI(carditemCard.getObject(), this.frame));
+    }
+
+    /**
+     * Method that based on which menu item was clicked redirects to the person's GitHub page.
+     *
+     * @author Rodrigo Guerreiro
+     * @param e action event.
+     */
+    private void gitActionPerformed(ActionEvent e){
+        this.arrayColabs.stream().filter(collaboratorsitem -> e.getSource() == collaboratorsitem.getItem()).forEach(collaboratorsitem -> {
+            try {
+                Desktop.getDesktop().browse(new URL(collaboratorsitem.getObject().getProfile()).toURI());
+            } catch (IOException | URISyntaxException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     /**

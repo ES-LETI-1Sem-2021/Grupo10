@@ -121,6 +121,9 @@ public class TrelloAPI {
          * @return The due date.
          */
         public String getDueDate() {
+            if (this.due.equals(null)){
+                return "N/A";
+            }
             return this.due.split("T")[0]; // split by delimiter T
         }
 

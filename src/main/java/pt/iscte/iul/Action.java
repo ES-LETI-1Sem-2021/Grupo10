@@ -122,7 +122,10 @@ public class Action {
             e.printStackTrace();
         }
 
-        String dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
+        String dataInicio_toLabel = null;
+        if (dataInicio != null) {
+            dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
+        }
         //Label com a data de inicio do trabalho
         JLabel labelData = new JLabel("Project's start date: " + dataInicio_toLabel);
         labelData.setBounds(100,50,250,30);
@@ -137,7 +140,9 @@ public class Action {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        labelProjName.setBounds(400, 50 , 300, 30);
+        if (labelProjName != null) {
+            labelProjName.setBounds(400, 50 , 300, 30);
+        }
         frame.add(labelProjName);
 
 

@@ -260,7 +260,8 @@ public class Menus implements ActionListener {
      * @param e action event.
      */
     private void listsActionPerformed(ActionEvent e){
-        this.arrayCards.stream().filter(carditemCard -> e.getSource() == carditemCard.getItem()).forEach(carditemCard -> new CardUI(carditemCard.getObject(), this.frame));
+        this.arrayCards.stream().filter(carditemCard -> e.getSource() == carditemCard.getItem())
+                .forEach(carditemCard -> new CardUI(carditemCard.getObject(), this.frame));
     }
 
     /**
@@ -270,7 +271,8 @@ public class Menus implements ActionListener {
      * @param e action event.
      */
     private void gitActionPerformed(ActionEvent e){
-        this.arrayColabs.stream().filter(collaboratorsitem -> e.getSource() == collaboratorsitem.getItem()).forEach(collaboratorsitem -> {
+        this.arrayColabs.stream().filter(collaboratorsitem -> e.getSource() == collaboratorsitem.getItem())
+                .forEach(collaboratorsitem -> {
             try {
                 Desktop.getDesktop().browse(new URL(collaboratorsitem.getObject().getProfile()).toURI());
             } catch (IOException | URISyntaxException ex) {

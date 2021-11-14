@@ -5,7 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -226,10 +228,47 @@ public class Menus implements ActionListener {
         //Options menus
         for (JMenuItem opm : optionsMenus) {
             if(e.getSource()==opm){
-                System.out.println(opm.getText());
+
+                switch(opm.getText()){
+                    case "Home Screen":
+                       Action.clearFrame(frame);
+                       Action.homeScreen(this.frame, this.gapi, this.tapi);
+                       break;
+                    case "Clear data file" :
+                        try {
+                            clearTheFile("data/user_data.txt");
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "Logout":
+                        try {
+                            clearTheFile("data/user_data.txt");
+                            this.frame.dispose();
+                            new HomeUI();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
+                    default: break;
+                }
             }
         }
 
+    }
+
+    /**
+     * Method that clear the content of a file.
+     * @author Rodrigo Guerreiro
+     * @throws IOException throws exception.
+     */
+
+    public static void clearTheFile(String filename) throws IOException {
+        FileWriter fwOb = new FileWriter(filename, false);
+        PrintWriter pwOb = new PrintWriter(fwOb, false);
+        pwOb.flush();
+        pwOb.close();
+        fwOb.close();
     }
 
 }

@@ -16,6 +16,11 @@ import org.commonmark.renderer.html.HtmlRenderer;
  */
 public class Action {
 
+
+
+
+
+
     /**
      *
      * Function that does everything.
@@ -29,26 +34,17 @@ public class Action {
      *
      */
     public static void do_action(JFrame frame, String[] user_git_info, String[] user_trello_info, int flag){
-
         var gitApi = new GitHubAPI(user_git_info[0],user_git_info[1],user_git_info[2]);
         var trelloAPI = new TrelloAPI(user_trello_info[0],user_trello_info[1],user_trello_info[2]);
 
-        String readme= null;
-        String dataInicio_toLabel = "";
         String boardID = null;
         try {
-
             TrelloAPI.Board[] boards = trelloAPI.getBoards();
             for (TrelloAPI.Board b: boards) {
                 if(b.getName().equals(user_trello_info[0])){
                     boardID = b.getId();
                 }
             }
-
-            readme = gitApi.getFile("master","/README.md");
-
-            GitHubAPI.Date dataInicio = gitApi.getStartTime();
-            dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,29 +60,9 @@ public class Action {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             frame.setSize(screenSize.width, screenSize.height - 100);
         }
+        //if (dataInicio == null) throw new AssertionError();
+        homeScreen(frame, gitApi, trelloAPI);
 
-
-        //Label com a data de inicio do trabalho
-        JLabel labelData = new JLabel("Project's start date: " + dataInicio_toLabel);
-        labelData.setBounds(100,50,250,30);
-        frame.add(labelData);
-
-        //Label com o nome do projeto (nome do repo)
-        JLabel labelProjName = new JLabel("Project's name: " + user_git_info[1]);
-        labelProjName.setBounds(400, 50 , 300, 30);
-        frame.add(labelProjName);
-
-
-        //Print do readme no ecrã
-        JEditorPane edt = new JEditorPane();
-        edt.setContentType("text/html");
-        edt.setText(convertMarkdownToHTML(readme));
-        edt.setEditable(false);
-        edt.setVisible(true);
-        edt.setBounds(100,100,500,600);
-
-        frame.add(edt);
-        frame.setVisible(true);
     }
 
     /**
@@ -128,4 +104,47 @@ public class Action {
         frame.revalidate();
         frame.repaint();
     }
+
+    /**
+     * Function that shows the default information on the screen.
+     * @param frame the frame to show the info.
+     * @param gapi the github api instance.
+     * @param tapi the trello api instance.
+     * @author Rodrigo Guerreiro
+     */
+    public static void homeScreen(JFrame frame, GitHubAPI gapi, TrelloAPI tapi){
+        GitHubAPI.Date dataInicio = null;
+        String readme="";
+        try {
+            dataInicio = gapi.getStartTime();
+            readme = gapi.getFile("master", "/README.md");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
+        //Label com a data de inicio do trabalho
+        JLabel labelData = new JLabel("Project's start date: " + dataInicio_toLabel);
+        labelData.setBounds(100,50,250,30);
+        frame.add(labelData);
+
+        //TODO arranjar forma de meter o nome do projeto
+        //Label com o nome do projeto (nome do repo)
+        //JLabel labelProjName = new JLabel("Project's name: " + user_git_info[1]);
+        //labelProjName.setBounds(400, 50 , 300, 30);
+        //frame.add(labelProjName);
+
+
+        //Print do readme no ecrã
+        JEditorPane edt = new JEditorPane();
+        edt.setContentType("text/html");
+        edt.setText(convertMarkdownToHTML(readme));
+        edt.setEditable(false);
+        edt.setVisible(true);
+        edt.setBounds(100,100,500,600);
+
+        frame.add(edt);
+        frame.setVisible(true);
+    }
+
 }

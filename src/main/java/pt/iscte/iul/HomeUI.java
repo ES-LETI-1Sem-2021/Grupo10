@@ -182,6 +182,7 @@ public class HomeUI implements ActionListener {
         this.frame.add(label_git_logo);
     }
 
+
     /**
      *
      * Action preformed when the search button is pressed.

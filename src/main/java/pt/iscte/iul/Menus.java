@@ -59,14 +59,17 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * optionsMenus[Default_screen, clear_userData, logout]
+     * Creates the option's menu with all of its submenus.
+     * Stores in an array with the following content:
+     *  - optionsMenus[Default_screen, clear_userData, logout]
+     * @author Rodrigo Guerreiro
      */
 
     private void optionsMenus() {
         JMenu options = new JMenu("Options");
         this.optionsMenus = new JMenuItem[3];
 
-        JMenuItem defaultScreen = new JMenuItem("Default");
+        JMenuItem defaultScreen = new JMenuItem("Home Screen");
         defaultScreen.addActionListener(this);
         options.add(defaultScreen);
         this.optionsMenus[0]=defaultScreen;

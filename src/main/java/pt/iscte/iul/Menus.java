@@ -24,8 +24,9 @@ public class Menus implements ActionListener {
     private final JMenuBar mb;
     private final GitHubAPI gapi;
     private final TrelloAPI tapi;
+    private JMenuItem[] optionsMenus;
     private final List<itemCard<TrelloAPI.Card>> arrayCards= new ArrayList<>();
-    private final List<itemCard<GitHubAPI.Collaborators>> arraycolabs= new ArrayList<>();
+    private final List<itemCard<GitHubAPI.Collaborators>> arrayColabs = new ArrayList<>();
 
 
     /**
@@ -48,12 +49,40 @@ public class Menus implements ActionListener {
         this.mb = new JMenuBar();
 
         try{
+            optionsMenus();
             gitMenus();
             listsMenus();
        }catch (IOException e){
            e.printStackTrace();
        }
         this.frame.setJMenuBar(mb);
+    }
+
+    /**
+     * optionsMenus[Default_screen, clear_userData, logout]
+     */
+
+    private void optionsMenus() {
+        JMenu options = new JMenu("Options");
+        this.optionsMenus = new JMenuItem[3];
+
+        JMenuItem defaultScreen = new JMenuItem("Default");
+        defaultScreen.addActionListener(this);
+        options.add(defaultScreen);
+        this.optionsMenus[0]=defaultScreen;
+
+        JMenuItem clearCache = new JMenuItem("Clear data file");
+        clearCache.addActionListener(this);
+        options.add(clearCache);
+        this.optionsMenus[1] = clearCache;
+
+        JMenuItem logout = new JMenuItem("Logout");
+        logout.addActionListener(this);
+        options.add(logout);
+        this.optionsMenus[2] = logout;
+
+        mb.add(options);
+
     }
 
     /**
@@ -72,9 +101,7 @@ public class Menus implements ActionListener {
 
             item.addActionListener(this);
             colabs.add(item);
-            arraycolabs.add(new itemCard<>(col,item));
-            //mapa_cols.put(col, item);
-
+            arrayColabs.add(new itemCard<>(col,item));
         }
         mb.add(colabs);
     }
@@ -176,7 +203,7 @@ public class Menus implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         //redirect for the GitHub page
-        this.arraycolabs.forEach(collaboratorsitem ->{
+        this.arrayColabs.forEach(collaboratorsitem ->{
             if(e.getSource()==collaboratorsitem.getItem()){
                 try {
                     Desktop.getDesktop().browse(new URL(collaboratorsitem.getObject().getProfile()).toURI());
@@ -192,6 +219,13 @@ public class Menus implements ActionListener {
                 new CardUI(carditemCard.getObject(), this.frame);
             }
         });
+
+        //Options menus
+        for (JMenuItem opm : optionsMenus) {
+            if(e.getSource()==opm){
+                System.out.println(opm.getText());
+            }
+        }
 
     }
 

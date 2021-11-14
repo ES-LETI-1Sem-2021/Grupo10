@@ -230,7 +230,7 @@ public class Menus implements ActionListener {
         switch(opm.getText()){
             case "Home Screen":
                 Action.clearFrame(frame);
-                Action.homeScreen(this.frame, this.gapi, this.tapi);
+                Action.homeScreen(this.frame, this.gapi, this.tapi, this.boardID);
                 break;
             case "Clear data file" :
                 try {

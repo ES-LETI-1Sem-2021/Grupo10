@@ -61,7 +61,7 @@ public class Action {
             frame.setSize(screenSize.width, screenSize.height - 100);
         }
         //if (dataInicio == null) throw new AssertionError();
-        homeScreen(frame, gitApi, trelloAPI);
+        homeScreen(frame, gitApi, trelloAPI, boardID);
 
     }
 
@@ -112,7 +112,7 @@ public class Action {
      * @param tapi the trello api instance.
      * @author Rodrigo Guerreiro
      */
-    public static void homeScreen(JFrame frame, GitHubAPI gapi, TrelloAPI tapi){
+    public static void homeScreen(JFrame frame, GitHubAPI gapi, TrelloAPI tapi, String boardID){
         GitHubAPI.Date dataInicio = null;
         String readme="";
         try {
@@ -129,10 +129,16 @@ public class Action {
         frame.add(labelData);
 
         //TODO arranjar forma de meter o nome do projeto
+
         //Label com o nome do projeto (nome do repo)
-        //JLabel labelProjName = new JLabel("Project's name: " + user_git_info[1]);
-        //labelProjName.setBounds(400, 50 , 300, 30);
-        //frame.add(labelProjName);
+        JLabel labelProjName = null;
+        try {
+            labelProjName = new JLabel("Project's name: " + tapi.getBoard(boardID).getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        labelProjName.setBounds(400, 50 , 300, 30);
+        frame.add(labelProjName);
 
 
         //Print do readme no ecrã

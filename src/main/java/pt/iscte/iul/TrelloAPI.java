@@ -8,7 +8,6 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author Duarte Casaleiro.
@@ -468,7 +467,6 @@ public class TrelloAPI {
     }
 
     /**
-<<<<<<< HEAD
      * @param boardId id of the board.
      * @return the total number of ceremonies that have been done.
      * @throws IOException If the request fails.

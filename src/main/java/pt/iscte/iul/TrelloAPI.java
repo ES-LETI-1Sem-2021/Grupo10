@@ -384,8 +384,8 @@ public class TrelloAPI {
 
     /**
      * @param sprintNumber number of the sprint.
-     * @param boardId      id of the board.
-     * @return an array with the start date and the end date of the specific sprint..
+     * @param boardId id of the board.
+     * @return an array with the start date and the end date of the specific sprint.
      * @throws IOException If the request fails.
      */
     // Function to return the start and end dates of a specific sprint
@@ -554,7 +554,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId    id of the board.
+     * @param boardId id of the board.
      * @param sprintNumber number of the sprint.
      * @param memberName name of the member.
      * @return an array with the hours of a specific member in a specific sprint.

@@ -8,6 +8,7 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author Duarte Casaleiro.
@@ -183,6 +184,53 @@ public class TrelloAPI {
     }
 
     /**
+     * Member object.
+     */
+    public static class Member {
+        private String name;
+        private String id;
+        // DRAFT: Hours defined for testing
+        private int estimatedHours;
+        private int onGoingHours;
+        private int concludedHours;
+
+        /**
+         * @return The name.
+         */
+        public String getName() {
+            return this.name;
+        }
+
+        /**
+         * @return The ID.
+         */
+        public String getId() {
+            return this.id;
+        }
+
+        /**
+         * @return The estimated hours.
+         */
+        public int getEstimatedHours() {
+            return 2;
+        }
+
+        /**
+         * @return The on going hours.
+         */
+        public int getOnGoingHours() {
+            return 4;
+        }
+
+        /**
+         * @return The concluded hours.
+         */
+        public int getConcludedHours() {
+            return 3;
+        }
+    }
+
+    /**
      * @return a list of all boards owned by the user.
      * @throws IOException If the request fails.
      */
@@ -347,7 +395,7 @@ public class TrelloAPI {
         boolean startDateFound = false;
         // initialize list of dates
         String[] dates = new String[2];
-        String listName = "Sprint Ceremonies";
+        String listName = "Ceremonies - Sprint " + sprintNumber;
 
         // get the list of all ceremonies
         var list = this.getList("Sprint Ceremonies", boardId);
@@ -383,7 +431,7 @@ public class TrelloAPI {
     // Function to get the description of a Sprint Ceremony of a specific sprint
     public String getCeremonyDescription(String boardId, String sprintType, int sprintNumber) throws IOException {
 
-        String listName = "Sprint Ceremonies";
+        String listName = "Ceremonies - Sprint " + sprintNumber;
 
         // get the list of all ceremonies
         var list = this.getList(listName, boardId);
@@ -420,6 +468,7 @@ public class TrelloAPI {
     }
 
     /**
+<<<<<<< HEAD
      * @param boardId id of the board.
      * @return the total number of ceremonies that have been done.
      * @throws IOException If the request fails.
@@ -505,5 +554,40 @@ public class TrelloAPI {
         }
         return totalOfHours;
     }
+
+    /**
+     * @param boardId    id of the board.
+     * @param sprintNumber number of the sprint.
+     * @param memberName name of the member.
+     * @return an array with the hours of a specific member in a specific sprint.
+     * @throws IOException If the request fails.
+     */
+    /*
+    // Function to return the hours (estimated, concluded and ongoing) of a specific member in a specific sprint
+    public int[] getMemberHours(String boardId, int sprintNumber, String memberName) throws IOException {
+        // hours[0] - Estimated hours
+        // hours[1] - Ongoing hours
+        // hours[2] - Concluded hours
+        int[] hours = new int[3];
+
+        // TODO: Get the members of a board (including global)
+        //var members = this.getMembers(boardId);
+        //Member[] members = {"Alexandre", "Dudu", "Rodrigo Guerreyro ou Manel", "Miguel"};
+
+        // Iterate over all members
+        for (Member m : members) {
+            if (m.name.equals(memberName)) {
+                hours[0] = m.getEstimatedHours();
+                hours[1] = m.getOnGoingHours();
+                hours[2] = m.getConcludedHours();
+                break;
+            }
+        }
+
+        // Returns hours list
+        return hours;
+    }
+    */
+
 
 }

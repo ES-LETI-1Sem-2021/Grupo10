@@ -170,5 +170,6 @@ public class TrelloAPITests {
         String boardId = "614df1d076293f6b763c1c9c";
         String cardId = "617d6dad687e4e3dc1fb3a50";
         Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
+        Assertions.assertEquals(8.25, this.api.getTotalHoursCeremonyDescriptionBased(boardId));
     }
 }

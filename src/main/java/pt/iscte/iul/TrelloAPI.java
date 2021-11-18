@@ -485,7 +485,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId      id of the board.
+     * @param boardId id of the board.
      * @param sprintNumber number of the sprint.
      * @return the total number of ceremonies that have been done.
      * @throws IOException If the request fails.
@@ -548,6 +548,38 @@ public class TrelloAPI {
         for (List list: listOfCeremonies){
             for (Card card: this.getListCards(list.getId())) {
                 totalOfHours += calculateTotalHoursPerCard(this.getActionsInCard(card.getId()));
+            }
+        }
+        return totalOfHours;
+    }
+
+    /**
+     * @param descriptionInCard all actions in the card.
+     * @return the total hours spent by the team in the ceremony.
+     * @throws IOException If the request fails.
+     */
+    // ALTERNATIVE FUNCTION TO calculateTotalHoursPerCard!!
+    public double calculateTotalHoursPerCardDescriptionBased(String descriptionInCard) {
+        double totalHours = 0.0;
+
+        String hours = descriptionInCard.split("@global")[1].split("/")[0];
+        totalHours += Double.parseDouble(hours);
+
+        return totalHours;
+    }
+
+    /**
+     * @param boardId id of the board.
+     * @return the total hours spent by the team in ceremonies.
+     * @throws IOException If the request fails.
+     */
+    // ALTERNATIVE FUNCTION TO getTotalHoursCeremony!!
+    public double getTotalHoursCeremonyDescriptionBased(String boardId) throws IOException {
+        double totalOfHours = 0;
+        ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Ceremonies");
+        for (List list: listOfCeremonies){
+            for (Card card: this.getListCards(list.getId())) {
+                totalOfHours += calculateTotalHoursPerCardDescriptionBased(card.getDesc());
             }
         }
         return totalOfHours;

@@ -102,6 +102,7 @@ public class TrelloAPI {
         private String id;
         private String due;
         private String desc;
+        private Member member;
 
         /**
          * @return The name.
@@ -133,6 +134,8 @@ public class TrelloAPI {
         public String getDesc() {
             return this.desc;
         }
+
+        public Member getMember(){return this.member;}
     }
 
     // TODO: With this Data class it's possible to access the component card, board and list.
@@ -186,7 +189,7 @@ public class TrelloAPI {
      * Member object.
      */
     public static class Member {
-        private String name;
+        private String username;
         private String id;
         // DRAFT: Hours defined for testing
         private int estimatedHours;
@@ -197,7 +200,7 @@ public class TrelloAPI {
          * @return The name.
          */
         public String getName() {
-            return this.name;
+            return this.username;
         }
 
         /**
@@ -380,6 +383,20 @@ public class TrelloAPI {
 
         // map http response to the class Board
         return mapper.readValue(response.body().string(), Action[].class);
+    }
+
+    public Member[] getMemberOfCard(String cardId) throws  IOException {
+        //HTTP request to access the board
+        Response response = HTTPRequest("members", cardId, cardURL);
+        // Build ObjectMapper
+        ObjectMapper mapper = new ObjectMapper();
+        // map http response to the class Board
+        // https://stackoverflow.com/a/26371693
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+        // map http response to the class Board
+        return mapper.readValue(response.body().string(), Member[].class);
     }
 
     /**
@@ -583,6 +600,45 @@ public class TrelloAPI {
             }
         }
         return totalOfHours;
+    }
+
+    /**
+     * @param boardId id of the board.
+     * @return the total hours spent by user.
+     * @throws IOException If the request fails.
+     */
+    public double[] getTotalHoursByUser(String boardId) throws IOException {
+        double[] hourSpent = new double[3];
+        double totalOfHours = 0;
+        ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Done");
+        for (List list: listOfCeremonies){
+            for (Card card: this.getListCards(list.getId())) {
+                // iterate over all members of the card
+                for (Member member: this.getMemberOfCard(card.getId())) {
+                    if (card.getDesc().contains("@" + member.getName())) {
+                        // TODO: Can't be solved this way. Needs improvement
+                        hourSpent[0] += calculateTotalHoursPerUser(card.getDesc(), member.getName());
+                        //totalOfHours += calculateTotalHoursPerUser(card.getDesc(), name);
+                    }
+                }
+            }
+        }
+        return hourSpent;
+    }
+
+    /**
+     * @param descriptionInCard all actions in the card.
+     * @return the total hours spent by the team in the ceremony.
+     * @throws IOException If the request fails.
+     */
+    // TODO: Needs to be modified to calculate all spent hours by yser.
+    public double calculateTotalHoursPerUser(String descriptionInCard, String userName) {
+        double totalHours = 0.0;
+
+        String hours = descriptionInCard.split("@" + userName)[1].split("/")[0];
+        totalHours += Double.parseDouble(hours);
+
+        return totalHours;
     }
 
     /**

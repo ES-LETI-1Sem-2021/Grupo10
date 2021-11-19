@@ -122,10 +122,8 @@ public class TrelloAPI {
          * @return The due date.
          */
         public String getDueDate() {
-            if (this.due.equals(null)){
-                return "N/A";
-            }
-            return this.due.split("T")[0]; // split by delimiter T
+            return (this.due.equals(null)) ? "N/A" :
+                    this.due.split("T")[0]; // split by delimiter T
         }
 
         /**
@@ -135,7 +133,9 @@ public class TrelloAPI {
             return this.desc;
         }
 
-        public Member getMember(){return this.member;}
+        public Member getMember() {
+            return this.member;
+        }
     }
 
     // TODO: With this Data class it's possible to access the component card, board and list.
@@ -218,7 +218,7 @@ public class TrelloAPI {
         }
 
         /**
-         * @return The on going hours.
+         * @return The ongoing hours.
          */
         public int getOnGoingHours() {
             return 4;
@@ -255,7 +255,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param component   component that we want to access ("list, card, board, etc").
+     * @param component   component that we want to access ("list, card, board, etc.").
      * @param componentId id of the component that we want to access.
      * @param url         url of the component (board url, list url, etc).
      * @return the http response.
@@ -331,7 +331,7 @@ public class TrelloAPI {
      * @return all cards in the board identified by the board id.
      * @throws IOException If the request fails.
      */
-    // Function to return all the lists in the board
+    // Function to return all the cards in the board
     public Card[] getBoardCards(String boardId) throws IOException {
         //HTTP request to access the board
         Response response = HTTPRequest("cards", boardId, boardURL);
@@ -385,7 +385,8 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), Action[].class);
     }
 
-    public Member[] getMemberOfCard(String cardId) throws  IOException {
+    // TODO Add JavaDoc
+    public Member[] getMemberOfCard(String cardId) throws IOException {
         //HTTP request to access the board
         Response response = HTTPRequest("members", cardId, cardURL);
         // Build ObjectMapper
@@ -401,7 +402,7 @@ public class TrelloAPI {
 
     /**
      * @param sprintNumber number of the sprint.
-     * @param boardId id of the board.
+     * @param boardId      id of the board.
      * @return an array with the start date and the end date of the specific sprint.
      * @throws IOException If the request fails.
      */
@@ -458,7 +459,7 @@ public class TrelloAPI {
             // get the Sprint sprintType's description
             if (c.name.equals("Sprint " + sprintType + " - Sprint " + sprintNumber))
                 return c.getDesc();
-        return ""; // If the description doesn't exist returns a null String
+        return ""; // returns an empty String if the description doesn't exist
     }
 
     /**
@@ -502,7 +503,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId id of the board.
+     * @param boardId      id of the board.
      * @param sprintNumber number of the sprint.
      * @return the total number of ceremonies that have been done.
      * @throws IOException If the request fails.
@@ -520,7 +521,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId id of the board.
+     * @param boardId    id of the board.
      * @param startsWith id of the board.
      * @return an array of all the lists when the name starts with a specific string.
      * @throws IOException If the request fails.
@@ -541,9 +542,9 @@ public class TrelloAPI {
      * @return the total hours spent by the team in the ceremony.
      * @throws IOException If the request fails.
      */
-    public double calculateTotalHoursPerCard(Action[] actionsInCard) {
+    public double calculateTotalHoursPerCard(Action[] actionsInCard)  throws IOException {
         double totalHours = 0;
-        for (Action action: actionsInCard) {
+        for (Action action : actionsInCard) {
             if (action.getData().getText() != null && action.getData().getText().startsWith("plus! @global")) {
                 String spentEstimatedTime = action.getData().getText().split(" ")[2];
                 double hoursSpent = Double.parseDouble(String.valueOf(spentEstimatedTime.split("/")[0]));
@@ -562,8 +563,8 @@ public class TrelloAPI {
     public double getTotalHoursCeremony(String boardId) throws IOException {
         double totalOfHours = 0;
         ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Ceremonies");
-        for (List list: listOfCeremonies){
-            for (Card card: this.getListCards(list.getId())) {
+        for (List list : listOfCeremonies) {
+            for (Card card : this.getListCards(list.getId())) {
                 totalOfHours += calculateTotalHoursPerCard(this.getActionsInCard(card.getId()));
             }
         }
@@ -576,7 +577,7 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     // ALTERNATIVE FUNCTION TO calculateTotalHoursPerCard!!
-    public double calculateTotalHoursPerCardDescriptionBased(String descriptionInCard) {
+    public double calculateTotalHoursPerCardDescriptionBased(String descriptionInCard)  throws IOException {
         double totalHours = 0.0;
 
         String hours = descriptionInCard.split("@global")[1].split("/")[0];
@@ -594,8 +595,8 @@ public class TrelloAPI {
     public double getTotalHoursCeremonyDescriptionBased(String boardId) throws IOException {
         double totalOfHours = 0;
         ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Ceremonies");
-        for (List list: listOfCeremonies){
-            for (Card card: this.getListCards(list.getId())) {
+        for (List list : listOfCeremonies) {
+            for (Card card : this.getListCards(list.getId())) {
                 totalOfHours += calculateTotalHoursPerCardDescriptionBased(card.getDesc());
             }
         }
@@ -611,10 +612,10 @@ public class TrelloAPI {
         double[] hourSpent = new double[3];
         double totalOfHours = 0;
         ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Done");
-        for (List list: listOfCeremonies){
-            for (Card card: this.getListCards(list.getId())) {
+        for (List list : listOfCeremonies) {
+            for (Card card : this.getListCards(list.getId())) {
                 // iterate over all members of the card
-                for (Member member: this.getMemberOfCard(card.getId())) {
+                for (Member member : this.getMemberOfCard(card.getId())) {
                     if (card.getDesc().contains("@" + member.getName())) {
                         // TODO: Can't be solved this way. Needs improvement
                         hourSpent[0] += calculateTotalHoursPerUser(card.getDesc(), member.getName());
@@ -631,8 +632,8 @@ public class TrelloAPI {
      * @return the total hours spent by the team in the ceremony.
      * @throws IOException If the request fails.
      */
-    // TODO: Needs to be modified to calculate all spent hours by yser.
-    public double calculateTotalHoursPerUser(String descriptionInCard, String userName) {
+    // TODO: Needs to be modified to calculate all spent hours by user.
+    public double calculateTotalHoursPerUser(String descriptionInCard, String userName) throws IOException {
         double totalHours = 0.0;
 
         String hours = descriptionInCard.split("@" + userName)[1].split("/")[0];
@@ -650,11 +651,11 @@ public class TrelloAPI {
      */
     /*
     // Function to return the hours (estimated, concluded and ongoing) of a specific member in a specific sprint
-    public int[] getMemberHours(String boardId, int sprintNumber, String memberName) throws IOException {
+    public double[] getMemberHours(String boardId, int sprintNumber, String memberName) throws IOException {
         // hours[0] - Estimated hours
         // hours[1] - Ongoing hours
         // hours[2] - Concluded hours
-        int[] hours = new int[3];
+        double[] hours = new int[3];
 
         // TODO: Get the members of a board (including global)
         //var members = this.getMembers(boardId);

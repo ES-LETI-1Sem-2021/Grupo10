@@ -74,7 +74,7 @@ public class TrelloAPI {
     }
 
     /**
-     * Board object.
+     * List object.
      */
     public static class List {
         private String name;
@@ -363,7 +363,11 @@ public class TrelloAPI {
         return mapper.readValue(response.body().string(), Action[].class);
     }
 
-    // TODO Add JavaDoc
+    /**
+     * @param cardId id of the card.
+     * @return all members in the card identified by the card id.
+     * @throws IOException If the request fails.
+     */
     public Member[] getMemberOfCard(String cardId) throws IOException {
         //HTTP request to access the board
         Response response = HTTPRequest("members", cardId, cardURL);
@@ -515,7 +519,7 @@ public class TrelloAPI {
 
     /**
      * @param boardId    id of the board.
-     * @param query id of the board.
+     * @param query name present in the list name.
      * @return an array of all the lists where the name contains with a specific string.
      * @throws IOException If the request fails.
      */
@@ -558,28 +562,52 @@ public class TrelloAPI {
         private double spentHours;
         private double estimatedHours;
 
+        /**
+         * Class to get all hours spent and estimated by user.
+         *
+         * @param user Member.
+         * @param spentHours spent hours.
+         * @param estimatedHours estimated hours.
+         */
         public HoursPerUser(String user, double spentHours, double estimatedHours) {
             this.user = user;
             this.spentHours = spentHours;
             this.estimatedHours = estimatedHours;
         }
 
+        /**
+         * @return The user.
+         */
         public String getUser() {
             return user;
         }
 
+        /**
+         * @return the hours that were spent.
+         */
         public double getSpentHours() {
             return spentHours;
         }
 
+        /**
+         * @return the hours that were estimated.
+         */
         public double getEstimatedHours() {
             return estimatedHours;
         }
 
+        /**
+         * @param hours spent hours added to the user.
+         * @throws IOException If the request fails.
+         */
         private void addSpentHours(double hours) {
             this.spentHours += hours;
         }
 
+        /**
+         * @param hours estimated hours added to the user.
+         * @throws IOException If the request fails.
+         */
         private void addEstimatedHours(double hours) {
             this.estimatedHours += hours;
         }
@@ -594,6 +622,8 @@ public class TrelloAPI {
     }
     /**
      * @param boardId id of the board.
+     * @param boardQuery name present on the list name.
+     * @param cardQuery name present on the card name.
      * @return the total hours spent by user in a list of {@link HoursPerUser}
      * @throws IOException If the request fails.
      */

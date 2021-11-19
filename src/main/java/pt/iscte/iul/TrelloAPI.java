@@ -8,9 +8,12 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * @author Duarte Casaleiro.
+ * @author Duarte Casaleiro, Oleksandr Kobelyuk.
  */
 public class TrelloAPI {
     private final String apiKey;
@@ -467,7 +470,7 @@ public class TrelloAPI {
     // function to get the total number of ceremonies
     public int getTotalNumberOfCeremonies(String boardId) throws IOException {
         int numberOfCeremonies = 0;
-        var ceremoniesLists = this.getListThatStartsWith(boardId, "Ceremonies");
+        var ceremoniesLists = this.getListsThatStartWith(boardId, "Ceremonies");
         for (List ceremoniesList : ceremoniesLists) {
             var ceremoniesListCards = this.getListCards(ceremoniesList.id);
             numberOfCeremonies += ceremoniesListCards.length;
@@ -496,10 +499,10 @@ public class TrelloAPI {
     /**
      * @param boardId    id of the board.
      * @param startsWith id of the board.
-     * @return an array of all the lists when the name starts with a specific string.
+     * @return an array of all the lists where the name starts with a specific string.
      * @throws IOException If the request fails.
      */
-    public ArrayList<List> getListThatStartsWith(String boardId, String startsWith) throws IOException {
+    public ArrayList<List> getListsThatStartWith(String boardId, String startsWith) throws IOException {
         var allLists = this.getBoardLists(boardId);
         var listsThatStartWith = new ArrayList<List>();
         for (List list : allLists) {
@@ -511,20 +514,20 @@ public class TrelloAPI {
     }
 
     /**
-     * @param actionsInCard all actions in the card.
-     * @return the total hours spent by the team in the ceremony.
+     * @param boardId    id of the board.
+     * @param query id of the board.
+     * @return an array of all the lists where the name contains with a specific string.
      * @throws IOException If the request fails.
      */
-    public double calculateTotalHoursPerCard(Action[] actionsInCard)  throws IOException {
-        double totalHours = 0;
-        for (Action action : actionsInCard) {
-            if (action.getData().getText() != null && action.getData().getText().startsWith("plus! @global")) {
-                String spentEstimatedTime = action.getData().getText().split(" ")[2];
-                double hoursSpent = Double.parseDouble(String.valueOf(spentEstimatedTime.split("/")[0]));
-                totalHours += hoursSpent;
+    public ArrayList<List> getListsThatContain(String boardId, String query) throws IOException {
+        var allLists = this.getBoardLists(boardId);
+        var listsThatStartWith = new ArrayList<List>();
+        for (List list : allLists) {
+            if (list.getName().contains(query)) {
+                listsThatStartWith.add(list);
             }
         }
-        return totalHours;
+        return listsThatStartWith;
     }
 
     /**
@@ -532,122 +535,95 @@ public class TrelloAPI {
      * @return the total hours spent by the team in ceremonies.
      * @throws IOException If the request fails.
      */
-    // TODO: Remove unnecessary comments in trello
     public double getTotalHoursCeremony(String boardId) throws IOException {
+        Pattern global = Pattern.compile("(?:@global (\\d?.?\\d+)/(\\d?.?\\d+))");
         double totalOfHours = 0;
-        ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Ceremonies");
+        ArrayList<List> listOfCeremonies = this.getListsThatStartWith(boardId, "Ceremonies");
         for (List list : listOfCeremonies) {
             for (Card card : this.getListCards(list.getId())) {
-                totalOfHours += calculateTotalHoursPerCard(this.getActionsInCard(card.getId()));
+                Matcher match = global.matcher(card.getDescription());
+                while (match.find()) {
+                    totalOfHours += Double.parseDouble(match.group(1));
+                }
             }
         }
         return totalOfHours;
     }
 
     /**
-     * @param descriptionInCard all actions in the card.
-     * @return the total hours spent by the team in the ceremony.
-     * @throws IOException If the request fails.
+     * Contains relevant information about the time a user spent on the project.
      */
-    // ALTERNATIVE FUNCTION TO calculateTotalHoursPerCard!!
-    public double calculateTotalHoursPerCardDescriptionBased(String descriptionInCard)  throws IOException {
-        double totalHours = 0.0;
+    static class HoursPerUser {
+        private String user;
+        private double spentHours;
+        private double estimatedHours;
 
-        String hours = descriptionInCard.split("@global")[1].split("/")[0];
-        totalHours += Double.parseDouble(hours);
-
-        return totalHours;
-    }
-
-    /**
-     * @param boardId id of the board.
-     * @return the total hours spent by the team in ceremonies.
-     * @throws IOException If the request fails.
-     */
-    // ALTERNATIVE FUNCTION TO getTotalHoursCeremony!!
-    public double getTotalHoursCeremonyDescriptionBased(String boardId) throws IOException {
-        double totalOfHours = 0;
-        ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Ceremonies");
-        for (List list : listOfCeremonies) {
-            for (Card card : this.getListCards(list.getId())) {
-                totalOfHours += calculateTotalHoursPerCardDescriptionBased(card.getDescription());
-            }
+        public HoursPerUser(String user, double spentHours, double estimatedHours) {
+            this.user = user;
+            this.spentHours = spentHours;
+            this.estimatedHours = estimatedHours;
         }
-        return totalOfHours;
-    }
 
+        public String getUser() {
+            return user;
+        }
+
+        public double getSpentHours() {
+            return spentHours;
+        }
+
+        public double getEstimatedHours() {
+            return estimatedHours;
+        }
+
+        private void addSpentHours(double hours) {
+            this.spentHours += hours;
+        }
+
+        private void addEstimatedHours(double hours) {
+            this.estimatedHours += hours;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            HoursPerUser that = (HoursPerUser) o;
+            return Objects.equals(user, that.user);
+        }
+    }
     /**
      * @param boardId id of the board.
-     * @return the total hours spent by user.
+     * @return the total hours spent by user in a list of {@link HoursPerUser}
      * @throws IOException If the request fails.
      */
-    public double[] getTotalHoursByUser(String boardId) throws IOException {
-        double[] hourSpent = new double[3];
-        double totalOfHours = 0;
-        ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Done");
+    public ArrayList<HoursPerUser> getTotalHoursByUser(String boardId, String boardQuery, String cardQuery) throws IOException {
+        Pattern global = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
+
+        var hoursPerUser = new ArrayList<HoursPerUser>();
+        ArrayList<List> listOfCeremonies = this.getListsThatContain(boardId, boardQuery);
         for (List list : listOfCeremonies) {
             for (Card card : this.getListCards(list.getId())) {
-                // iterate over all members of the card
-                for (Member member : this.getMemberOfCard(card.getId())) {
-                    if (card.getDescription().contains("@" + member.getName())) {
-                        // TODO: Can't be solved this way. Needs improvement
-                        hourSpent[0] += calculateTotalHoursPerUser(card.getDescription(), member.getName());
-                        //totalOfHours += calculateTotalHoursPerUser(card.getDesc(), name);
+                if (!card.getName().contains(cardQuery))
+                    continue;
+
+                for (var member : this.getMemberOfCard(card.getId())) {
+                    if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
+                        hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
+                    }
+                }
+
+                Matcher match = global.matcher(card.getDescription());
+                while(match.find()) {
+                    for (var o : hoursPerUser) {
+                        if (Objects.equals(o.user, match.group(1))) {
+                            o.addSpentHours(Double.parseDouble(match.group(2)));
+                            o.addEstimatedHours(Double.parseDouble(match.group(3)));
+                        }
                     }
                 }
             }
         }
-        return hourSpent;
+        return hoursPerUser;
     }
-
-    /**
-     * @param descriptionInCard all actions in the card.
-     * @return the total hours spent by the team in the ceremony.
-     * @throws IOException If the request fails.
-     */
-    // TODO: Needs to be modified to calculate all spent hours by user.
-    public double calculateTotalHoursPerUser(String descriptionInCard, String userName) throws IOException {
-        double totalHours = 0.0;
-
-        String hours = descriptionInCard.split("@" + userName)[1].split("/")[0];
-        totalHours += Double.parseDouble(hours);
-
-        return totalHours;
-    }
-
-    /**
-     * @param boardId id of the board.
-     * @param sprintNumber number of the sprint.
-     * @param memberName name of the member.
-     * @return an array with the hours of a specific member in a specific sprint.
-     * @throws IOException If the request fails.
-     */
-    /*
-    // Function to return the hours (estimated, concluded and ongoing) of a specific member in a specific sprint
-    public double[] getMemberHours(String boardId, int sprintNumber, String memberName) throws IOException {
-        // hours[0] - Estimated hours
-        // hours[1] - Ongoing hours
-        // hours[2] - Concluded hours
-        double[] hours = new int[3];
-
-        // TODO: Get the members of a board (including global)
-        //var members = this.getMembers(boardId);
-        //Member[] members = {"Alexandre", "Dudu", "Rodrigo Guerreyro ou Manel", "Miguel"};
-
-        // Iterate over all members
-        for (Member m : members) {
-            if (m.name.equals(memberName)) {
-                hours[0] = m.getEstimatedHours();
-                hours[1] = m.getOnGoingHours();
-                hours[2] = m.getConcludedHours();
-                break;
-            }
-        }
-
-        // Returns hours list
-        return hours;
-    }
-    */
-
-
 }

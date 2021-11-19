@@ -165,7 +165,7 @@ public class TrelloAPITests {
     public void listsThatStartWith() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
 
-        var listsOfCeremonies = this.api.getListThatStartsWith(boardId, "Ceremonies");
+        var listsOfCeremonies = this.api.getListsThatStartWith(boardId, "Ceremonies");
         Assertions.assertEquals(2, listsOfCeremonies.size());
         Assertions.assertEquals("Ceremonies - Sprint 2", listsOfCeremonies.get(0).getName());
         Assertions.assertEquals("Ceremonies - Sprint 1", listsOfCeremonies.get(1).getName());
@@ -176,7 +176,7 @@ public class TrelloAPITests {
         String boardId = "614df1d076293f6b763c1c9c";
         String cardId = "617d6dad687e4e3dc1fb3a50";
         //Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
-        Assertions.assertEquals(8.25, this.api.getTotalHoursCeremonyDescriptionBased(boardId));
+        Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
     }
 
     @Test
@@ -184,7 +184,11 @@ public class TrelloAPITests {
         String boardId = "614df1d076293f6b763c1c9c";
         String cardId = "617d6dad687e4e3dc1fb3a50";
         //Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
-        Assertions.assertEquals(10.5, this.api.getTotalHoursByUser(boardId)[0]);
-        Assertions.assertEquals(10.5, this.api.getTotalHoursByUser(boardId)[1]);
+        var out = this.api.getTotalHoursByUser(boardId, "", "Sprint 1");
+        for(var o : out) {
+            System.out.println(o.getUser());
+            System.out.println(o.getSpentHours());
+            System.out.println(o.getEstimatedHours());
+        }
     }
 }

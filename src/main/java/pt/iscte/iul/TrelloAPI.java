@@ -122,19 +122,15 @@ public class TrelloAPI {
          * @return The due date.
          */
         public String getDueDate() {
-            return (this.due.equals(null)) ? "N/A" :
+            return this.due == null ? "N/A" :
                     this.due.split("T")[0]; // split by delimiter T
         }
 
         /**
          * @return The description.
          */
-        public String getDesc() {
+        public String getDescription() {
             return this.desc;
-        }
-
-        public Member getMember() {
-            return this.member;
         }
     }
 
@@ -208,27 +204,6 @@ public class TrelloAPI {
          */
         public String getId() {
             return this.id;
-        }
-
-        /**
-         * @return The estimated hours.
-         */
-        public int getEstimatedHours() {
-            return 2;
-        }
-
-        /**
-         * @return The ongoing hours.
-         */
-        public int getOnGoingHours() {
-            return 4;
-        }
-
-        /**
-         * @return The concluded hours.
-         */
-        public int getConcludedHours() {
-            return 3;
         }
     }
 
@@ -458,7 +433,7 @@ public class TrelloAPI {
         for (Card c : cards)
             // get the Sprint sprintType's description
             if (c.name.equals("Sprint " + sprintType + " - Sprint " + sprintNumber))
-                return c.getDesc();
+                return c.getDescription();
         return ""; // returns an empty String if the description doesn't exist
     }
 
@@ -595,7 +570,7 @@ public class TrelloAPI {
         ArrayList<List> listOfCeremonies = this.getListThatStartsWith(boardId, "Ceremonies");
         for (List list : listOfCeremonies) {
             for (Card card : this.getListCards(list.getId())) {
-                totalOfHours += calculateTotalHoursPerCardDescriptionBased(card.getDesc());
+                totalOfHours += calculateTotalHoursPerCardDescriptionBased(card.getDescription());
             }
         }
         return totalOfHours;
@@ -614,9 +589,9 @@ public class TrelloAPI {
             for (Card card : this.getListCards(list.getId())) {
                 // iterate over all members of the card
                 for (Member member : this.getMemberOfCard(card.getId())) {
-                    if (card.getDesc().contains("@" + member.getName())) {
+                    if (card.getDescription().contains("@" + member.getName())) {
                         // TODO: Can't be solved this way. Needs improvement
-                        hourSpent[0] += calculateTotalHoursPerUser(card.getDesc(), member.getName());
+                        hourSpent[0] += calculateTotalHoursPerUser(card.getDescription(), member.getName());
                         //totalOfHours += calculateTotalHoursPerUser(card.getDesc(), name);
                     }
                 }

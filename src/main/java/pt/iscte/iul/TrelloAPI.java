@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Duarte Casaleiro, Oleksandr Kobelyuk.
+ * @author Duarte Casaleiro, Oleksandr Kobelyuk, Miguel Romana.
  */
 public class TrelloAPI {
     private final String apiKey;
@@ -37,7 +37,6 @@ public class TrelloAPI {
         this.apiToken = apiToken;
         this.boardName = boardName;
 
-        //TODO: Function to get the id of the board giving the name of the board
         this.baseAPIUrl = "https://api.trello.com/1/members/me/boards?key=" + apiKey + "&token=" + apiToken;
 
         this.httpClient = new OkHttpClient();
@@ -95,8 +94,6 @@ public class TrelloAPI {
         }
     }
 
-    // TODO: The class Card needs more attributes for the rest of the project
-
     /**
      * Card object.
      */
@@ -136,9 +133,6 @@ public class TrelloAPI {
             return this.desc;
         }
     }
-
-    // TODO: With this Data class it's possible to access the component card, board and list.
-    //  Might be good to reduce code.
 
     /**
      * Data object.
@@ -241,7 +235,7 @@ public class TrelloAPI {
      */
     // Function for HTTP request for components
     private Response HTTPRequest(String component, String componentId, String url) throws IOException {
-        //HTTP request to access the board
+        //HTTP request to access
         Request request = new Request.Builder()
                 .header("Accept", "application/json")
                 .url(url + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
@@ -275,16 +269,16 @@ public class TrelloAPI {
      */
     // Function to return all the lists in the board
     public List[] getBoardLists(String boardId) throws IOException {
-        //HTTP request to access the board
+        //HTTP request to access the lists
         Response response = HTTPRequest("lists", boardId, boardURL);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Board
+        // map http response to the class List
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-        // map http response to the class Board
+        // map http response to the class List
         return mapper.readValue(response.body().string(), List[].class);
     }
 
@@ -311,15 +305,15 @@ public class TrelloAPI {
      */
     // Function to return all the cards in the board
     public Card[] getBoardCards(String boardId) throws IOException {
-        //HTTP request to access the board
+        //HTTP request to access all cards in the board
         Response response = HTTPRequest("cards", boardId, boardURL);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Board
+        // map http response to the class Card
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-        // map http response to the class Board
+        // map http response to the class Card
         return mapper.readValue(response.body().string(), Card[].class);
     }
 
@@ -330,16 +324,16 @@ public class TrelloAPI {
      */
     // Function to return all the cards in a specific list
     public Card[] getListCards(String listId) throws IOException {
-        //HTTP request to access the board
+        //HTTP request to access a List
         Response response = HTTPRequest("cards", listId, this.listURL);
 
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Board
+        // map http response to the class List
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-        // map http response to the class Board
+        // map http response to the class List
         return mapper.readValue(response.body().string(), Card[].class);
     }
 
@@ -350,16 +344,16 @@ public class TrelloAPI {
      */
     // Function to get actions from a specific card
     public Action[] getActionsInCard(String cardId) throws IOException {
-        //HTTP request to access the board
+        //HTTP request to access Action in a Card
         Response response = HTTPRequest("actions", cardId, cardURL);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Board
+        // map http response to the class Action
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-        // map http response to the class Board
+        // map http response to the class Action
         return mapper.readValue(response.body().string(), Action[].class);
     }
 
@@ -369,16 +363,16 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     public Member[] getMemberOfCard(String cardId) throws IOException {
-        //HTTP request to access the board
+        //HTTP request to access all Members of a Card
         Response response = HTTPRequest("members", cardId, cardURL);
         // Build ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Board
+        // map http response to the class Member
         // https://stackoverflow.com/a/26371693
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-        // map http response to the class Board
+        // map http response to the class Member
         return mapper.readValue(response.body().string(), Member[].class);
     }
 

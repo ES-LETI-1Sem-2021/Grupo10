@@ -415,7 +415,7 @@ public class TrelloAPI {
         String listName = "Ceremonies - Sprint " + sprintNumber;
 
         // get the list of all ceremonies
-        var list = this.getList("Sprint Ceremonies", boardId);
+        var list = this.getList(listName, boardId);
         var cards = this.getListCards(list.getId());
 
         // Iterate over all cards in the list
@@ -492,12 +492,10 @@ public class TrelloAPI {
     // function to get the total number of ceremonies
     public int getTotalNumberOfCeremonies(String boardId) throws IOException {
         int numberOfCeremonies = 0;
-        var lists = this.getBoardLists(boardId);
-        for (List ceremoniesList : lists) {
-            if (ceremoniesList.getName().startsWith("Ceremonies")) {
-                var ceremoniesListCards = this.getListCards(ceremoniesList.id);
-                numberOfCeremonies += ceremoniesListCards.length;
-            }
+        var ceremoniesLists = this.getListThatStartsWith(boardId, "Ceremonies");
+        for (List ceremoniesList : ceremoniesLists) {
+            var ceremoniesListCards = this.getListCards(ceremoniesList.id);
+            numberOfCeremonies += ceremoniesListCards.length;
         }
         return numberOfCeremonies;
     }

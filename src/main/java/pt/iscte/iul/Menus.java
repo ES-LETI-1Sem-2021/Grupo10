@@ -1,6 +1,7 @@
 package pt.iscte.iul;
 
 import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,53 +21,49 @@ import java.util.List;
  */
 
 public class Menus implements ActionListener {
-
     private final JFrame frame;
     private final String boardID;
-    private final JMenuBar mb;
-    private final GitHubAPI gapi;
-    private final TrelloAPI tapi;
+    private final JMenuBar menuBar;
+    private final GitHubAPI gitHubAPI;
+    private final TrelloAPI trelloAPI;
     private JMenuItem[] optionsMenus;
-    private final List<itemCard<TrelloAPI.Card>> arrayCards= new ArrayList<>();
-    private final List<itemCard<GitHubAPI.Collaborators>> arrayColabs = new ArrayList<>();
+    private final List<ItemCard<TrelloAPI.Card>> arrayCards = new ArrayList<>();
+    private final List<ItemCard<GitHubAPI.Collaborators>> arrayColabs = new ArrayList<>();
 
 
     /**
      * Constructor method to inicialize the variables in order to create the menus.
      *
-     * @author Rodrigo Guerreiro
-     * @param frame The frame where the menus will be attached on.
-     * @param gapi Instance of GitHub Api.
-     * @param tapi Instance of Trello Api.
+     * @param frame   The frame where the menus will be attached on.
+     * @param gitHubAPI    Instance of GitHub Api.
+     * @param trelloAPI    Instance of Trello Api.
      * @param boardID The ID of the board to get the lists and cards.
+     * @throws IOException
+     * @author Rodrigo Guerreiro
      */
-
-    public Menus(JFrame frame, GitHubAPI gapi, TrelloAPI tapi, String boardID) {
+    public Menus(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI, String boardID) throws IOException {
         this.frame = frame;
-        this.gapi = gapi;
-        this.tapi = tapi;
+        this.gitHubAPI = gitHubAPI;
+        this.trelloAPI = trelloAPI;
 
         this.boardID = boardID;
 
-        this.mb = new JMenuBar();
+        this.menuBar = new JMenuBar();
 
-        try{
-            optionsMenus();
-            gitMenus();
-            listsMenus();
-       }catch (IOException e){
-           e.printStackTrace();
-       }
-        this.frame.setJMenuBar(mb);
+        optionsMenus();
+        gitMenus();
+        listsMenus();
+
+        this.frame.setJMenuBar(menuBar);
     }
 
     /**
      * Creates the option's menu with all of its submenus.
      * Stores in an array with the following content:
-     *  - optionsMenus[Default_screen, clear_userData, logout]
+     * - optionsMenus[Default_screen, clear_userData, logout]
+     *
      * @author Rodrigo Guerreiro
      */
-
     private void optionsMenus() {
         JMenu options = new JMenu("Options");
         this.optionsMenus = new JMenuItem[3];
@@ -74,7 +71,7 @@ public class Menus implements ActionListener {
         JMenuItem defaultScreen = new JMenuItem("Home Screen");
         defaultScreen.addActionListener(this);
         options.add(defaultScreen);
-        this.optionsMenus[0]=defaultScreen;
+        this.optionsMenus[0] = defaultScreen;
 
         JMenuItem clearCache = new JMenuItem("Clear data file");
         clearCache.addActionListener(this);
@@ -86,8 +83,7 @@ public class Menus implements ActionListener {
         options.add(logout);
         this.optionsMenus[2] = logout;
 
-        mb.add(options);
-
+        menuBar.add(options);
     }
 
     /**
@@ -96,19 +92,16 @@ public class Menus implements ActionListener {
      * @throws IOException exception.
      * @author Rodrigo Guerreiro
      */
-    public void gitMenus() throws IOException{
+    public void gitMenus() throws IOException {
         JMenu colabs = new JMenu("Collaborators");
-        GitHubAPI.Collaborators[] cols = gapi.getCollaborators();
-        JMenuItem item;
-
-        for (GitHubAPI.Collaborators col : cols) {
-            item = getjMenuItem(col);
+        for (var col : gitHubAPI.getCollaborators()) {
+            JMenuItem item = getjMenuItem(col);
 
             item.addActionListener(this);
             colabs.add(item);
-            arrayColabs.add(new itemCard<>(col,item));
+            arrayColabs.add(new ItemCard<>(col, item));
         }
-        mb.add(colabs);
+        menuBar.add(colabs);
     }
 
     /**
@@ -119,26 +112,17 @@ public class Menus implements ActionListener {
      */
     @NotNull
     private JMenuItem getjMenuItem(GitHubAPI.Collaborators col) {
-        JMenuItem item;
-        if(col.getName() == null){
-            item = new JMenuItem(col.getLogin());
-        }
-        else{
-            item = new JMenuItem(col.getName());
-        }
-        return item;
+        return col.getName() == null ? new JMenuItem(col.getLogin()) : new JMenuItem(col.getName());
     }
 
     /**
      * Um record que associa um objeto a um menuItem.
      *
      * @param object the object to associate to the menu item.
-     * @param item the item to associate to the object.
-     * @param <T> The type of object to associate to an item.
+     * @param item   the item to associate to the object.
+     * @param <T>    The type of object to associate to an item.
      */
-
-    private record itemCard<T>(T object, JMenuItem item) {
-
+    private record ItemCard<T>(T object, JMenuItem item) {
         /**
          * Getter for the menuItem.
          *
@@ -149,7 +133,6 @@ public class Menus implements ActionListener {
         }
 
         /**
-         *
          * @return object --> The object to be returned.
          */
         public T getObject() {
@@ -159,51 +142,43 @@ public class Menus implements ActionListener {
 
 
     /**
-     *
      * Function that creates a menu item for each list in the board.
      * Also creates a submenu on each item, regarding the cards on that list.
      *
      * @throws IOException exception.
      * @author Rodrigo Guerreiro
-     *
      */
-
-    private void listsMenus() throws IOException{
+    private void listsMenus() throws IOException {
         JMenu listas = new JMenu("Listas");
 
-        TrelloAPI.List[] Lists;
-        TrelloAPI.Card[] cards;
+        TrelloAPI.List[] lists = trelloAPI.getBoardLists(boardID);
 
-        Lists = tapi.getBoardLists(boardID);
-
-        if (Lists != null) {
-            for(TrelloAPI.List l : Lists){
+        if (lists != null) {
+            for (TrelloAPI.List l : lists) {
                 JMenu listMenu = new JMenu(l.getName());
-                cards = tapi.getListCards(l.getId());
+                TrelloAPI.Card[] cards = trelloAPI.getListCards(l.getId());
 
-                for (TrelloAPI.Card c : cards) {
-                    JMenuItem item2 = new JMenuItem(c.getName());
-                    arrayCards.add(new itemCard<>(c,item2));
+                for (TrelloAPI.Card card : cards) {
+                    JMenuItem item2 = new JMenuItem(card.getName());
+                    arrayCards.add(new ItemCard<>(card, item2));
                     item2.addActionListener(this);
                     listMenu.add(item2);
                 }
                 listas.add(listMenu);
             }
-        mb.add(listas);
+            menuBar.add(listas);
         }
     }
 
     /**
-     *
      * Performs an action based on which menu item was clicked.
      * If the user clicks on a collaborator item it will redirect to the GitHub page.
      * If the user clicks on the Lists menus it will show all the lists. Each list is a submenu,
      * On each submenu it will show all the cards from that list.
      *
-     * @author Rodrigo Guerreiro
      * @param e the events that happens when the user clicks on a collaborator name.
+     * @author Rodrigo Guerreiro
      */
-
     @Override
     public void actionPerformed(ActionEvent e) {
         //redirect for the GitHub page
@@ -214,52 +189,52 @@ public class Menus implements ActionListener {
 
         //Options menus
         for (JMenuItem opm : optionsMenus) {
-            if(e.getSource()==opm){
-                optionsActionPerformed(opm);
+            if (e.getSource() == opm) {
+                try {
+                    optionsActionPerformed(opm);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
 
     }
+
     /**
      * Method that based on which menu item was clicked performs an action.
      *
-     * @author Rodrigo Guerreiro
      * @param opm the JMenuItem that was clicked.
+     * @author Rodrigo Guerreiro
      */
-    private void optionsActionPerformed(@NotNull JMenuItem opm){
-        switch(opm.getText()){
+    private void optionsActionPerformed(@NotNull JMenuItem opm) throws IOException {
+        switch (opm.getText()) {
             case "Home Screen":
                 Action.clearFrame(frame);
-                Action.homeScreen(this.frame, this.gapi, this.tapi, this.boardID);
+                Action.homeScreen(this.frame, this.gitHubAPI, this.trelloAPI, this.boardID);
+
                 break;
-            case "Clear data file" :
-                try {
-                    clearTheFile("data/user_data.txt");
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+            case "Clear data file":
+                clearTheFile("data/user_data.txt");
+
                 break;
             case "Logout":
-                try {
-                    clearTheFile("data/user_data.txt");
-                    this.frame.dispose();
-                    new HomeUI();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                clearTheFile("data/user_data.txt");
+                this.frame.dispose();
+                new HomeUI();
+
                 break;
-            default: break;
+            default:
+                break;
         }
     }
-
 
     /**
      * Method that based on which menu item was clicked show the trello card on the frame.
      *
-     * @author Rodrigo Guerreiro
      * @param e action event.
+     * @author Rodrigo Guerreiro
      */
-    private void listsActionPerformed(ActionEvent e){
+    private void listsActionPerformed(ActionEvent e) {
         this.arrayCards.stream().filter(carditemCard -> e.getSource() == carditemCard.getItem())
                 .forEach(carditemCard -> new CardUI(carditemCard.getObject(), this.frame));
     }
@@ -267,26 +242,27 @@ public class Menus implements ActionListener {
     /**
      * Method that based on which menu item was clicked redirects to the person's GitHub page.
      *
-     * @author Rodrigo Guerreiro
      * @param e action event.
+     * @author Rodrigo Guerreiro
      */
-    private void gitActionPerformed(ActionEvent e){
+    private void gitActionPerformed(ActionEvent e) {
         this.arrayColabs.stream().filter(collaboratorsitem -> e.getSource() == collaboratorsitem.getItem())
                 .forEach(collaboratorsitem -> {
-            try {
-                Desktop.getDesktop().browse(new URL(collaboratorsitem.getObject().getProfile()).toURI());
-            } catch (IOException | URISyntaxException ex) {
-                ex.printStackTrace();
-            }
-        });
+                    try {
+                        Desktop.getDesktop().browse(new URL(collaboratorsitem.getObject().getProfile()).toURI());
+                    } catch (IOException | URISyntaxException ex) {
+                        ex.printStackTrace();
+                    }
+                });
     }
 
     /**
      * Method that clear the content of a file.
-     * @author Rodrigo Guerreiro
+     *
+     * @param filename Input filename.
      * @throws IOException throws exception.
+     * @author Rodrigo Guerreiro
      */
-
     public static void clearTheFile(String filename) throws IOException {
         FileWriter fwOb = new FileWriter(filename, false);
         PrintWriter pwOb = new PrintWriter(fwOb, false);
@@ -294,5 +270,4 @@ public class Menus implements ActionListener {
         pwOb.close();
         fwOb.close();
     }
-
 }

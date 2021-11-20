@@ -9,12 +9,12 @@ public class DataReaderTests {
 
     @Test
     public void testDataReaderGit() throws IOException{
-        String[] string = {Encoding.Decode("test_line1"), Encoding.Decode("test_line2"), Encoding.Decode("test_line3")};
+        String[] string = {Encoding.decode("test_line1"), Encoding.decode("test_line2"), Encoding.decode("test_line3")};
         Assertions.assertArrayEquals(string,DataReader.getUserGitData("test_files/data_reader_test.txt"));
     }
     @Test
     public void testDataReaderTrello() throws IOException{
-        String[] string = {Encoding.Decode("test_line4"), Encoding.Decode("test_line5"), Encoding.Decode("test_line6")};
+        String[] string = {Encoding.decode("test_line4"), Encoding.decode("test_line5"), Encoding.decode("test_line6")};
         Assertions.assertArrayEquals(string,DataReader.getUserTrelloData("test_files/data_reader_test.txt"));
     }
 }

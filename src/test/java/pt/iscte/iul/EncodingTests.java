@@ -1,7 +1,9 @@
 package pt.iscte.iul;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +23,7 @@ public class EncodingTests {
     @Test
     public void readmeEncodeDecode() throws IOException {
         String readme = api.getFile("master", "/README.md");
-        String encoded = Encoding.Encode(readme);
-        Assertions.assertEquals(readme, Encoding.Decode(encoded));
+        String encoded = Encoding.encode(readme);
+        Assertions.assertEquals(readme, Encoding.decode(encoded));
     }
 }

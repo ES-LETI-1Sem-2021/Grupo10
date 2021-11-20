@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
-import javax.swing.text.TabExpander;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Duarte Casaleiro.
@@ -216,6 +215,7 @@ public class TrelloAPI {
      * @param listName name of the list.
      * @param boardId  board id.
      * @return the list in the board identified by the board id.
+     *
      */
     // Function to return a specific list in the board
     public List getList(String listName, String boardId) throws IOException {

@@ -1,12 +1,12 @@
 package pt.iscte.iul;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
 
 
 /**
@@ -15,39 +15,27 @@ import org.commonmark.renderer.html.HtmlRenderer;
  * @author Rodrigo Guerreiro.
  */
 public class Action {
-
-
-
-
-
-
     /**
-     *
      * Function that does everything.
      * Connects the UI's to the api's.
      *
-     * @param frame The frame to attach the info.
-     * @param  user_git_info String array with[git_owner, git_repo, git_token]
-     * @param user_trello_info String array with [trello_name, trello_key, trello_token]
-     * @param flag flag == 1 if it is needed to scale the window size, any number otherwise.
+     * @param frame            The frame to attach the info.
+     * @param userGitInfo    String array with[git_owner, git_repo, git_token]
+     * @param userTrelloInfo String array with [trello_name, trello_key, trello_token]
+     * @param flag             flag == 1 if it is needed to scale the window size, any number otherwise.
+     * @throws IOException
      * @author Rodrigo Guerreiro
-     *
      */
-    public static void do_action(JFrame frame, String[] user_git_info, String[] user_trello_info, int flag){
-        var gitApi = new GitHubAPI(user_git_info[0],user_git_info[1],user_git_info[2]);
-        var trelloAPI = new TrelloAPI(user_trello_info[0],user_trello_info[1],user_trello_info[2]);
+    public static void doAction(JFrame frame, String[] userGitInfo, String[] userTrelloInfo, int flag) throws IOException {
+        var gitApi = new GitHubAPI(userGitInfo[0], userGitInfo[1], userGitInfo[2]);
+        var trelloAPI = new TrelloAPI(userTrelloInfo[0], userTrelloInfo[1], userTrelloInfo[2]);
 
         String boardID = null;
-        try {
-            TrelloAPI.Board[] boards = trelloAPI.getBoards();
-            for (TrelloAPI.Board b: boards) {
-                if(b.getName().equals(user_trello_info[0])){
-                    boardID = b.getId();
-                }
+        TrelloAPI.Board[] boards = trelloAPI.getBoards();
+        for (TrelloAPI.Board b : boards) {
+            if (b.getName().equals(userTrelloInfo[0])) {
+                boardID = b.getId();
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         clearFrame(frame);
@@ -55,27 +43,24 @@ public class Action {
         new Menus(frame, gitApi, trelloAPI, boardID);
 
         // aumenta o tamanho do ecra apenas usado a primeira vez que esta função é executada
-        if(flag == 1) {
+        if (flag == 1) {
             frame.setLocation(0, 0);
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             frame.setSize(screenSize.width, screenSize.height - 100);
         }
         //if (dataInicio == null) throw new AssertionError();
         homeScreen(frame, gitApi, trelloAPI, boardID);
-
     }
 
     /**
-     *
      * Function that calls another function in order to save the user data in a .txt file
      *
-     * @param user_git_info info needed for git api.
-     * @param user_trello_info info needed for trello api.
+     * @param userGitInfo    info needed for git api.
+     * @param userTrelloInfo info needed for trello api.
      * @author Rodrigo Guerreiro
      */
-
-    public static void save_data(String[] user_git_info, String[] user_trello_info) {
-        DataSaver.save(user_git_info,user_trello_info, "data/user_data.txt");
+    public static void saveData(String[] userGitInfo, String[] userTrelloInfo) {
+        DataSaver.save(userGitInfo, userTrelloInfo, "data/user_data.txt");
     }
 
     /**
@@ -95,11 +80,11 @@ public class Action {
     /**
      * Function that clear every thing that is on the frame at the moment
      *
-     * @author Rodrigo Guerreiro
      * @param frame the JFrame that the project is based on
+     * @author Rodrigo Guerreiro
      */
 
-    public static void clearFrame(JFrame frame){
+    public static void clearFrame(JFrame frame) {
         frame.getContentPane().removeAll();
         frame.revalidate();
         frame.repaint();
@@ -107,44 +92,28 @@ public class Action {
 
     /**
      * Function that shows the default information on the screen.
+     *
      * @param frame the frame to show the info.
-     * @param gapi the github api instance.
-     * @param tapi the trello api instance.
+     * @param gitHubAPI  the github api instance.
+     * @param trelloAPI  the trello api instance.
+     * @throws IOException
      * @author Rodrigo Guerreiro
      */
-    public static void homeScreen(JFrame frame, GitHubAPI gapi, TrelloAPI tapi, String boardID){
-        GitHubAPI.Date dataInicio = null;
-        String readme="";
-        try {
-            dataInicio = gapi.getStartTime();
-            readme = gapi.getFile("master", "/README.md");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void homeScreen(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI, String boardID) throws IOException {
+        GitHubAPI.Date dataInicio = gitHubAPI.getStartTime();
+        String readme = gitHubAPI.getFile("master", "/README.md");
 
-        String dataInicio_toLabel = null;
-        if (dataInicio != null) {
-            dataInicio_toLabel = dataInicio.getDay() + "-" + dataInicio.getMonth() + "-" + dataInicio.getYear();
-        }
         //Label com a data de inicio do trabalho
-        JLabel labelData = new JLabel("Project's start date: " + dataInicio_toLabel);
-        labelData.setBounds(100,50,250,30);
+        JLabel labelData = new JLabel("Project's start date: " + dataInicio.toString());
+        labelData.setBounds(100, 50, 250, 30);
         frame.add(labelData);
 
         //TODO arranjar forma de meter o nome do projeto
 
         //Label com o nome do projeto (nome do repo)
-        JLabel labelProjName = null;
-        try {
-            labelProjName = new JLabel("Project's name: " + tapi.getBoard(boardID).getName());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (labelProjName != null) {
-            labelProjName.setBounds(400, 50 , 300, 30);
-        }
+        JLabel labelProjName = new JLabel("Project's name: " + trelloAPI.getBoard(boardID).getName());
+        labelProjName.setBounds(400, 50, 300, 30);
         frame.add(labelProjName);
-
 
         //Print do readme no ecrã
         JEditorPane edt = new JEditorPane();
@@ -152,10 +121,9 @@ public class Action {
         edt.setText(convertMarkdownToHTML(readme));
         edt.setEditable(false);
         edt.setVisible(true);
-        edt.setBounds(100,100,500,600);
+        edt.setBounds(100, 100, 500, 600);
 
         frame.add(edt);
         frame.setVisible(true);
     }
-
 }

@@ -13,60 +13,56 @@ import java.util.Scanner;
 public class DataReader {
 
     /**
-     *  This function reads the data saved in the .txt file regarding the GitHub api.
-     *  And returns an array with that data.
+     * This function reads the data saved in the .txt file regarding the GitHub api.
+     * And returns an array with that data.
      *
      * @param data the name of the file to read the info.
      * @return user_git_info. An array with the data saved in the .txt file, regarding the GitHUb api.
      * @author Rodrigo Guerreiro
-     *
      */
-
     public static String[] getUserGitData(String data) {
-        String[] user_git_info = {"", "", ""};
+        String[] userGitInfo = {"", "", ""};
         try {
             File file = new File(data);
             Scanner sc = new Scanner(file);
-            user_git_info[0] = Encoding.Decode(sc.nextLine());
-            user_git_info[1] = Encoding.Decode(sc.nextLine());
-            user_git_info[2] = Encoding.Decode(sc.nextLine());
+            userGitInfo[0] = Encoding.decode(sc.nextLine());
+            userGitInfo[1] = Encoding.decode(sc.nextLine());
+            userGitInfo[2] = Encoding.decode(sc.nextLine());
             sc.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        return user_git_info;
+        return userGitInfo;
     }
 
 
     /**
+     * This function reads the data saved in the .txt file regarding the Trello api.
+     * And returns an array with that data.
      *
-     *  This function reads the data saved in the .txt file regarding the Trello api.
-     *  And returns an array with that data.
-     *
-     *  @param data the name of the file to read the info.
-     *  @return user_trello_info. An array with the data saved in the .txt file, regarding the Trello api.
-     *  @author Rodrigo Guerreiro
-     *
+     * @param data the name of the file to read the info.
+     * @return user_trello_info. An array with the data saved in the .txt file, regarding the Trello api.
+     * @throws FileNotFoundException
+     * @author Rodrigo Guerreiro
      */
-    public static String[] getUserTrelloData(String data) {
-        String[] user_trello_info = {"", "", ""};
-        try {
-            File file = new File(data);
-            Scanner sc = new Scanner(file);
+    public static String[] getUserTrelloData(String data) throws FileNotFoundException {
+        String[] userTrelloInfo = {"", "", ""};
 
-            String foo = sc.nextLine();
-            foo = sc.nextLine();
-            foo = sc.nextLine();
-            user_trello_info[0] = Encoding.Decode(sc.nextLine());
-            user_trello_info[1] = Encoding.Decode(sc.nextLine());
-            user_trello_info[2] = Encoding.Decode(sc.nextLine());
-            sc.close();
+        File file = new File(data);
+        Scanner sc = new Scanner(file);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return user_trello_info;
+        sc.nextLine();
+        sc.nextLine();
+        sc.nextLine();
+
+        userTrelloInfo[0] = Encoding.decode(sc.nextLine());
+        userTrelloInfo[1] = Encoding.decode(sc.nextLine());
+        userTrelloInfo[2] = Encoding.decode(sc.nextLine());
+
+        sc.close();
+
+        return userTrelloInfo;
     }
 }
 

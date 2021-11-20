@@ -448,8 +448,8 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId    id of the board.
-     * @param query name present in the list name.
+     * @param boardId id of the board.
+     * @param query   name present in the list name.
      * @return an array of all the lists where the name contains with a specific string.
      * @throws IOException If the request fails.
      */
@@ -495,8 +495,8 @@ public class TrelloAPI {
         /**
          * Class to get all hours spent and estimated by user.
          *
-         * @param user Member.
-         * @param spentHours spent hours.
+         * @param user           Member.
+         * @param spentHours     spent hours.
          * @param estimatedHours estimated hours.
          */
         public HoursPerUser(String user, double spentHours, double estimatedHours) {
@@ -548,10 +548,11 @@ public class TrelloAPI {
             return Objects.equals(user, that.user);
         }
     }
+
     /**
-     * @param boardId id of the board.
+     * @param boardId    id of the board.
      * @param boardQuery name present on the list name.
-     * @param cardQuery name present on the card name.
+     * @param cardQuery  name present on the card name.
      * @return the total hours spent by user in a list of {@link HoursPerUser}
      * @throws IOException If the request fails.
      */
@@ -572,7 +573,7 @@ public class TrelloAPI {
                 }
 
                 Matcher match = global.matcher(card.getDescription());
-                while(match.find()) {
+                while (match.find()) {
                     for (var o : hoursPerUser) {
                         if (Objects.equals(o.user, match.group(1))) {
                             o.addSpentHours(Double.parseDouble(match.group(2)));

@@ -46,7 +46,7 @@ public class CardUI {
 
         JEditorPane edt = new JEditorPane();
         edt.setContentType("text/html");
-        edt.setText(Action.convertMarkdownToHTML(card.getDesc()));
+        edt.setText(Action.convertMarkdownToHTML(card.getDescription()));
         edt.setEditable(false);
         edt.setVisible(true);
         edt.setBounds(75, 100, 500, 600);

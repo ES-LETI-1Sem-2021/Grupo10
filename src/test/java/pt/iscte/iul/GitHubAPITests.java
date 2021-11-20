@@ -26,7 +26,7 @@ public class GitHubAPITests {
 
         Assertions.assertEquals(5, collaborators.length);
 
-        var names = new String[] {"Olek", null, "Duarte", "Miguel", "Rodrigo Guerreiro"};
+        var names = new String[]{"Olek", null, "Duarte", "Miguel", "Rodrigo Guerreiro"};
         for (int i = 0; i < collaborators.length; i++) {
             Assertions.assertEquals(names[i], collaborators[i].getName());
         }
@@ -52,12 +52,12 @@ public class GitHubAPITests {
                 > - Nome do projeto e sua data de início
                 - Datas de ínicio e fim dos sprints
                 """;
-        Assertions.assertEquals(readme, this.api.getFile("master","/README.md"));
+        Assertions.assertEquals(readme, this.api.getFile("master", "/README.md"));
     }
 
     @Test
     public void noFileTest() throws IOException {
-        Assertions.assertEquals("404: Not Found", this.api.getFile("master","/a/README.md"));
+        Assertions.assertEquals("404: Not Found", this.api.getFile("master", "/a/README.md"));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class GitHubAPITests {
 
         Assertions.assertEquals(4, branches.length);
 
-        var names = new String[] {"github_api", "master", "trello_api", "ui_test"};
+        var names = new String[]{"github_api", "master", "trello_api", "ui_test"};
         for (int i = 0; i < branches.length; i++) {
             Assertions.assertEquals(names[i], branches[i].getName());
         }

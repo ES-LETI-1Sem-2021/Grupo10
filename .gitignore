@@ -1,4 +1,5 @@
 .idea
 /target
-/data
-*.txt
+data/user_data.txt
+token.txt
+tokens.txt

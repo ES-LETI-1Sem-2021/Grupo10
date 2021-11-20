@@ -1,0 +1,2 @@
+just a placeholder for the data directory because it is necessary to have this directory in order
+for the program to work.

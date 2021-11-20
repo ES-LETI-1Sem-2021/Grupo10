@@ -166,6 +166,10 @@ public class GitHubAPI {
         public String getName() {
             return name;
         }
+
+        private void setName(String name) {
+            this.name = name;
+        }
     }
 
     /**
@@ -188,10 +192,10 @@ public class GitHubAPI {
                     new Request.Builder().url("https://api.github.com/users/" + collaborator.login).build()
             ).execute();
 
-            collaborator.name = this.mapper.readValue(
+            collaborator.setName(this.mapper.readValue(
                     Objects.requireNonNull(resp.body()).string(),
                     User.class
-            ).getName();
+            ).getName());
         }
 
         return mapped;

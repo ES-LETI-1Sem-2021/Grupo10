@@ -174,21 +174,22 @@ public class TrelloAPITests {
     @Test
     public void numberOfHoursCeremony() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
-        String cardId = "617d6dad687e4e3dc1fb3a50";
-        //Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
         Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
     }
 
     @Test
     public void numberOfHoursPerUser() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
-        String cardId = "617d6dad687e4e3dc1fb3a50";
-        //Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
+
         var out = this.api.getTotalHoursByUser(boardId, "", "Sprint 1");
-        for(var o : out) {
-            System.out.println(o.getUser());
-            System.out.println(o.getSpentHours());
-            System.out.println(o.getEstimatedHours());
+        String[] users = new String[]{"rfgoo_iscte", "mamra2", "duartecasaleiro", "oleksandrkobelyuk"};
+        Double[] spent = new Double[]{14.0, 8.0, 7.0, 3.0};
+        Double[] estimated = new Double[]{14.0, 8.0, 7.0, 3.0};
+
+        for (int i = 0; i < out.size(); i++) {
+            Assertions.assertEquals(users[i], out.get(i).getUser());
+            Assertions.assertEquals(spent[i], out.get(i).getSpentHours());
+            Assertions.assertEquals(estimated[i], out.get(i).getEstimatedHours());
         }
     }
 }

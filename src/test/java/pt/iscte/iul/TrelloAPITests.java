@@ -48,7 +48,7 @@ public class TrelloAPITests {
     @Test
     public void numberOfLists() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
-        Assertions.assertEquals(6, this.api.getBoardLists(boardId).length);
+        Assertions.assertEquals(9, this.api.getBoardLists(boardId).length);
     }
 
     @Test
@@ -96,43 +96,95 @@ public class TrelloAPITests {
     @Test
     //TODO: Beautify the descriptions of the Sprint Ceremonies
     public void sprintCeremonyDescription() throws IOException {
-        String planningDescription = "#Planeamento realizado\n" +
-                "- Identificação do Product Backlog;\n" +
-                "- Definida a duração do Sprint (3 semanas);\n" +
-                "- Definição de Sprint Backlog;\n" +
-                "- Definidas as datas das Sprint Retrospectives e Sprint Reviews (30 de outubro);\n" +
-                "- Discussão sobre o design e arquitetura do trabalho.\n" +
-                "\n" +
-                "`Iniciado às 16:44 do dia 9 de outubro`";
+        String planningDescription = """
+                #Planeamento realizado
+                - Identificação do Product Backlog;
+                - Definida a duração do Sprint (3 semanas);
+                - Definição de Sprint Backlog;
+                - Definidas as datas das Sprint Retrospectives e Sprint Reviews (30 de outubro);
+                - Discussão sobre o design e arquitetura do trabalho.
+
+                `Iniciado às 16:44 do dia 9 de outubro`
+
+                @global 3/3""";
         Assertions.assertEquals(planningDescription,
                 this.api.getCeremonyDescription("614df1d076293f6b763c1c9c", "Planning", 1));
 
-        String reviewDescription = "Todos os objetivos (Goals) propostos no Sprint Planning foram implementados com sucesso. Daqui saiu a versão 0.1 do trabalho.\n" +
-                "## Este Sprint teve como resultados:\n" +
-                "- Uma GUI funcional, onde é possivel observar:\n" +
-                "> - O ficheiro ([README.md](https://github.com/Roguezilla/ES-LETI-1Sem-2021-Grupo10#readme))\n" +
-                "> - Os colaboradores (acedendo ainda às suas páginas do GitHub)\n" +
-                "> - Nome do projeto e sua data de início\n" +
-                "- Datas de ínicio e fim dos sprints";
+        String reviewDescription = """
+                Todos os objetivos (Goals) propostos no Sprint Planning foram implementados com sucesso. Daqui saiu a versão 0.1 do trabalho.
+                ## Este Sprint teve como resultados:
+                - Uma GUI funcional, onde é possivel observar:
+                > - O ficheiro ([README.md](https://github.com/Roguezilla/ES-LETI-1Sem-2021-Grupo10#readme))
+                > - Os colaboradores (acedendo ainda às suas páginas do GitHub)
+                > - Nome do projeto e sua data de início
+                - Datas de ínicio e fim dos sprints
+
+                @global 1/1""";
         Assertions.assertEquals(reviewDescription,
                 this.api.getCeremonyDescription("614df1d076293f6b763c1c9c", "Review", 1));
 
-        String retrospectiveDescription = "# Críticas positivas:\n" +
-                "- Estimativa da duração do sprint\n" +
-                "- Organização do trabalho a fazer\n" +
-                " \n" +
-                "\n" +
-                "# Críticas negativas:\n" +
-                "- Estimativa da duração das tarefas\n" +
-                "- Desequilíbrio na distribuição das tarefas\n" +
-                "(demasiados cartões para a GUI e poucos para a API do Trello)\n" +
-                "\n" +
-                "# A melhorar:\n" +
-                "- Estimar melhor a duração de cada tarefa\n" +
-                "- Distribuir melhor o trabalho\n" +
-                "\n";
+        String retrospectiveDescription = """
+                # Críticas positivas:
+                - Estimativa da duração do sprint
+                - Organização do trabalho a fazer
+
+                # Críticas negativas:
+                - Estimativa da duração das tarefas
+                - Desequilíbrio na distribuição das tarefas
+                (demasiados cartões para a GUI e poucos para a API do Trello)
+
+                # A melhorar:
+                - Estimar melhor a duração de cada tarefa
+                - Distribuir melhor o trabalho
+
+                @global 1/1""";
         Assertions.assertEquals(retrospectiveDescription,
                 this.api.getCeremonyDescription("614df1d076293f6b763c1c9c", "Retrospective", 1));
     }
 
+    @Test
+    public void totalNumberOfCeremonies() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        int totalNumberOfCeremonies = this.api.getTotalNumberOfCeremonies(boardId);
+        Assertions.assertEquals(12, totalNumberOfCeremonies);
+    }
+
+    @Test
+    public void totalNumberOfCeremoniesPerSprint() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        int totalNumberOfCeremonies = this.api.getTotalNumberOfCeremoniesPerSprint(boardId, 2);
+        Assertions.assertEquals(5, totalNumberOfCeremonies);
+    }
+
+    @Test
+    public void listsThatStartWith() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+
+        var listsOfCeremonies = this.api.getListsThatStartWith(boardId, "Ceremonies");
+        Assertions.assertEquals(3, listsOfCeremonies.size());
+        Assertions.assertEquals("Ceremonies - Sprint 3", listsOfCeremonies.get(0).getName());
+        Assertions.assertEquals("Ceremonies - Sprint 2", listsOfCeremonies.get(1).getName());
+    }
+
+    @Test
+    public void numberOfHoursCeremony() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+        Assertions.assertEquals(9.25, this.api.getTotalHoursCeremony(boardId));
+    }
+
+    @Test
+    public void numberOfHoursPerUser() throws IOException {
+        String boardId = "614df1d076293f6b763c1c9c";
+
+        var out = this.api.getTotalHoursByUser(boardId, "", "Sprint 1");
+        String[] users = new String[]{"rfgoo_iscte", "mamra2", "duartecasaleiro", "oleksandrkobelyuk"};
+        Double[] spent = new Double[]{14.0, 8.0, 7.0, 3.0};
+        Double[] estimated = new Double[]{14.0, 8.0, 7.0, 3.0};
+
+        for (int i = 0; i < out.size(); i++) {
+            Assertions.assertEquals(users[i], out.get(i).getUser());
+            Assertions.assertEquals(spent[i], out.get(i).getSpentHours());
+            Assertions.assertEquals(estimated[i], out.get(i).getEstimatedHours());
+        }
+    }
 }

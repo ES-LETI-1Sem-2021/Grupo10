@@ -135,50 +135,6 @@ public class TrelloAPI {
     }
 
     /**
-     * Data object.
-     */
-    public static class Data {
-        private String text;
-
-        /**
-         * @return The text.
-         */
-        public String getText() {
-            return this.text;
-        }
-    }
-
-    /**
-     * Action object.
-     */
-    public static class Action {
-        private String id;
-        private String text;
-        private Data data;
-
-        /**
-         * @return The id.
-         */
-        public String getId() {
-            return this.id;
-        }
-
-        /**
-         * @return The text.
-         */
-        public String getText() {
-            return this.text;
-        }
-
-        /**
-         * @return The Data.
-         */
-        public Data getData() {
-            return this.data;
-        }
-    }
-
-    /**
      * Member object.
      */
     public static class Member {
@@ -335,26 +291,6 @@ public class TrelloAPI {
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
         // map http response to the class List
         return mapper.readValue(response.body().string(), Card[].class);
-    }
-
-    /**
-     * @param cardId id of the card.
-     * @return all actions in the card identified by the card id.
-     * @throws IOException If the request fails.
-     */
-    // Function to get actions from a specific card
-    public Action[] getActionsInCard(String cardId) throws IOException {
-        //HTTP request to access Action in a Card
-        Response response = HTTPRequest("actions", cardId, cardURL);
-        // Build ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Action
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-
-        // map http response to the class Action
-        return mapper.readValue(response.body().string(), Action[].class);
     }
 
     /**
@@ -592,7 +528,6 @@ public class TrelloAPI {
 
         /**
          * @param hours spent hours added to the user.
-         * @throws IOException If the request fails.
          */
         private void addSpentHours(double hours) {
             this.spentHours += hours;
@@ -600,7 +535,6 @@ public class TrelloAPI {
 
         /**
          * @param hours estimated hours added to the user.
-         * @throws IOException If the request fails.
          */
         private void addEstimatedHours(double hours) {
             this.estimatedHours += hours;

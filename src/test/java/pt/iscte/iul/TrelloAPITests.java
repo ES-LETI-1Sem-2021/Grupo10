@@ -46,7 +46,7 @@ public class TrelloAPITests {
     @Test
     public void numberOfLists() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
-        Assertions.assertEquals(7, this.api.getBoardLists(boardId).length);
+        Assertions.assertEquals(9, this.api.getBoardLists(boardId).length);
     }
 
     @Test
@@ -144,21 +144,14 @@ public class TrelloAPITests {
     public void totalNumberOfCeremonies() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
         int totalNumberOfCeremonies = this.api.getTotalNumberOfCeremonies(boardId);
-        Assertions.assertEquals(10, totalNumberOfCeremonies);
+        Assertions.assertEquals(12, totalNumberOfCeremonies);
     }
 
     @Test
     public void totalNumberOfCeremoniesPerSprint() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
         int totalNumberOfCeremonies = this.api.getTotalNumberOfCeremoniesPerSprint(boardId, 2);
-        Assertions.assertEquals(3, totalNumberOfCeremonies);
-    }
-
-    @Test
-    public void numberOfActionsInCard() throws IOException {
-        String cardId = "617d6dad687e4e3dc1fb3a50";
-        System.out.println(this.api.getActionsInCard(cardId)[0].getData().getText());
-        Assertions.assertEquals(1, this.api.getActionsInCard(cardId).length);
+        Assertions.assertEquals(5, totalNumberOfCeremonies);
     }
 
     @Test
@@ -166,15 +159,15 @@ public class TrelloAPITests {
         String boardId = "614df1d076293f6b763c1c9c";
 
         var listsOfCeremonies = this.api.getListsThatStartWith(boardId, "Ceremonies");
-        Assertions.assertEquals(2, listsOfCeremonies.size());
-        Assertions.assertEquals("Ceremonies - Sprint 2", listsOfCeremonies.get(0).getName());
-        Assertions.assertEquals("Ceremonies - Sprint 1", listsOfCeremonies.get(1).getName());
+        Assertions.assertEquals(3, listsOfCeremonies.size());
+        Assertions.assertEquals("Ceremonies - Sprint 3", listsOfCeremonies.get(0).getName());
+        Assertions.assertEquals("Ceremonies - Sprint 2", listsOfCeremonies.get(1).getName());
     }
 
     @Test
     public void numberOfHoursCeremony() throws IOException {
         String boardId = "614df1d076293f6b763c1c9c";
-        Assertions.assertEquals(8.25, this.api.getTotalHoursCeremony(boardId));
+        Assertions.assertEquals(9.25, this.api.getTotalHoursCeremony(boardId));
     }
 
     @Test

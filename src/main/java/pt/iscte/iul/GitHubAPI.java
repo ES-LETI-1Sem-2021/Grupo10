@@ -26,9 +26,10 @@ public class GitHubAPI {
 
     /**
      * Base class for requesting information from the GitHub API.
-     * @param repoOwner Owner of the repository.
+     *
+     * @param repoOwner   Owner of the repository.
      * @param projectName Name of the project.
-     * @param apiKey GitHub API access key.
+     * @param apiKey      GitHub API access key.
      */
     public GitHubAPI(String repoOwner, String projectName, String apiKey) {
         this.apiKey = apiKey;
@@ -128,6 +129,7 @@ public class GitHubAPI {
             return this.name;
         }
     }
+
     /**
      * Stores relevant information about a collaborator.
      */
@@ -166,6 +168,10 @@ public class GitHubAPI {
         public String getName() {
             return name;
         }
+
+        private void setName(String name) {
+            this.name = name;
+        }
     }
 
     /**
@@ -188,10 +194,10 @@ public class GitHubAPI {
                     new Request.Builder().url("https://api.github.com/users/" + collaborator.login).build()
             ).execute();
 
-            collaborator.name = this.mapper.readValue(
+            collaborator.setName(this.mapper.readValue(
                     Objects.requireNonNull(resp.body()).string(),
                     User.class
-            ).getName();
+            ).getName());
         }
 
         return mapped;
@@ -199,7 +205,7 @@ public class GitHubAPI {
 
     /**
      * @param branch Branch name.
-     * @param path Path of file(from root) in the branch.
+     * @param path   Path of file(from root) in the branch.
      * @return File contents if it exists, otherwise '404: Not Found'.
      * @throws IOException If the request fails.
      */
@@ -235,6 +241,7 @@ public class GitHubAPI {
 
     /**
      * Function that retrieves all the repository branches.
+     *
      * @return An array of {@link Branch} objects.
      * @throws IOException If the request fails.
      */
@@ -290,6 +297,7 @@ public class GitHubAPI {
 
         /**
          * Can be empty, see "user" in {@link GitHubAPI#getCommits(String, String)}
+         *
          * @return The committer's name.
          */
         public String getCommitter() {
@@ -310,9 +318,9 @@ public class GitHubAPI {
 
         @SuppressWarnings("unchecked")
         @JsonProperty("commit")
-        private void unpackNested(Map<String,Object> commit) {
-            this.commitMessage = (String)commit.get("message");
-            Map<String,String> committer = (Map<String,String>)commit.get("committer");
+        private void unpackNested(Map<String, Object> commit) {
+            this.commitMessage = (String) commit.get("message");
+            Map<String, String> committer = (Map<String, String>) commit.get("committer");
             this.commitDate = new Date(committer.get("date"));
         }
 
@@ -332,8 +340,9 @@ public class GitHubAPI {
      *     <li>If both parameters are empty, branchName defaults to the main branch.</li>
      *     <li>If anything fails, a {@link Commits} object with no commits is returned.</li>
      * </ul>
+     *
      * @param branch Branch name.
-     * @param user The username of the user in question, can be empty.
+     * @param user   The username of the user in question, can be empty.
      * @return A {@link Commits} object.
      * @throws IOException If the request fails.
      */

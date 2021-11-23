@@ -3,10 +3,15 @@ package pt.iscte.iul;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 /**
@@ -116,14 +121,47 @@ public class Action {
         frame.add(labelProjName);
 
         //Print do readme no ecrã
-        JEditorPane edt = new JEditorPane();
-        edt.setContentType("text/html");
-        edt.setText(convertMarkdownToHTML(readme));
-        edt.setEditable(false);
-        edt.setVisible(true);
-        edt.setBounds(100, 100, 500, 600);
+        JEditorPane editorPane = new JEditorPane();
+        editorPane.setContentType("text/html");
+        //JScrollPane scrollPane = new JScrollPane(editorPane);
+        //scrollPane.setBounds(600,100,25,600);
+        //scrollPane.setAutoscrolls(true);
+        //scrollPane.setVerticalScrollBar(scrollPane.getVerticalScrollBar());
+        //scrollPane.setVisible(true);
 
-        frame.add(edt);
+        //frame.add(scrollPane);
+        //scrollPane.setVisible(true);
+        editorPane.setText(convertMarkdownToHTML(readme));
+        editorPane.setEditable(false);
+        editorPane.setVisible(true);
+        editorPane.setBounds(100, 100, 500, 600);
+
+        ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"","Sprint 1");
+        addPieChart(frame, hoursPerUsers);
+
+
+        frame.add(editorPane);
         frame.setVisible(true);
+    }
+
+    public static void addPieChart(JFrame frame, ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers){
+    DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
+    hoursPerUsers.forEach(e->{
+        dataset.setValue(e.getUser(),e.getEstimatedHours());
+    });
+        JFreeChart chart = ChartFactory.createPieChart(
+                "Hours Estimated by user for the 1st sprint",
+                dataset, true,true,false);
+        ChartPanel cp = new ChartPanel(chart);
+        cp.setBounds(500,100,100,100);
+        cp.setVisible(true);
+
+        //JFrame newFrame = new JFrame();
+        //frame.setBounds(500,100,250,250);
+        //frame.add(cp);
+        //frame.setVisible(true);
+
+
+        frame.add(cp);
     }
 }

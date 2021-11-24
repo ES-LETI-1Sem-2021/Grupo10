@@ -28,7 +28,7 @@ public class Action {
      * @param userGitInfo    String array with[git_owner, git_repo, git_token]
      * @param userTrelloInfo String array with [trello_name, trello_key, trello_token]
      * @param flag             flag == 1 if it is needed to scale the window size, any number otherwise.
-     * @throws IOException
+     * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      */
     public static void doAction(JFrame frame, String[] userGitInfo, String[] userTrelloInfo, int flag) throws IOException {
@@ -101,7 +101,7 @@ public class Action {
      * @param frame the frame to show the info.
      * @param gitHubAPI  the github api instance.
      * @param trelloAPI  the trello api instance.
-     * @throws IOException
+     * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      */
     public static void homeScreen(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI, String boardID) throws IOException {
@@ -137,31 +137,34 @@ public class Action {
         editorPane.setBounds(100, 100, 500, 600);
 
         ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"","Sprint 1");
-        addPieChart(frame, hoursPerUsers);
+        //addPieChart(frame, hoursPerUsers, boardID);
 
 
         frame.add(editorPane);
         frame.setVisible(true);
     }
 
-    public static void addPieChart(JFrame frame, ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers){
-    DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
-    hoursPerUsers.forEach(e->{
-        dataset.setValue(e.getUser(),e.getEstimatedHours());
-    });
+
+    public static void addPieChart(JFrame frame, String sprintName, String boardID, TrelloAPI trelloAPI) throws IOException {
+        ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"", sprintName);
+
+        DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
+
+        hoursPerUsers.forEach(e->{
+            dataset.setValue(e.getUser(),e.getEstimatedHours());
+        });
         JFreeChart chart = ChartFactory.createPieChart(
-                "Hours Estimated by user for the 1st sprint",
+                "Hours Estimated by user for the" + sprintName,
                 dataset, true,true,false);
         ChartPanel cp = new ChartPanel(chart);
-        cp.setBounds(500,100,100,100);
+        cp.setBounds(750,0,250,250);
         cp.setVisible(true);
 
-        //JFrame newFrame = new JFrame();
-        //frame.setBounds(500,100,250,250);
-        //frame.add(cp);
-        //frame.setVisible(true);
-
-
         frame.add(cp);
+        //JFrame newFrame = new JFrame();
+        //newFrame.setBounds(500,100,250,250);
+        //newFrame.add(cp);
+        //newFrame.setVisible(true);
+        frame.setVisible(true);
     }
 }

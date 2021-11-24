@@ -38,7 +38,7 @@ public class Menus implements ActionListener {
      * @param gitHubAPI    Instance of GitHub Api.
      * @param trelloAPI    Instance of Trello Api.
      * @param boardID The ID of the board to get the lists and cards.
-     * @throws IOException
+     * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      */
     public Menus(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI, String boardID) throws IOException {
@@ -236,7 +236,13 @@ public class Menus implements ActionListener {
      */
     private void listsActionPerformed(ActionEvent e) {
         this.arrayCards.stream().filter(carditemCard -> e.getSource() == carditemCard.getItem())
-                .forEach(carditemCard -> new CardUI(carditemCard.getObject(), this.frame));
+                .forEach(carditemCard -> {
+                    try {
+                        new CardUI(carditemCard.getObject(), this.frame, trelloAPI, boardID);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
     }
 
     /**

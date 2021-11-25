@@ -156,15 +156,25 @@ public class Action {
         JFreeChart chart = ChartFactory.createPieChart(
                 "Hours Estimated by user for the" + sprintName,
                 dataset, true,true,false);
+
         ChartPanel cp = new ChartPanel(chart);
-        cp.setBounds(750,0,250,250);
+        cp.setBounds(750, 0, 300, 250);
         cp.setVisible(true);
 
         frame.add(cp);
-        //JFrame newFrame = new JFrame();
-        //newFrame.setBounds(500,100,250,250);
-        //newFrame.add(cp);
-        //newFrame.setVisible(true);
         frame.setVisible(true);
+
+        /* TABLE
+        String[][] data = {{"Name1", "40"}, {"Name2", "40"}};
+        String[] names = {"Name1", "Name2"};
+        JTable table = new JTable(data, names);
+        table.setBounds(750,0,300,250);
+        table.setVisible(true);
+        frame.add(table);
+        frame.setVisible(true);
+
+        */
+
+
     }
 }

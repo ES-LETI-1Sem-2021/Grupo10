@@ -177,7 +177,7 @@ public class Action {
         cp.setVisible(true);
 
         ChartPanel spentCP = new ChartPanel(spentHoursChart);
-        spentCP.setBounds(1050, 0, 300, 250);
+        spentCP.setBounds(1100, 0, 300, 250);
         spentCP.setVisible(true);
 
         frame.add(cp);
@@ -207,6 +207,5 @@ public class Action {
         frame.add(table);
         frame.setVisible(true);
     }
-
 
 }

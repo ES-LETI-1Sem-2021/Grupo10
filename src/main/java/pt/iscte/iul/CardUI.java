@@ -45,9 +45,6 @@ public class CardUI extends Thread{
     private void showCardInfo() throws IOException {
         JEditorPane edt = new JEditorPane();
 
-        CardUI thread = new CardUI(card, frame, trelloAPI, boardID);
-        thread.start();
-
         this.dateLabel.setText("This card was ended at: " + this.dueDate);
         this.dateLabel.setBounds(75, 10, 350, 10);
         this.dateLabel.setVisible(true);
@@ -59,14 +56,6 @@ public class CardUI extends Thread{
         edt.setVisible(true);
         edt.setBounds(75, 100, 500, 600);
 
-        /*
-        if (this.card.getName().contains("Sprint Retrospective")) {
-            String splitedString = this.card.getName().split(" - ")[1];
-
-
-             Action.addHoursInfo(frame, splitedString, this.boardID , trelloAPI);
-        }
-         */
         this.frame.add(edt);
     }
 
@@ -79,6 +68,7 @@ public class CardUI extends Thread{
                 e.printStackTrace();
             }
         }
+        this.frame.repaint();
         System.out.println("CHARTS");
     }
 

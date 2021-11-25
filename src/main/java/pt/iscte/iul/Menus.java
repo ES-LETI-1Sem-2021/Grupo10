@@ -238,7 +238,8 @@ public class Menus implements ActionListener {
         this.arrayCards.stream().filter(carditemCard -> e.getSource() == carditemCard.getItem())
                 .forEach(carditemCard -> {
                     try {
-                        new CardUI(carditemCard.getObject(), this.frame, trelloAPI, boardID);
+                        CardUI thread = new CardUI(carditemCard.getObject(), this.frame, trelloAPI, boardID);
+                        thread.start();
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }

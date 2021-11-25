@@ -10,7 +10,7 @@ import java.io.IOException;
  *
  * @author Rodrigo Guerreiro.
  */
-public class Main {
+public class Main{
 
     /**
      * Main function to start the application.

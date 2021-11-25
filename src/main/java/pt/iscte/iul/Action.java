@@ -139,16 +139,16 @@ public class Action {
 
         addHoursInfo(frame,"",boardID,trelloAPI);
         frame.repaint();
-        frame.validate();
+
     }
 
 
     /**
      * Function that adds a pie chart to the ui as well as a table with the same information.
-     *
+     * This function, by calling the getTotalHoursByUser severely increases the processing time.
      *
      * @param frame the frame to display the table
-     * @param sprintName the name of the sprint.
+     * @param sprintName the name of the sprint blank if total.
      * @param boardID   the board id.
      * @param trelloAPI the trello instance.
      * @throws IOException throws exception

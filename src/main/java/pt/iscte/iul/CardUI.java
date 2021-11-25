@@ -59,7 +59,7 @@ public class CardUI {
         if (this.card.getName().contains("Sprint Retrospective")) {
             String splitedString = this.card.getName().split(" - ")[1];
 
-             Action.addPieChart(frame, splitedString, this.boardID , trelloAPI);
+             Action.addHoursInfo(frame, splitedString, this.boardID , trelloAPI);
         }
 
         this.frame.add(edt);

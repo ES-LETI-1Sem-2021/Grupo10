@@ -113,8 +113,6 @@ public class Action {
         labelData.setBounds(100, 50, 250, 30);
         frame.add(labelData);
 
-        //TODO arranjar forma de meter o nome do projeto
-
         //Label com o nome do projeto (nome do repo)
         JLabel labelProjName = new JLabel("Project's name: " + trelloAPI.getBoard(boardID).getName());
         labelProjName.setBounds(400, 50, 300, 30);
@@ -136,7 +134,7 @@ public class Action {
         editorPane.setVisible(true);
         editorPane.setBounds(100, 100, 500, 600);
 
-        ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"","Sprint 1");
+        //ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"","Sprint 1");
         //addPieChart(frame, hoursPerUsers, boardID);
 
 
@@ -144,8 +142,19 @@ public class Action {
         frame.setVisible(true);
     }
 
-
-    public static void addPieChart(JFrame frame, String sprintName, String boardID, TrelloAPI trelloAPI) throws IOException {
+    /**
+     * Function that adds a pie chart to the ui as well as a table with the same information.
+     *
+     *
+     * @param frame the frame to display the table
+     * @param sprintName the name of the sprint.
+     * @param boardID   the board id.
+     * @param trelloAPI the trello instance.
+     * @throws IOException throws exception
+     * @author Rodrigo Guerreiro
+     * @author Duarte Casaleiro
+     */
+    public static void addHoursInfo(JFrame frame, String sprintName, String boardID, TrelloAPI trelloAPI) throws IOException {
         ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"", sprintName);
 
         DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
@@ -154,7 +163,7 @@ public class Action {
             dataset.setValue(e.getUser(),e.getEstimatedHours());
         });
         JFreeChart chart = ChartFactory.createPieChart(
-                "Hours Estimated by user for the" + sprintName,
+                "Hours Estimated by user for the " + sprintName,
                 dataset, true,true,false);
 
         ChartPanel cp = new ChartPanel(chart);
@@ -164,17 +173,29 @@ public class Action {
         frame.add(cp);
         frame.setVisible(true);
 
-        /* TABLE
-        String[][] data = {{"Name1", "40"}, {"Name2", "40"}};
-        String[] names = {"Name1", "Name2"};
+        String[][] data = new String[hoursPerUsers.size()+1][3];
+        String[] names = {"User", "Estimated Hours","Spent Hours"};
+
+        data[0] = names;
+
+        for(int cont = 0; cont!=hoursPerUsers.size();cont++){
+            data[cont+1] = new String[]{hoursPerUsers.get(cont).getUser(),
+                                      String.valueOf(hoursPerUsers.get(cont).getEstimatedHours()),
+                                        String.valueOf(hoursPerUsers.get(cont).getSpentHours())};
+
+        }
+
+
         JTable table = new JTable(data, names);
-        table.setBounds(750,0,300,250);
+        table.setBounds(750,300,400,250);
         table.setVisible(true);
+        table.setEnabled(false);
+        table.setGridColor(Color.BLACK);
+        table.setShowGrid(true);
+
         frame.add(table);
         frame.setVisible(true);
-
-        */
-
-
     }
+
+
 }

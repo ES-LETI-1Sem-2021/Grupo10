@@ -158,19 +158,30 @@ public class Action {
         ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"", sprintName);
 
         DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
+        DefaultPieDataset<String> spentHoursDataset= new DefaultPieDataset<>();
 
         hoursPerUsers.forEach(e->{
             dataset.setValue(e.getUser(),e.getEstimatedHours());
+            spentHoursDataset.setValue(e.getUser(),e.getEstimatedHours());
         });
         JFreeChart chart = ChartFactory.createPieChart(
                 "Hours Estimated by user for the " + sprintName,
+                dataset, true,true,false);
+
+        JFreeChart spentHoursChart = ChartFactory.createPieChart(
+                "Hours Spent by user for the " + sprintName,
                 dataset, true,true,false);
 
         ChartPanel cp = new ChartPanel(chart);
         cp.setBounds(750, 0, 300, 250);
         cp.setVisible(true);
 
+        ChartPanel spentCP = new ChartPanel(spentHoursChart);
+        spentCP.setBounds(1050, 0, 300, 250);
+        spentCP.setVisible(true);
+
         frame.add(cp);
+        frame.add(spentCP);
         frame.setVisible(true);
 
         String[][] data = new String[hoursPerUsers.size()+1][3];

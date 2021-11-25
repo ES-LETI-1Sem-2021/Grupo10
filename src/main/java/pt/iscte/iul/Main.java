@@ -37,9 +37,10 @@ public class Main {
 
                 HomeUI.showFrame(frame);
                 Action.doAction(frame, git, trello, 1);
-            } else if (opc == JOptionPane.NO_OPTION) {
+            } /*else if (opc == JOptionPane.NO_OPTION) {
                 new HomeUI();
             }
+            */
         } else {
             new HomeUI();
         }

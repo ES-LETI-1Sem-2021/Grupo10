@@ -121,6 +121,7 @@ public class Action {
         //Print do readme no ecrã
         JEditorPane editorPane = new JEditorPane();
         editorPane.setContentType("text/html");
+
         //JScrollPane scrollPane = new JScrollPane(editorPane);
         //scrollPane.setBounds(600,100,25,600);
         //scrollPane.setAutoscrolls(true);
@@ -189,15 +190,16 @@ public class Action {
                 frame.add(spentCP);
                 frame.setVisible(true);
 
-                String[][] data = new String[hoursPerUsers.size() + 1][3];
-                String[] names = {"User", "Estimated Hours", "Spent Hours"};
+                String[][] data = new String[hoursPerUsers.size() + 1][4];
+                String[] names = {"User", "Estimated Hours", "Spent Hours", "Cost"};
 
                 data[0] = names;
 
                 for (int cont = 0; cont != hoursPerUsers.size(); cont++) {
                     data[cont + 1] = new String[]{hoursPerUsers.get(cont).getUser(),
                             String.valueOf(hoursPerUsers.get(cont).getEstimatedHours()),
-                            String.valueOf(hoursPerUsers.get(cont).getSpentHours())};
+                            String.valueOf(hoursPerUsers.get(cont).getSpentHours()),
+                            String.valueOf(hoursPerUsers.get(cont).getSpentHours() * 20)};
                 }
 
                 JTable table = new JTable(data, names);

@@ -26,33 +26,20 @@ public class GitHubAPITests {
 
         Assertions.assertEquals(5, collaborators.length);
 
-        var names = new String[]{"Olek", null, "Duarte", "Miguel", "Rodrigo Guerreiro"};
+        var names = new String[]{"Olek", null, "Duarte", "Miguel Romana", "Rodrigo Guerreiro"};
         for (int i = 0; i < collaborators.length; i++) {
             Assertions.assertEquals(names[i], collaborators[i].getName());
         }
     }
 
     @Test
-    public void readMe() throws IOException {
+    public void fileTest() throws IOException {
         // may be changed in the future
-        String readme = """
-                # Aplicação para monitorização e avaliação de progresso de projetos de software que seguem a abordagem SCRUM
-                ------------------------------------------
-                # Projeto desenvolvido por:
-                - Duarte Casaleiro, nº 92697
-                - Miguel Romana, nº 92688
-                - Oleksandr Kobelyuk, nº 92402
-                - Rodrigo Guerreiro, nº 92388
-                                
-                ## Sprint 1:
-                ### Este Sprint teve como resultados:
-                - Uma GUI funcional, onde é possivel observar:
-                > - O ficheiro ([README.md](https://github.com/Roguezilla/ES-LETI-1Sem-2021-Grupo10#readme))
-                > - Os colaboradores (acedendo ainda às suas páginas do GitHub)
-                > - Nome do projeto e sua data de início
-                - Datas de ínicio e fim dos sprints
+        String foo = """
+                just a placeholder for the data directory because it is necessary to have this directory in order
+                for the program to work.
                 """;
-        Assertions.assertEquals(readme, this.api.getFile("master", "/README.md"));
+        Assertions.assertEquals(foo, this.api.getFile("master", "/data/foo.txt"));
     }
 
     @Test
@@ -89,11 +76,23 @@ public class GitHubAPITests {
 
         System.out.println("Committer: " + commits.getCommitter());
         System.out.println("Number of commits: " + commits.getCommitList().size());
-        System.out.println("First commit: " + commits.getCommitList().get(0).getMessage());
-        System.out.println("First commit date: " + commits.getCommitList().get(0).getDate());
-        System.out.println("Lastest commit: " + commits.getCommitList().get(commits.getCommitList().size() - 1).getMessage());
-        System.out.println("Lastest commit date: " + commits.getCommitList().get(commits.getCommitList().size() - 1).getDate());
+        System.out.println("First commit: " + commits.getCommitList().get(0));
+        System.out.println("First commit date: " + commits.getCommitList().get(0).message());
+        System.out.println("Lastest commit: " + commits.getCommitList().get(commits.getCommitList().size() - 1).message());
+        System.out.println("Lastest commit date: " + commits.getCommitList().get(commits.getCommitList().size() - 1).date());
 
-        commits.getCommitList().forEach(commitData -> Assertions.assertNotEquals(null, commitData.getMessage()));
+        commits.getCommitList().forEach(commitData -> Assertions.assertNotEquals(null, commitData.message()));
+    }
+
+    @Test
+    public void tagTest() throws IOException {
+        var tags = api.getTags();
+
+        var names = new String[]{"Sprint_1", "DashboardSCRUM-0.2"};
+        var dates = new GitHubAPI.Date[]{new GitHubAPI.Date("2021-10-29"), new GitHubAPI.Date("2021-11-20")};
+        for (int i = 0; i < tags.size(); i++) {
+            Assertions.assertEquals(names[i], tags.get(i).name());
+            Assertions.assertEquals(dates[i], tags.get(i).date());
+        }
     }
 }

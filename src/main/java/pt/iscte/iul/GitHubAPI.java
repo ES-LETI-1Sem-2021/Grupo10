@@ -11,6 +11,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -93,6 +95,14 @@ public class GitHubAPI {
         @Override
         public String toString() {
             return formatted;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Date date = (Date) o;
+            return  Objects.equals(year, date.year) && Objects.equals(month, date.month) && Objects.equals(day, date.day);
         }
     }
 
@@ -257,20 +267,8 @@ public class GitHubAPI {
     /**
      * Stores imporant data about a commit.
      */
-    public record CommitData(Date date, String description) {
-        /**
-         * @return Commit date in a {@link Date} object.
-         */
-        public Date getDate() {
-            return date;
-        }
+    public record CommitData(Date date, String message) {
 
-        /**
-         * @return Commit message.
-         */
-        public String getMessage() {
-            return description;
-        }
     }
 
     /**
@@ -375,5 +373,102 @@ public class GitHubAPI {
         }
 
         return new Commits(user, commitBuffer);
+    }
+
+    private static class Tag {
+        private String name;
+        private String sha;
+
+        @SuppressWarnings("unchecked")
+        @JsonProperty("commit")
+        private void unpackNested(Map<String, Object> commit) {
+            this.sha = (String) commit.get("sha");
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getSha() {
+            return sha;
+        }
+    }
+
+    /**
+     * Contains relevant information about a Tag.
+     */
+    public record TagData(String name, Date date) {
+        @Override
+        public String toString() {
+            return "TagData{" +
+                    "name='" + name + '\'' +
+                    ", date=" + date +
+                    '}';
+        }
+    }
+
+    /**
+     * Retrieves the tags of the master branch.
+     * @return A list of {@link TagData}
+     * @throws IOException If a request fails.
+     */
+    public List<TagData> getTags() throws IOException {
+        var tagData = new ArrayList<TagData>();
+
+        var request = new Request.Builder()
+                .addHeader("Authorization", "Bearer " + apiKey)
+                .url(this.baseAPIUrl + "/tags").build();
+
+        Response resp = this.httpClient.newCall(request).execute();
+        var mapped = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Tag[].class);
+        for (var tag : mapped) {
+            request = new Request.Builder()
+                    .addHeader("Authorization", "Bearer " + apiKey)
+                    .url(this.baseAPIUrl + "/commits/" + tag.getSha()).build();
+
+            resp = this.httpClient.newCall(request).execute();
+            var commit = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Commit.class);
+
+            tagData.add(
+                    new TagData(
+                            tag.getName(),
+                            commit.getCommitDate()
+                    )
+            );
+        }
+
+        return tagData;
+    }
+
+    /**
+     * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV formatted string.
+     * @return A CSV formatted string.
+     * @throws IOException
+     */
+    public String commitsToCSV() throws IOException {
+        var csv = new ArrayList<String>();
+        csv.add("Contributor,Branch,Mensagem do Commit,Data do Commit (MM/DD/YYYY)\n");
+
+        String previousUser = "";
+        String previousBranch = "";
+        for (var user : this.getCollaborators()) {
+            for (var branch : this.getBranches()) {
+                var commitsForUser = this.getCommits(branch.getName(), user.getLogin());
+                for (var commit : commitsForUser.getCommitList()) {
+                    csv.add(
+                            String.format(
+                                    "%s,%s,%s,%s\n",
+                                    Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
+                                    Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
+                                    commit.message().replace(',', ' ').split("\n")[0],
+                                    commit.date().toString())
+                    );
+                    previousUser = user.getLogin();
+                    previousBranch = branch.getName();
+                }
+            }
+        }
+
+        return String.join("", csv);
     }
 }

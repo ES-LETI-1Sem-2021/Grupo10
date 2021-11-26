@@ -549,6 +549,24 @@ public class TrelloAPI {
         }
     }
 
+    private void addObjectToList(Card card, Pattern global, ArrayList<HoursPerUser> hoursPerUser ) throws IOException {
+        for (var member : this.getMemberOfCard(card.getId())) {
+            if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
+                hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
+            }
+        }
+
+        Matcher match = global.matcher(card.getDescription());
+        while (match.find()) {
+            for (var o : hoursPerUser) {
+                if (Objects.equals(o.user, match.group(1))) {
+                    o.addSpentHours(Double.parseDouble(match.group(2)));
+                    o.addEstimatedHours(Double.parseDouble(match.group(3)));
+                }
+            }
+        }
+    }
+
     /**
      * @param boardId    id of the board.
      * @param boardQuery name present on the list name.
@@ -565,22 +583,7 @@ public class TrelloAPI {
             for (Card card : this.getListCards(list.getId())) {
                 if (!card.getName().contains(cardQuery))
                     continue;
-
-                for (var member : this.getMemberOfCard(card.getId())) {
-                    if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
-                        hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
-                    }
-                }
-
-                Matcher match = global.matcher(card.getDescription());
-                while (match.find()) {
-                    for (var o : hoursPerUser) {
-                        if (Objects.equals(o.user, match.group(1))) {
-                            o.addSpentHours(Double.parseDouble(match.group(2)));
-                            o.addEstimatedHours(Double.parseDouble(match.group(3)));
-                        }
-                    }
-                }
+                addObjectToList(card, global, hoursPerUser);
             }
         }
         return hoursPerUser;

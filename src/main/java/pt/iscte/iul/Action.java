@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 
 /**
- * Classe where all the magic happens.
+ * Class where all the magic happens.
  *
  * @author Rodrigo Guerreiro.
  */

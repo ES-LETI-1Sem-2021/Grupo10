@@ -8,10 +8,12 @@ import java.util.ArrayList;
 
 public class JElements implements ActionListener {
 
-    private JFrame frame;
-    private JSpinner spinner;
-    private JButton button;
-    private ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers;
+    private final JFrame frame;
+    private final JSpinner spinner;
+    private final JButton button;
+    private final ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers;
+    private JTable table;
+    private String[][] data;
 
     public JElements(JFrame frame, ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers) {
         this.frame = frame;
@@ -46,7 +48,7 @@ public class JElements implements ActionListener {
         int totalEstimated = 0;
         int totalSpent = 0;
 
-        String[][] data = new String[hoursPerUsers.size() + 2][4];
+        this.data = new String[hoursPerUsers.size() + 2][4];
         String[] names = {"User", "Estimated Hours", "Spent Hours", "Cost (€)"};
 
         data[0] = names;
@@ -55,7 +57,7 @@ public class JElements implements ActionListener {
             data[cont + 1] = new String[]{hoursPerUsers.get(cont).getUser(),
                     String.valueOf(hoursPerUsers.get(cont).getEstimatedHours()),
                     String.valueOf(hoursPerUsers.get(cont).getSpentHours()),
-                    String.valueOf(hoursPerUsers.get(cont).getSpentHours() * (int)spinner.getValue())};
+                    String.valueOf(hoursPerUsers.get(cont).getSpentHours()*20)};
             totalEstimated += hoursPerUsers.get(cont).getEstimatedHours();
             totalSpent += hoursPerUsers.get(cont).getSpentHours();
         }
@@ -66,7 +68,7 @@ public class JElements implements ActionListener {
                 String.valueOf(totalSpent),
                 String.valueOf(totalCost)};
 
-        JTable table = new JTable(data, names);
+        this.table = new JTable(data, names);
         table.setBounds(750, 300, 400, 250);
         table.setVisible(true);
         table.setEnabled(false);
@@ -79,7 +81,17 @@ public class JElements implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(spinner.getValue());
-        addTable(this.hoursPerUsers, this.frame, this.spinner);
+
+        double totalMoney = 0;
+        int multiplier = (int)spinner.getValue();
+        for(int i =1; i !=hoursPerUsers.size()+1;i++){
+            double obj = this.hoursPerUsers.get(i-1).getSpentHours() * multiplier;
+            this.table.setValueAt(String.valueOf(obj),i,3);
+            totalMoney += obj;
+        }
+
+        this.table.setValueAt(String.valueOf(totalMoney),hoursPerUsers.size() + 1,3);
+        this.frame.repaint();
+
     }
 }

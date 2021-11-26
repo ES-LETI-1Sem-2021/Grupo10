@@ -10,6 +10,8 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -191,38 +193,8 @@ public class Action {
         frame.add(spentCP);
         frame.setVisible(true);
 
-        //Table
-        int totalEstimated = 0;
-        int totalSpent = 0;
+        new JElements(frame, hoursPerUsers);
 
-        String[][] data = new String[hoursPerUsers.size() + 2][4];
-        String[] names = {"User", "Estimated Hours", "Spent Hours", "Cost (€)"};
-
-        data[0] = names;
-
-        for (int cont = 0; cont != hoursPerUsers.size(); cont++) {
-            data[cont + 1] = new String[]{hoursPerUsers.get(cont).getUser(),
-                    String.valueOf(hoursPerUsers.get(cont).getEstimatedHours()),
-                    String.valueOf(hoursPerUsers.get(cont).getSpentHours()),
-                    String.valueOf(hoursPerUsers.get(cont).getSpentHours() * 20)};
-            totalEstimated += hoursPerUsers.get(cont).getEstimatedHours();
-            totalSpent += hoursPerUsers.get(cont).getSpentHours();
-        }
-
-        int totalCost = totalSpent * 20;
-
-        data[hoursPerUsers.size() + 1] = new String[]{"Total", String.valueOf(totalEstimated),
-                String.valueOf(totalSpent),
-                String.valueOf(totalCost)};
-
-        JTable table = new JTable(data, names);
-        table.setBounds(750, 300, 400, 250);
-        table.setVisible(true);
-        table.setEnabled(false);
-        table.setGridColor(Color.BLACK);
-        table.setShowGrid(true);
-
-        frame.add(table);
-        frame.setVisible(true);
     }
+
 }

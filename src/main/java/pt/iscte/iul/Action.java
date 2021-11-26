@@ -137,11 +137,16 @@ public class Action {
         frame.add(editorPane);
         frame.setVisible(true);
 
-        addHoursInfo(frame,"",boardID,trelloAPI);
-        frame.repaint();
-
+        // Threading
+        SwingUtilities.invokeLater(() -> {
+            try {
+                addHoursInfo(frame,"",boardID,trelloAPI);
+                frame.repaint();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
-
 
     /**
      * Function that adds a pie chart to the ui as well as a table with the same information.
@@ -158,53 +163,51 @@ public class Action {
     public static void addHoursInfo(JFrame frame, String sprintName, String boardID, TrelloAPI trelloAPI) throws IOException {
         ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"", sprintName);
 
-        DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
-        DefaultPieDataset<String> spentHoursDataset= new DefaultPieDataset<>();
+                DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
+                DefaultPieDataset<String> spentHoursDataset= new DefaultPieDataset<>();
 
-        hoursPerUsers.forEach(e->{
-            dataset.setValue(e.getUser(),e.getEstimatedHours());
-            spentHoursDataset.setValue(e.getUser(),e.getEstimatedHours());
-        });
-        JFreeChart chart = ChartFactory.createPieChart(
-                "Hours Estimated by user " + sprintName,
-                dataset, true,true,false);
+                hoursPerUsers.forEach(e->{
+                    dataset.setValue(e.getUser(),e.getEstimatedHours());
+                    spentHoursDataset.setValue(e.getUser(),e.getEstimatedHours());
+                });
+                JFreeChart chart = ChartFactory.createPieChart(
+                        "Hours Estimated by user " + sprintName,
+                        dataset, true,true,false);
 
-        JFreeChart spentHoursChart = ChartFactory.createPieChart(
-                "Hours Spent by user " + sprintName,
-                dataset, true,true,false);
+                JFreeChart spentHoursChart = ChartFactory.createPieChart(
+                        "Hours Spent by user " + sprintName,
+                        dataset, true,true,false);
+                ChartPanel cp = new ChartPanel(chart);
+                cp.setBounds(750, 0, 300, 250);
+                cp.setVisible(true);
 
-        ChartPanel cp = new ChartPanel(chart);
-        cp.setBounds(750, 0, 300, 250);
-        cp.setVisible(true);
+                ChartPanel spentCP = new ChartPanel(spentHoursChart);
+                spentCP.setBounds(1100, 0, 300, 250);
+                spentCP.setVisible(true);
 
-        ChartPanel spentCP = new ChartPanel(spentHoursChart);
-        spentCP.setBounds(1100, 0, 300, 250);
-        spentCP.setVisible(true);
+                frame.add(cp);
+                frame.add(spentCP);
+                frame.setVisible(true);
 
-        frame.add(cp);
-        frame.add(spentCP);
-        frame.setVisible(true);
+                String[][] data = new String[hoursPerUsers.size() + 1][3];
+                String[] names = {"User", "Estimated Hours", "Spent Hours"};
 
-        String[][] data = new String[hoursPerUsers.size()+1][3];
-        String[] names = {"User", "Estimated Hours","Spent Hours"};
+                data[0] = names;
 
-        data[0] = names;
+                for (int cont = 0; cont != hoursPerUsers.size(); cont++) {
+                    data[cont + 1] = new String[]{hoursPerUsers.get(cont).getUser(),
+                            String.valueOf(hoursPerUsers.get(cont).getEstimatedHours()),
+                            String.valueOf(hoursPerUsers.get(cont).getSpentHours())};
+                }
 
-        for(int cont = 0; cont!=hoursPerUsers.size();cont++){
-            data[cont+1] = new String[]{hoursPerUsers.get(cont).getUser(),
-                                      String.valueOf(hoursPerUsers.get(cont).getEstimatedHours()),
-                                        String.valueOf(hoursPerUsers.get(cont).getSpentHours())};
-        }
+                JTable table = new JTable(data, names);
+                table.setBounds(750, 300, 400, 250);
+                table.setVisible(true);
+                table.setEnabled(false);
+                table.setGridColor(Color.BLACK);
+                table.setShowGrid(true);
 
-        JTable table = new JTable(data, names);
-        table.setBounds(750,300,400,250);
-        table.setVisible(true);
-        table.setEnabled(false);
-        table.setGridColor(Color.BLACK);
-        table.setShowGrid(true);
-
-        frame.add(table);
-        frame.setVisible(true);
+                frame.add(table);
+                frame.setVisible(true);
     }
-
 }

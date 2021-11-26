@@ -2,7 +2,6 @@ package pt.iscte.iul;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -22,7 +21,7 @@ public class Main{
      * If flag==1 then it will scale the main frame.
      *
      * @param args nothing.
-     * @throws IOException
+     * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      */
     public static void main(String[] args) throws IOException {

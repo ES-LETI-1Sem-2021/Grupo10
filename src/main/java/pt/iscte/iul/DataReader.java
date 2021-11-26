@@ -43,7 +43,7 @@ public class DataReader {
      *
      * @param data the name of the file to read the info.
      * @return user_trello_info. An array with the data saved in the .txt file, regarding the Trello api.
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException throws exception
      * @author Rodrigo Guerreiro
      */
     public static String[] getUserTrelloData(String data) throws FileNotFoundException {

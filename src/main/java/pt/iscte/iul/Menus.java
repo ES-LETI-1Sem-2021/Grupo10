@@ -208,23 +208,18 @@ public class Menus implements ActionListener {
      */
     private void optionsActionPerformed(@NotNull JMenuItem opm) throws IOException {
         switch (opm.getText()) {
-            case "Home Screen":
+            case "Home Screen" -> {
                 Action.clearFrame(frame);
                 Action.homeScreen(this.frame, this.gitHubAPI, this.trelloAPI, this.boardID);
-
-                break;
-            case "Clear data file":
-                clearTheFile("data/user_data.txt");
-
-                break;
-            case "Logout":
+            }
+            case "Clear data file" -> clearTheFile("data/user_data.txt");
+            case "Logout" -> {
                 clearTheFile("data/user_data.txt");
                 this.frame.dispose();
                 new HomeUI();
-
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
     }
 

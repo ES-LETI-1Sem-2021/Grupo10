@@ -24,9 +24,9 @@ public class DataSaver {
 
         try {
             File file = new File(filename);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
+            //if (!file.exists()) {
+                //file.createNewFile();
+            //}
             write(userGitInfo, userTrelloInfo, file);
         } catch (IOException e) {
             e.printStackTrace();

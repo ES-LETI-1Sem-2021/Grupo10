@@ -25,15 +25,12 @@ public class JElements implements ActionListener {
         this.spinner.setBounds(1150, 350, 100, 50);
         System.out.println(spinner.getValue());
 
-
-
         //Button
         this.button = new JButton("Calculate new Cost");
         this.button.setBounds(950, 600, 150, 100);
         this.button.setVisible(true);
         this.frame.add(button);
         this.button.repaint();
-
         this.button.addActionListener(this);
 
         this.frame.add(spinner);
@@ -45,8 +42,8 @@ public class JElements implements ActionListener {
 
     //Table
     public void addTable(ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers, JFrame frame , JSpinner spinner){
-        int totalEstimated = 0;
-        int totalSpent = 0;
+        double totalEstimated = 0;
+        double totalSpent = 0;
 
         this.data = new String[hoursPerUsers.size() + 2][4];
         String[] names = {"User", "Estimated Hours", "Spent Hours", "Cost (€)"};
@@ -62,7 +59,7 @@ public class JElements implements ActionListener {
             totalSpent += hoursPerUsers.get(cont).getSpentHours();
         }
 
-        int totalCost = totalSpent * (int)spinner.getValue();
+        double totalCost = totalSpent * (int)spinner.getValue();
 
         data[hoursPerUsers.size() + 1] = new String[]{"Total", String.valueOf(totalEstimated),
                 String.valueOf(totalSpent),

@@ -138,14 +138,12 @@ public class Action {
         frame.add(editorPane);
         frame.setVisible(true);
 
-        addSprintDatesTable(trelloAPI, frame, boardID);
-        addHoursByCeremony(trelloAPI, frame, boardID);
-
         // Threading
         SwingUtilities.invokeLater(() -> {
             try {
                 addHoursInfo(frame,"",boardID,trelloAPI);
-
+                addSprintDatesTable(trelloAPI, frame, boardID);
+                addHoursByCeremony(trelloAPI, frame, boardID);
                 frame.repaint();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -259,10 +257,10 @@ public class Action {
                         String.valueOf(trelloAPI.getTotalHoursCeremony(boardID))};
 
         JTable table = new JTable(content, names);
-        table.setBounds(1150, 300, 300, 100);
+        table.setBounds(1200, 300, 300, 100);
         table.setVisible(true);
         table.setEnabled(false);
-        table.setGridColor(Color.pink);
+        table.setGridColor(Color.black);
         table.setShowGrid(true);
 
         frame.add(table);

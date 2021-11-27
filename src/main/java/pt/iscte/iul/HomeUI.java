@@ -194,7 +194,7 @@ public class HomeUI implements ActionListener {
                 "Warning?", JOptionPane.YES_NO_OPTION);
 
         if (opc == JOptionPane.YES_OPTION && i == 0) {
-            Action.saveData(userGitInfo, userTrelloInfo);
+            Action.saveData(userGitInfo, userTrelloInfo, "data/user_data.txt");
             try {
                 Action.doAction(this.frame, userGitInfo, userTrelloInfo, 1);
             } catch (IOException ex) {

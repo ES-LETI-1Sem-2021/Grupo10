@@ -64,8 +64,8 @@ public class Action {
      * @param userTrelloInfo info needed for trello api.
      * @author Rodrigo Guerreiro
      */
-    public static void saveData(String[] userGitInfo, String[] userTrelloInfo) {
-        DataSaver.save(userGitInfo, userTrelloInfo, "data/user_data.txt");
+    public static void saveData(String[] userGitInfo, String[] userTrelloInfo, String filename) {
+        DataSaver.save(userGitInfo, userTrelloInfo, filename);
     }
 
     /**

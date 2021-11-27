@@ -266,5 +266,6 @@ public class Action {
         table.setShowGrid(true);
 
         frame.add(table);
+
     }
 }

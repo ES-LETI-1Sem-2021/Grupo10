@@ -46,7 +46,7 @@ public class JElements implements ActionListener {
         double totalSpent = 0;
 
         this.data = new String[hoursPerUsers.size() + 2][4];
-        String[] names = {"User", "Estimated Hours", "Spent Hours", "Cost (€)"};
+        String[] names = {"Member", "Estimated Hours", "Spent Hours", "Cost (€)"};
 
         data[0] = names;
 

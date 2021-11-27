@@ -139,11 +139,13 @@ public class Action {
         frame.setVisible(true);
 
         addSprintDatesTable(trelloAPI, frame, boardID);
+        addHoursByCeremony(trelloAPI, frame, boardID);
 
         // Threading
         SwingUtilities.invokeLater(() -> {
             try {
                 addHoursInfo(frame,"",boardID,trelloAPI);
+
                 frame.repaint();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -229,4 +231,40 @@ public class Action {
         frame.add(table);
     }
 
+    /**
+     * Function that adds a table with the hours spent by the team and by member in ceremonies
+     *
+     * @param trelloAPI the trello instance
+     * @param frame the frame to display the table
+     * @param boardID   the board id.
+     * @throws IOException throws exception
+     * @author Rodrigo Guerreiro
+     * @author Duarte Casaleiro
+     */
+    public static void addHoursByCeremony(TrelloAPI trelloAPI, JFrame frame, String boardID) throws IOException {
+        ArrayList<TrelloAPI.HoursPerUser> hoursPerUser = trelloAPI.getTotalHoursByUser(boardID,"Ceremonies", "");
+
+        String[][] content = new String[hoursPerUser.size() + 2][3];
+        String[] names = {"Members", "Nº Ceremonies", "Total Hours"};
+        content[0] = names;
+
+        for (int i = 0; i != hoursPerUser.size(); i++) {
+            content[i + 1] = new String[]{hoursPerUser.get(i).getUser(),
+                    String.valueOf(trelloAPI.getTotalNumberOfCeremonies(boardID)),
+                    String.valueOf(hoursPerUser.get(i).getSpentHours())};
+        }
+
+        content[hoursPerUser.size() + 1] = new String[]{"Total",
+                String.valueOf(trelloAPI.getTotalNumberOfCeremonies(boardID)),
+                        String.valueOf(trelloAPI.getTotalHoursCeremony(boardID))};
+
+        JTable table = new JTable(content, names);
+        table.setBounds(1150, 300, 300, 100);
+        table.setVisible(true);
+        table.setEnabled(false);
+        table.setGridColor(Color.pink);
+        table.setShowGrid(true);
+
+        frame.add(table);
+    }
 }

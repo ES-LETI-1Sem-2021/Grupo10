@@ -138,6 +138,8 @@ public class Action {
         frame.add(editorPane);
         frame.setVisible(true);
 
+        addSprintDatesTable(trelloAPI, frame, boardID);
+
         // Threading
         SwingUtilities.invokeLater(() -> {
             try {
@@ -192,7 +194,31 @@ public class Action {
         frame.setVisible(true);
 
         new JElements(frame, hoursPerUsers);
+    }
 
+    // Sprint Dates Table
+    public static void addSprintDatesTable(TrelloAPI trelloAPI, JFrame frame, String boardID) throws IOException {
+
+        int numberOfSprints = trelloAPI.getListsThatContain(boardID, "Done - Sprint").size();
+
+        String[][] dates = new String[numberOfSprints + 1][3];
+        String[] names = {"Sprint", "Start Date", "End Date"};
+        dates[0] = names;
+
+        for (int i = 0; i < numberOfSprints; i++) {
+            String[] datesOfSprint = trelloAPI.getSprintDates(boardID, i+1);
+            dates[i + 1] = new String[]{String.valueOf(i + 1), datesOfSprint[0], datesOfSprint[1]};
+        }
+
+        JTable table = new JTable(dates, names);
+        table.setBounds(750, 500, 400, 100);
+        table.setVisible(true);
+        table.setEnabled(false);
+        table.setGridColor(Color.BLACK);
+        table.setShowGrid(true);
+
+        frame.add(table);
+        //frame.repaint();
     }
 
 }

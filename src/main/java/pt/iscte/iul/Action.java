@@ -196,7 +196,16 @@ public class Action {
         new JElements(frame, hoursPerUsers);
     }
 
-    // Sprint Dates Table
+    /**
+     * Function that adds a table with the start and end date of each sprint
+     *
+     * @param trelloAPI the trello instance
+     * @param frame the frame to display the table
+     * @param boardID   the board id.
+     * @throws IOException throws exception
+     * @author Rodrigo Guerreiro
+     * @author Duarte Casaleiro
+     */
     public static void addSprintDatesTable(TrelloAPI trelloAPI, JFrame frame, String boardID) throws IOException {
 
         int numberOfSprints = trelloAPI.getListsThatContain(boardID, "Done - Sprint").size();
@@ -218,7 +227,6 @@ public class Action {
         table.setShowGrid(true);
 
         frame.add(table);
-        //frame.repaint();
     }
 
 }

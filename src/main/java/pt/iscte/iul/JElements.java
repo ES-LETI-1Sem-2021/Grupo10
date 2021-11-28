@@ -22,13 +22,13 @@ public class JElements implements ActionListener {
         //Spinner
         SpinnerModel model = new SpinnerNumberModel(20, 20, 100, 1);
         this.spinner = new JSpinner(model);
-        this.spinner.setBounds(710, 410, 100, 40);
+        this.spinner.setBounds(((frame.getWidth() - 200)), ((frame.getHeight() / 2) - 65), 100, 40);
 
         addTable(this.hoursPerUsers, this.frame , this.spinner);
 
         //Button
         this.button = new JButton("Calculate new Cost");
-        this.button.setBounds(820, 410, 150, 50);
+        this.button.setBounds((frame.getWidth() - 220), ((frame.getHeight() / 2) - 25), 150, 50);
         this.button.setVisible(true);
         this.frame.add(button);
         this.button.repaint();
@@ -66,7 +66,7 @@ public class JElements implements ActionListener {
                 String.valueOf(totalCost)};
 
         this.table = new JTable(data, names);
-        table.setBounds(620, 300, 400, 100);
+        table.setBounds(((frame.getWidth() / 2) - 20), ((frame.getHeight() / 2) - 70), 400, 100);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.BLACK);

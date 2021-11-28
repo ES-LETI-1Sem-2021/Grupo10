@@ -126,7 +126,7 @@ public class Action {
         JEditorPane editorPane = new JEditorPane();
         editorPane.setContentType("text/html");
 
-        editorPane.setText("<br></br><br></br><br></br>" + convertMarkdownToHTML(readme) + "<br></br><br></br><br></br>");
+        editorPane.setText("<br></br><br></br>" + convertMarkdownToHTML(readme) + "<br></br><br></br><br></br>");
         editorPane.setEditable(false);
         editorPane.setVisible(true);
         editorPane.setBounds(100, 100, 500, 600);
@@ -185,11 +185,11 @@ public class Action {
                 "Hours Spent by user " + sprintName,
                 dataset, true,true,false);
         ChartPanel cp = new ChartPanel(chart);
-        cp.setBounds(620, 0, 300, 250);
+        cp.setBounds(((frame.getWidth() / 2) - 30), 0, 300, 250);
         cp.setVisible(true);
 
         ChartPanel spentCP = new ChartPanel(spentHoursChart);
-        spentCP.setBounds(955, 0, 300, 250);
+        spentCP.setBounds((frame.getWidth() - 320), 0, 300, 250);
         spentCP.setVisible(true);
 
         frame.add(cp);
@@ -223,7 +223,7 @@ public class Action {
         }
 
         JTable table = new JTable(dates, names);
-        table.setBounds(620, 500, 400, 100);
+        table.setBounds(((frame.getWidth() / 2) + 95), (frame.getHeight() - 150), 400, 100);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.BLACK);
@@ -260,7 +260,7 @@ public class Action {
                         String.valueOf(trelloAPI.getTotalHoursCeremony(boardID))};
 
         JTable table = new JTable(content, names);
-        table.setBounds(1040, 300, 300, 100);
+        table.setBounds(((frame.getWidth() / 2) + 150), ((frame.getHeight() / 2) + 70), 300, 100);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.black);

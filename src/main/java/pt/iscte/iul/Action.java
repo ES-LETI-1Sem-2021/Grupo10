@@ -13,6 +13,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static javax.swing.BorderFactory.createEmptyBorder;
+
 
 /**
  * Class where all the magic happens.
@@ -108,34 +110,34 @@ public class Action {
         GitHubAPI.Date dataInicio = gitHubAPI.getStartTime();
         String readme = gitHubAPI.getFile("master", "/README.md");
 
+        JScrollPane scrollerLeft = new JScrollPane();
+
         //Label com a data de inicio do trabalho
         JLabel labelData = new JLabel("Project's start date: " + dataInicio.toString());
-        labelData.setBounds(100, 50, 250, 30);
-        frame.add(labelData);
+        labelData.setBounds(100, 25, 250, 30);
+        scrollerLeft.add(labelData);
 
         //Label com o nome do projeto (nome do repo)
         JLabel labelProjName = new JLabel("Project's name: " + trelloAPI.getBoard(boardID).getName());
-        labelProjName.setBounds(400, 50, 300, 30);
-        frame.add(labelProjName);
+        labelProjName.setBounds(400, 25, 300, 30);
+        scrollerLeft.add(labelProjName);
 
         //Print do readme no ecrã
         JEditorPane editorPane = new JEditorPane();
         editorPane.setContentType("text/html");
 
-        //JScrollPane scrollPane = new JScrollPane(editorPane);
-        //scrollPane.setBounds(600,100,25,600);
-        //scrollPane.setAutoscrolls(true);
-        //scrollPane.setVerticalScrollBar(scrollPane.getVerticalScrollBar());
-        //scrollPane.setVisible(true);
-
-        //frame.add(scrollPane);
-        //scrollPane.setVisible(true);
-        editorPane.setText(convertMarkdownToHTML(readme));
+        editorPane.setText("<br></br><br></br><br></br>" + convertMarkdownToHTML(readme) + "<br></br><br></br><br></br>");
         editorPane.setEditable(false);
         editorPane.setVisible(true);
         editorPane.setBounds(100, 100, 500, 600);
 
         frame.add(editorPane);
+        frame.setVisible(true);
+
+        scrollerLeft.setViewportView(editorPane);
+        scrollerLeft.setBounds(15, 0, ((frame.getWidth() - 100) / 2), frame.getHeight());
+        scrollerLeft.setBorder(createEmptyBorder());
+        frame.add(scrollerLeft);
         frame.setVisible(true);
 
         // Threading

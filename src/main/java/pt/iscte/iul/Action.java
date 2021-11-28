@@ -140,6 +140,7 @@ public class Action {
         frame.add(scrollerLeft);
         frame.setVisible(true);
 
+
         // Threading
         SwingUtilities.invokeLater(() -> {
             try {

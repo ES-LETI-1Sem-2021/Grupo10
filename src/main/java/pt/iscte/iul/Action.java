@@ -185,11 +185,11 @@ public class Action {
                 "Hours Spent by user " + sprintName,
                 dataset, true,true,false);
         ChartPanel cp = new ChartPanel(chart);
-        cp.setBounds(750, 0, 300, 250);
+        cp.setBounds(620, 0, 300, 250);
         cp.setVisible(true);
 
         ChartPanel spentCP = new ChartPanel(spentHoursChart);
-        spentCP.setBounds(1100, 0, 300, 250);
+        spentCP.setBounds(955, 0, 300, 250);
         spentCP.setVisible(true);
 
         frame.add(cp);
@@ -223,7 +223,7 @@ public class Action {
         }
 
         JTable table = new JTable(dates, names);
-        table.setBounds(750, 500, 400, 100);
+        table.setBounds(620, 500, 400, 100);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.BLACK);
@@ -260,7 +260,7 @@ public class Action {
                         String.valueOf(trelloAPI.getTotalHoursCeremony(boardID))};
 
         JTable table = new JTable(content, names);
-        table.setBounds(1200, 300, 300, 100);
+        table.setBounds(1040, 300, 300, 100);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.black);

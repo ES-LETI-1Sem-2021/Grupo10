@@ -110,20 +110,20 @@ public class Action {
         GitHubAPI.Date dataInicio = gitHubAPI.getStartTime();
         String readme = gitHubAPI.getFile("master", "/README.md");
 
+        JEditorPane editorPane = new JEditorPane();
         JScrollPane scrollerLeft = new JScrollPane();
 
         //Label com a data de inicio do trabalho
         JLabel labelData = new JLabel("Project's start date: " + dataInicio.toString());
-        labelData.setBounds(100, 25, 250, 30);
-        scrollerLeft.add(labelData);
+        labelData.setBounds(10, 5, 250, 30);
+        editorPane.add(labelData);
 
         //Label com o nome do projeto (nome do repo)
         JLabel labelProjName = new JLabel("Project's name: " + trelloAPI.getBoard(boardID).getName());
-        labelProjName.setBounds(400, 25, 300, 30);
-        scrollerLeft.add(labelProjName);
+        labelProjName.setBounds(260, 5, 300, 30);
+        editorPane.add(labelProjName);
 
         //Print do readme no ecrã
-        JEditorPane editorPane = new JEditorPane();
         editorPane.setContentType("text/html");
 
         editorPane.setText("<br></br><br></br>" + convertMarkdownToHTML(readme) + "<br></br><br></br><br></br>");

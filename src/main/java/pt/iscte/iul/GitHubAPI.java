@@ -11,8 +11,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -26,6 +24,10 @@ public class GitHubAPI {
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
+    // simple cache
+    private final Collaborators[] cachedCollaborators;
+    private final Branch[] cachedBranches;
+
     /**
      * Base class for requesting information from the GitHub API.
      *
@@ -33,7 +35,7 @@ public class GitHubAPI {
      * @param projectName Name of the project.
      * @param apiKey      GitHub API access key.
      */
-    public GitHubAPI(String repoOwner, String projectName, String apiKey) {
+    public GitHubAPI(String repoOwner, String projectName, String apiKey) throws IOException {
         this.apiKey = apiKey;
 
         this.baseAPIUrl = "https://api.github.com/repos/" + repoOwner + "/" + projectName;
@@ -42,9 +44,11 @@ public class GitHubAPI {
         this.httpClient = new OkHttpClient();
 
         this.mapper = new ObjectMapper();
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+        this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        this.mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+        this.cachedCollaborators = this.getCollaborators();
+        this.cachedBranches = this.getBranches();
     }
 
     /**
@@ -189,6 +193,10 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public Collaborators[] getCollaborators() throws IOException {
+        if (this.cachedCollaborators != null && this.cachedCollaborators.length != 0) {
+            return this.cachedCollaborators;
+        }
+
         var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseAPIUrl + "/collaborators").build();
@@ -256,6 +264,10 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public Branch[] getBranches() throws IOException {
+        if (this.cachedBranches != null && this.cachedBranches.length != 0) {
+            return this.cachedBranches;
+        }
+
         var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseAPIUrl + "/branches").build();
@@ -461,7 +473,8 @@ public class GitHubAPI {
                                     Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
                                     Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
                                     commit.message().replace(',', ' ').split("\n")[0],
-                                    commit.date().toString())
+                                    commit.date().toString()
+                            )
                     );
                     previousUser = user.getLogin();
                     previousBranch = branch.getName();

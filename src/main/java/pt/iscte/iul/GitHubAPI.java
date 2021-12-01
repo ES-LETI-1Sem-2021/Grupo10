@@ -105,7 +105,7 @@ public class GitHubAPI {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Date date = (Date) o;
-            return Objects.equals(year, date.year) && Objects.equals(month, date.month) && Objects.equals(day, date.day);
+            return  Objects.equals(year, date.year) && Objects.equals(month, date.month) && Objects.equals(day, date.day);
         }
     }
 
@@ -420,7 +420,6 @@ public class GitHubAPI {
 
     /**
      * Retrieves the tags of the master branch.
-     *
      * @return A list of {@link TagData}
      * @throws IOException If a request fails.
      */
@@ -453,14 +452,24 @@ public class GitHubAPI {
     }
 
     /**
-     * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV formatted string.
-     *
-     * @return A CSV formatted string.
+     * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV and HTML formatted strings.
+     * @return CSV and HTML formatted strings.
      * @throws IOException
      */
-    public String commitsToCSV() throws IOException {
+    public String[] convert() throws IOException {
         var csv = new ArrayList<String>();
+        var html = new ArrayList<String>();
+
         csv.add("Contributor,Branch,Mensagem do Commit,Data do Commit (MM/DD/YYYY)\n");
+
+        html.add("""
+                <tr>
+                    <th>Contributor</th>
+                    <th>Branch</th>
+                    <th>Mensagem do Commit</th>
+                    <th>Data do Commit (YYYY/MM/DD)</th>
+                </tr>
+                """);
 
         var previousUser = "";
         var previousBranch = "";
@@ -474,15 +483,35 @@ public class GitHubAPI {
                                     Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
                                     Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
                                     commit.message().replace(',', ' ').split("\n")[0],
-                                    commit.date().toString()
+                                    commit.date()
                             )
                     );
+
+                    html.add(
+                            String.format("""
+                                    <tr>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                    </tr>
+                                    """,
+                                    Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
+                                    Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
+                                    commit.message().replace(',', ' ').split("\n")[0],
+                                    commit.date()
+                            )
+                    );
+
                     previousUser = user.getLogin();
                     previousBranch = branch.getName();
                 }
             }
         }
 
-        return String.join("", csv);
+        return new String[]{
+                String.join("", csv),
+                "<table>\n" + String.join("", html) + "</table>"
+        };
     }
 }

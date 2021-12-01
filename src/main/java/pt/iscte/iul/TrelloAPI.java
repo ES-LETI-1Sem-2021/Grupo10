@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Duarte Casaleiro, Oleksandr Kobelyuk, Miguel Romana.
@@ -32,10 +33,9 @@ public class TrelloAPI {
 
     /**
      * Base class for requesting information from the Trello API.
-     *
      * @param boardName Name of the board.
-     * @param apiKey    Trello API access key.
-     * @param apiToken  Trello API access token.
+     * @param apiKey Trello API access key.
+     * @param apiToken Trello API access token.
      */
     public TrelloAPI(String boardName, String apiKey, String apiToken) throws IOException {
         this.apiKey = apiKey;
@@ -49,6 +49,36 @@ public class TrelloAPI {
         this.mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
         this.boardId = this.getBoardID();
+    }
+
+    /**
+     * Board object.
+     */
+    public static class Board {
+        private String name;
+        private String id;
+        private String url;
+
+        /**
+         * @return The name.
+         */
+        public String getName() {
+            return this.name;
+        }
+
+        /**
+         * @return The ID.
+         */
+        public String getId() {
+            return this.id;
+        }
+
+        /**
+         * @return The url.
+         */
+        public String getUrl() {
+            return this.url;
+        }
     }
 
     /**
@@ -78,9 +108,9 @@ public class TrelloAPI {
     }
 
     /**
-     * @param component   Component that we want to access (list, card, board, etc).
+     * @param component Component that we want to access (list, card, board, etc).
      * @param componentId ID of the component that we want to access.
-     * @param url         Url of the component (board url, list url, etc).
+     * @param url Url of the component (board url, list url, etc).
      * @return A {@link Response} object.
      * @throws IOException If the request fails.
      */
@@ -103,6 +133,28 @@ public class TrelloAPI {
 
         // map http response to the class Board
         return mapper.readValue(response.body().string(), Board.class);
+    }
+
+    /**
+     * List object.
+     */
+    public static class List {
+        private String name;
+        private String id;
+
+        /**
+         * @return The name.
+         */
+        public String getName() {
+            return this.name;
+        }
+
+        /**
+         * @return The ID.
+         */
+        public String getId() {
+            return this.id;
+        }
     }
 
     /**
@@ -143,6 +195,46 @@ public class TrelloAPI {
     }
 
     /**
+     * Card object.
+     */
+    public static class Card {
+        private String name;
+        private String id;
+        private String due;
+        private String desc;
+        private Member member;
+
+        /**
+         * @return The name.
+         */
+        public String getName() {
+            return this.name;
+        }
+
+        /**
+         * @return The ID.
+         */
+        public String getId() {
+            return this.id;
+        }
+
+        /**
+         * @return The due date.
+         */
+        public String getDueDate() {
+            return this.due == null ? "N/A" :
+                    this.due.split("T")[0]; // split by delimiter T
+        }
+
+        /**
+         * @return The description.
+         */
+        public String getDescription() {
+            return this.desc;
+        }
+    }
+
+    /**
      * @param listId List ID.
      * @return All cards in the list identified by the list id.
      * @throws IOException If the request fails.
@@ -153,6 +245,32 @@ public class TrelloAPI {
 
         // map http response to the class List
         return mapper.readValue(response.body().string(), Card[].class);
+    }
+
+    /**
+     * Member object.
+     */
+    public static class Member {
+        private String username;
+        private String id;
+        // DRAFT: Hours defined for testing
+        private int estimatedHours;
+        private int onGoingHours;
+        private int concludedHours;
+
+        /**
+         * @return The name.
+         */
+        public String getName() {
+            return this.username;
+        }
+
+        /**
+         * @return The ID.
+         */
+        public String getId() {
+            return this.id;
+        }
     }
 
     /**
@@ -200,7 +318,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param sprintType   Spring type.
+     * @param sprintType Spring type.
      * @param sprintNumber Spring number.
      * @return Description of the ceremony in question.
      * @throws IOException If the request fails.
@@ -309,164 +427,6 @@ public class TrelloAPI {
         return totalOfHours;
     }
 
-    private void addObjectToList(Card card, Pattern pattern, ArrayList<HoursPerUser> hoursPerUser) throws IOException {
-        for (var member : this.getMemberOfCard(card.getId())) {
-            if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
-                hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
-            }
-        }
-
-        var match = pattern.matcher(card.getDescription());
-        while (match.find()) {
-            for (var o : hoursPerUser) {
-                if (Objects.equals(o.user, match.group(1))) {
-                    o.addSpentHours(Double.parseDouble(match.group(2)));
-                    o.addEstimatedHours(Double.parseDouble(match.group(3)));
-                }
-            }
-        }
-    }
-
-    /**
-     * @param listQuery query for the list name.
-     * @param cardQuery query for the card name.
-     * @return the total hours spent by user in a list of {@link HoursPerUser}
-     * @throws IOException If the request fails.
-     */
-    public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery) throws IOException {
-        var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
-
-        var hoursPerUser = new ArrayList<HoursPerUser>();
-        var listOfCeremonies = this.queryLists(listQuery);
-        for (var list : listOfCeremonies) {
-            for (var card : this.getListCards(list.getId())) {
-                if (!card.getName().contains(cardQuery))
-                    continue;
-
-                addObjectToList(card, pattern, hoursPerUser);
-            }
-        }
-        return hoursPerUser;
-    }
-
-    /**
-     * Board object.
-     */
-    public static class Board {
-        private String name;
-        private String id;
-        private String url;
-
-        /**
-         * @return The name.
-         */
-        public String getName() {
-            return this.name;
-        }
-
-        /**
-         * @return The ID.
-         */
-        public String getId() {
-            return this.id;
-        }
-
-        /**
-         * @return The url.
-         */
-        public String getUrl() {
-            return this.url;
-        }
-    }
-
-    /**
-     * List object.
-     */
-    public static class List {
-        private String name;
-        private String id;
-
-        /**
-         * @return The name.
-         */
-        public String getName() {
-            return this.name;
-        }
-
-        /**
-         * @return The ID.
-         */
-        public String getId() {
-            return this.id;
-        }
-    }
-
-    /**
-     * Card object.
-     */
-    public static class Card {
-        private String name;
-        private String id;
-        private String due;
-        private String desc;
-        private Member member;
-
-        /**
-         * @return The name.
-         */
-        public String getName() {
-            return this.name;
-        }
-
-        /**
-         * @return The ID.
-         */
-        public String getId() {
-            return this.id;
-        }
-
-        /**
-         * @return The due date.
-         */
-        public String getDueDate() {
-            return this.due == null ? "N/A" :
-                    this.due.split("T")[0]; // split by delimiter T
-        }
-
-        /**
-         * @return The description.
-         */
-        public String getDescription() {
-            return this.desc;
-        }
-    }
-
-    /**
-     * Member object.
-     */
-    public static class Member {
-        private String username;
-        private String id;
-        // DRAFT: Hours defined for testing
-        private int estimatedHours;
-        private int onGoingHours;
-        private int concludedHours;
-
-        /**
-         * @return The name.
-         */
-        public String getName() {
-            return this.username;
-        }
-
-        /**
-         * @return The ID.
-         */
-        public String getId() {
-            return this.id;
-        }
-    }
-
     /**
      * Contains relevant information about the time a user spent on the project.
      */
@@ -531,5 +491,76 @@ public class TrelloAPI {
             HoursPerUser that = (HoursPerUser) o;
             return Objects.equals(user, that.user);
         }
+    }
+
+    private void addObjectToList(Card card, Pattern pattern, ArrayList<HoursPerUser> hoursPerUser ) throws IOException {
+        for (var member : this.getMemberOfCard(card.getId())) {
+            if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
+                hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
+            }
+        }
+
+        var match = pattern.matcher(card.getDescription());
+        while (match.find()) {
+            for (var o : hoursPerUser) {
+                if (Objects.equals(o.user, match.group(1))) {
+                    o.addSpentHours(Double.parseDouble(match.group(2)));
+                    o.addEstimatedHours(Double.parseDouble(match.group(3)));
+                }
+            }
+        }
+    }
+
+    /**
+     * @param listQuery query for the list name.
+     * @param cardQuery  query for the card name.
+     * @return the total hours spent by user in a list of {@link HoursPerUser}
+     * @throws IOException If the request fails.
+     */
+    public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery) throws IOException {
+        var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
+
+        var hoursPerUser = new ArrayList<HoursPerUser>();
+        var listOfCeremonies = this.queryLists(listQuery);
+        for (var list : listOfCeremonies) {
+            for (var card : this.getListCards(list.getId())) {
+                if (!card.getName().contains(cardQuery))
+                    continue;
+
+                addObjectToList(card, pattern, hoursPerUser);
+            }
+        }
+        return hoursPerUser;
+    }
+
+    public String[] convertToCSV(int rate, int numberOfSprints) throws IOException {
+        var hoursPerUser = this.getTotalHoursByUser("", "");
+
+        // recursos humanos
+        var csv = new ArrayList<String>();
+        csv.add("Elemento,Salario\n");
+        for (var user : hoursPerUser) {
+            csv.add(
+                    user.user + "," + user.spentHours * rate + "\n"
+            );
+        }
+        csv.add("Total, " + hoursPerUser.stream().map(user -> user.spentHours * rate).mapToDouble(d -> d).sum() + "\n");
+
+        // horas de cada sprint
+        var csv2 = new ArrayList<String>();
+        csv2.add("Sprint,Elemento,Horas\n");
+        for (var i = 1; i < numberOfSprints + 1; i++) {
+            hoursPerUser = this.getTotalHoursByUser("", "Sprint " + i);
+            for (var user : hoursPerUser) {
+                csv2.add(
+                        i + "," + user.getUser() + "," + user.getSpentHours() + "\n"
+                );
+            }
+        }
+
+        return new String[]{
+                String.join("", csv),
+                String.join("", csv2)
+        };
     }
 }

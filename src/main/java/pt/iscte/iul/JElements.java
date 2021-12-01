@@ -26,7 +26,7 @@ public class JElements implements ActionListener {
         this.hoursPerUsers = hoursPerUsers;
 
         //Spinner
-        SpinnerModel model = new SpinnerNumberModel(20, 20, 100, 1);
+        var model = new SpinnerNumberModel(20, 20, 100, 1);
         this.spinner = new JSpinner(model);
         this.spinner.setBounds(((frame.getWidth() - 200)), ((frame.getHeight() / 2) - 65), 100, 40);
 
@@ -49,11 +49,11 @@ public class JElements implements ActionListener {
 
     //Table
     public void addTable(ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers, JFrame frame, JSpinner spinner) {
-        double totalEstimated = 0;
-        double totalSpent = 0;
+        var totalEstimated = 0.0;
+        var totalSpent = 0.0;
 
         this.data = new String[hoursPerUsers.size() + 2][4];
-        String[] names = {"Member", "Estimated Hours", "Spent Hours", "Cost (€)"};
+        var names = new String[]{"Member", "Estimated Hours", "Spent Hours", "Cost (€)"};
 
         data[0] = names;
 
@@ -66,7 +66,7 @@ public class JElements implements ActionListener {
             totalSpent += hoursPerUsers.get(cont).getSpentHours();
         }
 
-        double totalCost = totalSpent * (int) spinner.getValue();
+        var totalCost = totalSpent * (int) spinner.getValue();
 
         data[hoursPerUsers.size() + 1] = new String[]{"Total", String.valueOf(totalEstimated),
                 String.valueOf(totalSpent),
@@ -96,31 +96,31 @@ public class JElements implements ActionListener {
      * @author Duarte Casaleiro
      */
     public static void addHoursInfo(JFrame frame, String sprintName, TrelloAPI trelloAPI) throws IOException {
-        ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser("", sprintName);
+        var hoursPerUsers = trelloAPI.getTotalHoursByUser("", sprintName);
 
         // Pie Charts
-        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        DefaultPieDataset<String> spentHoursDataset = new DefaultPieDataset<>();
+        var dataset = new DefaultPieDataset<String>();
+        var spentHoursDataset = new DefaultPieDataset<String>();
 
         hoursPerUsers.forEach(e -> {
             dataset.setValue(e.getUser(), e.getEstimatedHours());
             spentHoursDataset.setValue(e.getUser(), e.getEstimatedHours());
         });
-        JFreeChart chart = ChartFactory.createPieChart(
+        var chart = ChartFactory.createPieChart(
                 "Hours Estimated by user " + sprintName,
                 dataset, true, true, false);
 
-        JFreeChart spentHoursChart = ChartFactory.createPieChart(
+        var spentHoursChart = ChartFactory.createPieChart(
                 "Hours Spent by user " + sprintName,
                 dataset, true, true, false);
-        ChartPanel cp = new ChartPanel(chart);
+        var cp = new ChartPanel(chart);
         cp.setBounds(((frame.getWidth() / 2) - 30), 0, 300, 250);
         cp.setVisible(true);
         chart.getPlot().setBackgroundPaint(Color.white);
         chart.getPlot().setOutlinePaint(Color.white);
         chart.getTitle().setPaint(new Color(68, 114, 196));
 
-        ChartPanel spentCP = new ChartPanel(spentHoursChart);
+        var spentCP = new ChartPanel(spentHoursChart);
         spentCP.setBounds((frame.getWidth() - 320), 0, 300, 250);
         spentCP.setVisible(true);
         spentHoursChart.getPlot().setBackgroundPaint(Color.white);
@@ -146,7 +146,7 @@ public class JElements implements ActionListener {
      */
     public static void addSprintDatesTable(TrelloAPI trelloAPI, JFrame frame) throws IOException {
 
-        int numberOfSprints = trelloAPI.queryLists("Done - Sprint").size();
+        var numberOfSprints = trelloAPI.queryLists("Done - Sprint").size();
 
         var dates = new String[numberOfSprints + 1][3];
         var names = new String[]{"Sprint", "Start Date", "End Date"};

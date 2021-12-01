@@ -85,11 +85,11 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     public Board[] getBoards() throws IOException {
-        Request request = new Request.Builder()
+        var request = new Request.Builder()
                 .header("Accept", "application/json")
                 .url("https://api.trello.com/1/members/me/boards?key=" + this.apiKey + "&token=" + this.apiToken).build();
 
-        Response response = this.httpClient.newCall(request).execute();
+        var response = this.httpClient.newCall(request).execute();
 
         return mapper.readValue(response.body().string(), Board[].class);
     }
@@ -115,7 +115,7 @@ public class TrelloAPI {
      */
     private Response httpRequest(String component, String componentId, String url) throws IOException {
         //HTTP request to access
-        Request request = new Request.Builder()
+        var request = new Request.Builder()
                 .header("Accept", "application/json")
                 .url(url + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
 
@@ -128,7 +128,7 @@ public class TrelloAPI {
      */
     public Board getBoardInfo() throws IOException {
         //HTTP request to access the board
-        Response response = this.httpRequest("", this.boardId, this.boardURL);
+        var response = this.httpRequest("", this.boardId, this.boardURL);
 
         // map http response to the class Board
         return mapper.readValue(response.body().string(), Board.class);
@@ -162,7 +162,7 @@ public class TrelloAPI {
      */
     public List[] getBoardLists() throws IOException {
         //HTTP request to access the lists
-        Response response = this.httpRequest("lists", this.boardId, this.boardURL);
+        var response = this.httpRequest("lists", this.boardId, this.boardURL);
 
         // map http response to the class List
         return mapper.readValue(response.body().string(), List[].class);
@@ -173,8 +173,7 @@ public class TrelloAPI {
      * @return The list in the board identified by the board id.
      */
     public List getList(String listName) throws IOException {
-        var lists = this.getBoardLists();
-        for (List list : lists) {
+        for (var list : this.getBoardLists()) {
             if (list.getName().equals(listName)) {
                 return list;
             }
@@ -188,7 +187,7 @@ public class TrelloAPI {
      */
     public Card[] getBoardCards() throws IOException {
         //HTTP request to access all cards in the board
-        Response response = this.httpRequest("cards", this.boardId, this.boardURL);
+        var response = this.httpRequest("cards", this.boardId, this.boardURL);
 
         // map http response to the class Card
         return mapper.readValue(response.body().string(), Card[].class);
@@ -241,7 +240,7 @@ public class TrelloAPI {
      */
     public Card[] getListCards(String listId) throws IOException {
         //HTTP request to access a List
-        Response response = this.httpRequest("cards", listId, this.listURL);
+        var response = this.httpRequest("cards", listId, this.listURL);
 
         // map http response to the class List
         return mapper.readValue(response.body().string(), Card[].class);
@@ -280,7 +279,7 @@ public class TrelloAPI {
      */
     public Member[] getMemberOfCard(String cardId) throws IOException {
         //HTTP request to access all Members of a Card
-        Response response = this.httpRequest("members", cardId, this.cardURL);
+        var response = this.httpRequest("members", cardId, this.cardURL);
 
         // map http response to the class Member
         return mapper.readValue(response.body().string(), Member[].class);
@@ -295,13 +294,13 @@ public class TrelloAPI {
         // flag to see if we've found the start date
         boolean startDateFound = false;
         // initialize list of dates
-        String[] dates = new String[2];
+        var dates = new String[2];
 
         // get the list of all ceremonies
         var list = this.getList("Ceremonies - Sprint " + sprintNumber);
 
         // Iterate over all cards in the list
-        for (Card c : this.getListCards(list.getId())) {
+        for (var c : this.getListCards(list.getId())) {
             // search for due date of Sprint Planning that is equal to Sprint start date
             if (c.name.equals("Sprint Planning - Sprint " + sprintNumber)) {
                 dates[0] = c.getDueDate();
@@ -329,7 +328,7 @@ public class TrelloAPI {
         var list = this.getList("Ceremonies - Sprint " + sprintNumber);
 
         // Iterate over all cards in the list
-        for (Card c : this.getListCards(list.getId())) {
+        for (var c : this.getListCards(list.getId())) {
             // get the Sprint sprintType's description
             if (c.name.equals("Sprint " + sprintType + " - Sprint " + sprintNumber)) {
                 return c.getDescription();
@@ -349,7 +348,7 @@ public class TrelloAPI {
 
         // get specific list
         var list = this.getList("Done - Sprint " + sprintNumber);
-        for (Card card : this.getListCards(list.getId())) {
+        for (var card : this.getListCards(list.getId())) {
             doneItems.add(card.name);
         }
 
@@ -364,7 +363,7 @@ public class TrelloAPI {
         var numberOfCeremonies = 0;
         var ceremoniesLists = this.queryLists("Ceremonies");
 
-        for (List ceremoniesList : ceremoniesLists) {
+        for (var ceremoniesList : ceremoniesLists) {
             var ceremoniesListCards = this.getListCards(ceremoniesList.id);
 
             numberOfCeremonies += ceremoniesListCards.length;
@@ -518,7 +517,7 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery) throws IOException {
-        Pattern pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
+        var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
 
         var hoursPerUser = new ArrayList<HoursPerUser>();
         var listOfCeremonies = this.queryLists(listQuery);

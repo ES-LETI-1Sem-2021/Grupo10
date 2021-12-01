@@ -35,7 +35,6 @@ public class TrelloAPITests {
         );
     }
 
-
     @Test
     public void numberOfBoards() throws IOException {
         Assertions.assertEquals(2, this.api.getBoards().length);
@@ -43,7 +42,7 @@ public class TrelloAPITests {
 
     @Test
     public void sprintDates() throws IOException {
-        String[] dates = {"2021-10-09", "2021-10-30"};
+        var dates = new String[]{"2021-10-09", "2021-10-30"};
         Assertions.assertArrayEquals(dates, this.api.getSprintDates(1));
     }
 
@@ -54,15 +53,15 @@ public class TrelloAPITests {
 
     @Test
     public void listAttributes() throws IOException {
-        TrelloAPI.List list = this.api.getBoardLists()[0];
+        var list = this.api.getBoardLists()[0];
         Assertions.assertEquals("Product Backlog", list.getName());
         Assertions.assertEquals("614df1f97143f252bad74c5b", list.getId());
     }
 
     @Test
     public void cardAttributes() throws IOException {
-        TrelloAPI.Card[] card = this.api.getBoardCards();
-        for (TrelloAPI.Card c : card) {
+        var card = this.api.getBoardCards();
+        for (var c : card) {
             if (c.getId().equals("6161b8f50e32ff864a928bd6")) {
                 Assertions.assertEquals("Sprint Planning - Sprint 1", c.getName());
                 Assertions.assertEquals("6161b8f50e32ff864a928bd6", c.getId());
@@ -74,7 +73,7 @@ public class TrelloAPITests {
 
     @Test
     public void doneProductBacklog() throws IOException {
-        ArrayList<String> backlogProducts = new ArrayList<>(
+        var backlogProducts = new ArrayList<>(
                 Arrays.asList("APIs - Sprint 1", "Home UI - Sprint 1", "12. Descrição do projeto - Sprint 1",
                         "1. Identificação do Projeto - Sprint 1", "3. Início do projeto - Sprint 1",
                         "Organização do Trello - Sprint 1", "4. Datas dos Sprints - Sprint 1",
@@ -89,7 +88,7 @@ public class TrelloAPITests {
 
     @Test
     public void sprintCeremonyDescription() throws IOException {
-        String planningDescription = """
+        var planningDescription = """
                 # Planeamento realizado
                 - Identificação do Product Backlog;
                 - Definida a duração do Sprint (3 semanas);
@@ -109,7 +108,7 @@ public class TrelloAPITests {
                 this.api.getCeremonyDescription("Planning", 1)
         );
 
-        String reviewDescription = """
+        var reviewDescription = """
                 Todos os objetivos (Goals) propostos no Sprint Planning foram implementados com sucesso. Daqui saiu a versão 0.1 do trabalho.
                 ## Este Sprint teve como resultados:
                 > - Uma GUI funcional, onde é possivel observar:
@@ -128,7 +127,7 @@ public class TrelloAPITests {
                 this.api.getCeremonyDescription("Review", 1)
         );
 
-        String retrospectiveDescription = """
+        var retrospectiveDescription = """
                 # Críticas positivas:
                 - Estimativa da duração do sprint
                 - Organização do trabalho a fazer
@@ -180,9 +179,9 @@ public class TrelloAPITests {
     @Test
     public void numberOfHoursPerUser() throws IOException {
         var out = this.api.getTotalHoursByUser("Done", "Sprint 1");
-        String[] users = new String[]{"duartecasaleiro", "oleksandrkobelyuk", "rfgoo_iscte", "mamra2"};
-        Double[] spent = new Double[]{7.0, 3.0, 14.0, 8.0};
-        Double[] estimated = new Double[]{7.0, 3.0, 14.0, 8.0};
+        var users = new String[]{"duartecasaleiro", "oleksandrkobelyuk", "rfgoo_iscte", "mamra2"};
+        var spent = new Double[]{7.0, 3.0, 14.0, 8.0};
+        var estimated = new Double[]{7.0, 3.0, 14.0, 8.0};
 
         for (int i = 0; i < out.size(); i++) {
             Assertions.assertEquals(users[i], out.get(i).getUser());

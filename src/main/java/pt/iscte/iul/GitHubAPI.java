@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -228,11 +227,11 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public String getFile(String branch, String path) throws IOException {
-        Request request = new Request.Builder()
+        var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseRawUrl + "/" + branch + path).build();
 
-        Response resp = this.httpClient.newCall(request).execute();
+        var resp = this.httpClient.newCall(request).execute();
 
         return Objects.requireNonNull(resp.body()).string();
     }
@@ -272,7 +271,7 @@ public class GitHubAPI {
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseAPIUrl + "/branches").build();
 
-        Response resp = this.httpClient.newCall(request).execute();
+        var resp = this.httpClient.newCall(request).execute();
         return this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Branch[].class);
     }
 
@@ -357,7 +356,7 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public Commits getCommits(String branch, String user) throws IOException {
-        List<Commit> commitBuffer = new ArrayList<>();
+        var commitBuffer = new ArrayList<Commit>();
 
         var currentPage = 1;
         // this way we can easily set the page number
@@ -368,7 +367,7 @@ public class GitHubAPI {
                     .addHeader("Authorization", "Bearer " + apiKey)
                     .url(String.format(formattableUrl, currentPage++)).build();
 
-            Response resp = this.httpClient.newCall(request).execute();
+            var resp = this.httpClient.newCall(request).execute();
 
             try {
                 var ret = this.mapper.readValue(
@@ -431,7 +430,7 @@ public class GitHubAPI {
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseAPIUrl + "/tags").build();
 
-        Response resp = this.httpClient.newCall(request).execute();
+        var resp = this.httpClient.newCall(request).execute();
         var mapped = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Tag[].class);
         for (var tag : mapped) {
             request = new Request.Builder()
@@ -461,8 +460,8 @@ public class GitHubAPI {
         var csv = new ArrayList<String>();
         csv.add("Contributor,Branch,Mensagem do Commit,Data do Commit (MM/DD/YYYY)\n");
 
-        String previousUser = "";
-        String previousBranch = "";
+        var previousUser = "";
+        var previousBranch = "";
         for (var user : this.getCollaborators()) {
             for (var branch : this.getBranches()) {
                 var commitsForUser = this.getCommits(branch.getName(), user.getLogin());

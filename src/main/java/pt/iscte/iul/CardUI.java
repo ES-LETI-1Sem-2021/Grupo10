@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.io.IOException;
 
+import static javax.swing.BorderFactory.createEmptyBorder;
+
 /**
  * Class to show the card's information on the UI.
  *
@@ -55,7 +57,16 @@ public class CardUI extends Thread {
         edt.setVisible(true);
         edt.setBounds(75, 100, 500, 600);
 
-        this.frame.add(edt);
+        scrollerLeft.setViewportView(edt);
+        scrollerLeft.add(dateLabel);
+
+        scrollerLeft.setBounds(15, 0, ((frame.getWidth() - 100) / 2), frame.getHeight());
+        scrollerLeft.setBorder(createEmptyBorder());
+
+        frame.add(scrollerLeft);
+        frame.setVisible(true);
+
+        //this.frame.add(edt);
     }
 
     public void run() {

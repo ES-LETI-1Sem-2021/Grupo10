@@ -60,7 +60,7 @@ public class HomeUI implements ActionListener {
         this.trelloBoardName = new JTextField();
         this.trelloKey = new JTextField();
 
-        JButton searchButton = new JButton("Search");
+        var searchButton = new JButton("Search");
 
         showFrame(frame);
         addImages();
@@ -180,21 +180,26 @@ public class HomeUI implements ActionListener {
      * or only calls {@link Action#doAction(JFrame, String[], String[], int)}
      * userGitInfo[gitOwner, gitRepo, gitToken]
      * userTrelloInfo[trelloUser, trelloKey, trelloToken]
+     *
      * @author Rodrigo Guerreiro
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        String[] userGitInfo = {this.gitOwner.getText(), this.gitRepo.getText(), this.gitToken.getText()};
-        String[] userTrelloInfo = {this.trelloBoardName.getText(), this.trelloKey.getText(), this.trelloToken.getText()};
+        var userGitInfo = new String[]{this.gitOwner.getText(), this.gitRepo.getText(), this.gitToken.getText()};
+        var userTrelloInfo = new String[]{this.trelloBoardName.getText(), this.trelloKey.getText(), this.trelloToken.getText()};
 
-        int i = 0;
+        var i = 0;
         i = allFieldsFull(userGitInfo, userTrelloInfo, i);
 
-        int opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
+        var opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
                 "Warning?", JOptionPane.YES_NO_OPTION);
 
         if (opc == JOptionPane.YES_OPTION && i == 0) {
-            Action.saveData(userGitInfo, userTrelloInfo, "data/user_data.txt");
+            try {
+                Action.saveData(userGitInfo, userTrelloInfo, "data/user_data.txt");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             try {
                 Action.doAction(this.frame, userGitInfo, userTrelloInfo, 1);
             } catch (IOException ex) {
@@ -215,18 +220,18 @@ public class HomeUI implements ActionListener {
      *
      * @param userGitInfo    user info
      * @param userTrelloInfo user info
-     * @param i                a value
+     * @param i              a value
      * @return the value 1 if is empty, 0 otherwise.
      */
     private int allFieldsFull(String[] userGitInfo, String[] userTrelloInfo, int i) {
-        for (String s : userGitInfo) {
+        for (var s : userGitInfo) {
             if (s.isEmpty()) {
                 i = 1;
                 break;
             }
         }
 
-        for (String s1 : userTrelloInfo) {
+        for (var s1 : userTrelloInfo) {
             if (s1.isEmpty()) {
                 i = 1;
                 break;

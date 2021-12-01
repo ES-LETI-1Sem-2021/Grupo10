@@ -30,7 +30,7 @@ public class JElements implements ActionListener {
         this.spinner = new JSpinner(model);
         this.spinner.setBounds(((frame.getWidth() - 200)), ((frame.getHeight() / 2) - 65), 100, 40);
 
-        addTable(this.hoursPerUsers, this.frame , this.spinner);
+        addTable(this.hoursPerUsers, this.frame, this.spinner);
 
         //Button
         this.button = new JButton("Calculate new Cost");
@@ -47,7 +47,7 @@ public class JElements implements ActionListener {
     }
 
     //Table
-    public void addTable(ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers, JFrame frame , JSpinner spinner){
+    public void addTable(ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers, JFrame frame, JSpinner spinner) {
         double totalEstimated = 0;
         double totalSpent = 0;
 
@@ -60,12 +60,12 @@ public class JElements implements ActionListener {
             data[cont + 1] = new String[]{hoursPerUsers.get(cont).getUser(),
                     String.valueOf(hoursPerUsers.get(cont).getEstimatedHours()),
                     String.valueOf(hoursPerUsers.get(cont).getSpentHours()),
-                    String.valueOf(hoursPerUsers.get(cont).getSpentHours()*20)};
+                    String.valueOf(hoursPerUsers.get(cont).getSpentHours() * 20)};
             totalEstimated += hoursPerUsers.get(cont).getEstimatedHours();
             totalSpent += hoursPerUsers.get(cont).getSpentHours();
         }
 
-        double totalCost = totalSpent * (int)spinner.getValue();
+        double totalCost = totalSpent * (int) spinner.getValue();
 
         data[hoursPerUsers.size() + 1] = new String[]{"Total", String.valueOf(totalEstimated),
                 String.valueOf(totalSpent),
@@ -87,32 +87,31 @@ public class JElements implements ActionListener {
      * Function that adds a pie chart to the ui as well as a table with the same information.
      * This function, by calling the getTotalHoursByUser severely increases the processing time.
      *
-     * @param frame the frame to display the table
+     * @param frame      the frame to display the table
      * @param sprintName the name of the sprint blank if total.
-     * @param boardID   the board id.
-     * @param trelloAPI the trello instance.
+     * @param trelloAPI  the trello instance.
      * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
      */
-    public static void addHoursInfo(JFrame frame, String sprintName, String boardID, TrelloAPI trelloAPI) throws IOException {
-        ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"", sprintName);
+    public static void addHoursInfo(JFrame frame, String sprintName, TrelloAPI trelloAPI) throws IOException {
+        ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser("", sprintName);
 
         // Pie Charts
-        DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
-        DefaultPieDataset<String> spentHoursDataset= new DefaultPieDataset<>();
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+        DefaultPieDataset<String> spentHoursDataset = new DefaultPieDataset<>();
 
-        hoursPerUsers.forEach(e->{
-            dataset.setValue(e.getUser(),e.getEstimatedHours());
-            spentHoursDataset.setValue(e.getUser(),e.getEstimatedHours());
+        hoursPerUsers.forEach(e -> {
+            dataset.setValue(e.getUser(), e.getEstimatedHours());
+            spentHoursDataset.setValue(e.getUser(), e.getEstimatedHours());
         });
         JFreeChart chart = ChartFactory.createPieChart(
                 "Hours Estimated by user " + sprintName,
-                dataset, true,true,false);
+                dataset, true, true, false);
 
         JFreeChart spentHoursChart = ChartFactory.createPieChart(
                 "Hours Spent by user " + sprintName,
-                dataset, true,true,false);
+                dataset, true, true, false);
         ChartPanel cp = new ChartPanel(chart);
         cp.setBounds(((frame.getWidth() / 2) - 30), 0, 300, 250);
         cp.setVisible(true);
@@ -133,26 +132,25 @@ public class JElements implements ActionListener {
      * Function that adds a table with the start and end date of each sprint
      *
      * @param trelloAPI the trello instance
-     * @param frame the frame to display the table
-     * @param boardID   the board id.
+     * @param frame     the frame to display the table
      * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
      */
-    public static void addSprintDatesTable(TrelloAPI trelloAPI, JFrame frame, String boardID) throws IOException {
+    public static void addSprintDatesTable(TrelloAPI trelloAPI, JFrame frame) throws IOException {
 
-        int numberOfSprints = trelloAPI.getListsThatContain(boardID, "Done - Sprint").size();
+        int numberOfSprints = trelloAPI.queryLists("Done - Sprint").size();
 
-        String[][] dates = new String[numberOfSprints + 1][3];
-        String[] names = {"Sprint", "Start Date", "End Date"};
+        var dates = new String[numberOfSprints + 1][3];
+        var names = new String[]{"Sprint", "Start Date", "End Date"};
         dates[0] = names;
 
-        for (int i = 0; i < numberOfSprints; i++) {
-            String[] datesOfSprint = trelloAPI.getSprintDates(boardID, i+1);
+        for (var i = 0; i < numberOfSprints; i++) {
+            var datesOfSprint = trelloAPI.getSprintDates(i + 1);
             dates[i + 1] = new String[]{String.valueOf(i + 1), datesOfSprint[0], datesOfSprint[1]};
         }
 
-        JTable table = new JTable(dates, names);
+        var table = new JTable(dates, names);
         table.setBounds(((frame.getWidth() / 2) + 95), (frame.getHeight() - 150), 400, 100);
         table.setVisible(true);
         table.setEnabled(false);
@@ -167,30 +165,29 @@ public class JElements implements ActionListener {
      * Function that adds a table with the hours spent by the team and by member in ceremonies
      *
      * @param trelloAPI the trello instance
-     * @param frame the frame to display the table
-     * @param boardID   the board id.
+     * @param frame     the frame to display the table
      * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
      */
-    public static void addHoursByCeremony(TrelloAPI trelloAPI, JFrame frame, String boardID) throws IOException {
-        ArrayList<TrelloAPI.HoursPerUser> hoursPerUser = trelloAPI.getTotalHoursByUser(boardID,"Ceremonies", "");
+    public static void addHoursByCeremony(TrelloAPI trelloAPI, JFrame frame) throws IOException {
+        var hoursPerUser = trelloAPI.getTotalHoursByUser("Ceremonies", "");
 
-        String[][] content = new String[hoursPerUser.size() + 2][3];
-        String[] names = {"Members", "Nº Ceremonies", "Total Hours"};
+        var content = new String[hoursPerUser.size() + 2][3];
+        var names = new String[]{"Members", "Nº Ceremonies", "Total Hours"};
         content[0] = names;
 
-        for (int i = 0; i != hoursPerUser.size(); i++) {
+        for (var i = 0; i != hoursPerUser.size(); i++) {
             content[i + 1] = new String[]{hoursPerUser.get(i).getUser(),
-                    String.valueOf(trelloAPI.getTotalNumberOfCeremonies(boardID)),
+                    String.valueOf(trelloAPI.getTotalNumberOfCeremonies()),
                     String.valueOf(hoursPerUser.get(i).getSpentHours())};
         }
 
         content[hoursPerUser.size() + 1] = new String[]{"Total",
-                String.valueOf(trelloAPI.getTotalNumberOfCeremonies(boardID)),
-                String.valueOf(trelloAPI.getTotalHoursCeremony(boardID))};
+                String.valueOf(trelloAPI.getTotalNumberOfCeremonies()),
+                String.valueOf(trelloAPI.getTotalCeremonyHours())};
 
-        JTable table = new JTable(content, names);
+        var table = new JTable(content, names);
         table.setBounds(((frame.getWidth() / 2) + 150), ((frame.getHeight() / 2) + 70), 300, 100);
         table.setVisible(true);
         table.setEnabled(false);
@@ -203,17 +200,15 @@ public class JElements implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
-        double totalMoney = 0;
-        int multiplier = (int)spinner.getValue();
-        for(int i =1; i !=hoursPerUsers.size()+1;i++){
-            double obj = this.hoursPerUsers.get(i-1).getSpentHours() * multiplier;
-            this.table.setValueAt(String.valueOf(obj),i,3);
+        var totalMoney = 0;
+        var multiplier = (int)spinner.getValue();
+        for (var i = 1; i != hoursPerUsers.size() + 1; i++) {
+            var obj = this.hoursPerUsers.get(i - 1).getSpentHours() * multiplier;
+            this.table.setValueAt(String.valueOf(obj), i, 3);
             totalMoney += obj;
         }
 
-        this.table.setValueAt(String.valueOf(totalMoney),hoursPerUsers.size() + 1,3);
+        this.table.setValueAt(String.valueOf(totalMoney), hoursPerUsers.size() + 1, 3);
         this.frame.repaint();
-
     }
 }

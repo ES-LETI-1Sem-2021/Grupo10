@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 
 import static javax.swing.BorderFactory.createEmptyBorder;
 
-
 /**
  * Class where all the magic happens.
  *
@@ -23,10 +22,10 @@ public class Action {
      * Function that does everything.
      * Connects the UI's to the api's.
      *
-     * @param frame            The frame to attach the info.
+     * @param frame          The frame to attach the info.
      * @param userGitInfo    String array with[git_owner, git_repo, git_token]
      * @param userTrelloInfo String array with [trello_name, trello_key, trello_token]
-     * @param flag             flag == 1 if it is needed to scale the window size, any number otherwise.
+     * @param flag           flag == 1 if it is needed to scale the window size, any number otherwise.
      * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      */
@@ -34,17 +33,9 @@ public class Action {
         var gitApi = new GitHubAPI(userGitInfo[0], userGitInfo[1], userGitInfo[2]);
         var trelloAPI = new TrelloAPI(userTrelloInfo[0], userTrelloInfo[1], userTrelloInfo[2]);
 
-        String boardID = null;
-        TrelloAPI.Board[] boards = trelloAPI.getBoards();
-        for (TrelloAPI.Board b : boards) {
-            if (b.getName().equals(userTrelloInfo[0])) {
-                boardID = b.getId();
-            }
-        }
-
         clearFrame(frame);
         //Adiciona os menus
-        new Menus(frame, gitApi, trelloAPI, boardID);
+        new Menus(frame, gitApi, trelloAPI);
 
         // aumenta o tamanho do ecra apenas usado a primeira vez que esta função é executada
         if (flag == 1) {
@@ -53,7 +44,7 @@ public class Action {
             frame.setSize(screenSize.width, screenSize.height - 100);
         }
         //if (dataInicio == null) throw new AssertionError();
-        homeScreen(frame, gitApi, trelloAPI, boardID);
+        homeScreen(frame, gitApi, trelloAPI);
     }
 
     /**
@@ -61,9 +52,10 @@ public class Action {
      *
      * @param userGitInfo    info needed for git api.
      * @param userTrelloInfo info needed for trello api.
+     * @throws IOException
      * @author Rodrigo Guerreiro
      */
-    public static void saveData(String[] userGitInfo, String[] userTrelloInfo, String filename) {
+    public static void saveData(String[] userGitInfo, String[] userTrelloInfo, String filename) throws IOException {
         DataSaver.save(userGitInfo, userTrelloInfo, filename);
     }
 
@@ -75,9 +67,9 @@ public class Action {
      */
 
     public static String convertMarkdownToHTML(String markdown) {
-        Parser parser = Parser.builder().build();
-        Node document = parser.parse(markdown);
-        HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
+        var parser = Parser.builder().build();
+        var document = parser.parse(markdown);
+        var htmlRenderer = HtmlRenderer.builder().build();
         return htmlRenderer.render(document);
     }
 
@@ -102,8 +94,8 @@ public class Action {
      * @author Rodrigo Guerreiro
      */
     public static void clearTheFile(String filename) throws IOException {
-        FileWriter fwOb = new FileWriter(filename, false);
-        PrintWriter pwOb = new PrintWriter(fwOb, false);
+        var fwOb = new FileWriter(filename, false);
+        var pwOb = new PrintWriter(fwOb, false);
         pwOb.flush();
         pwOb.close();
         fwOb.close();
@@ -112,26 +104,26 @@ public class Action {
     /**
      * Function that shows the default information on the screen.
      *
-     * @param frame the frame to show the info.
-     * @param gitHubAPI  the github api instance.
-     * @param trelloAPI  the trello api instance.
+     * @param frame     the frame to show the info.
+     * @param gitHubAPI the github api instance.
+     * @param trelloAPI the trello api instance.
      * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      */
-    public static void homeScreen(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI, String boardID) throws IOException {
-        GitHubAPI.Date dataInicio = gitHubAPI.getStartTime();
-        String readme = gitHubAPI.getFile("master", "/README.md");
+    public static void homeScreen(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI) throws IOException {
+        var dataInicio = gitHubAPI.getStartTime();
+        var readme = gitHubAPI.getFile("master", "/README.md");
 
-        JEditorPane editorPane = new JEditorPane();
-        JScrollPane scrollerLeft = new JScrollPane();
+        var editorPane = new JEditorPane();
+        var scrollerLeft = new JScrollPane();
 
         //Label com a data de inicio do trabalho
-        JLabel labelData = new JLabel("Project's start date: " + dataInicio.toString());
+        var labelData = new JLabel("Project's start date: " + dataInicio.toString());
         labelData.setBounds(10, 5, 250, 30);
         editorPane.add(labelData);
 
         //Label com o nome do projeto (nome do repo)
-        JLabel labelProjName = new JLabel("Project's name: " + trelloAPI.getBoard(boardID).getName());
+        var labelProjName = new JLabel("Project's name: " + trelloAPI.getBoardInfo().getName());
         labelProjName.setBounds(260, 5, 300, 30);
         editorPane.add(labelProjName);
 
@@ -154,9 +146,9 @@ public class Action {
         // Threading
         SwingUtilities.invokeLater(() -> {
             try {
-                JElements.addHoursInfo(frame,"",boardID,trelloAPI);
-                JElements.addSprintDatesTable(trelloAPI, frame, boardID);
-                JElements.addHoursByCeremony(trelloAPI, frame, boardID);
+                JElements.addHoursInfo(frame, "", trelloAPI);
+                JElements.addSprintDatesTable(trelloAPI, frame);
+                JElements.addHoursByCeremony(trelloAPI, frame);
                 frame.repaint();
             } catch (IOException e) {
                 e.printStackTrace();

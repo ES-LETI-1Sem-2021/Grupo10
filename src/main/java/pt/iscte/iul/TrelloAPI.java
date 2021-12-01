@@ -32,9 +32,10 @@ public class TrelloAPI {
 
     /**
      * Base class for requesting information from the Trello API.
+     *
      * @param boardName Name of the board.
-     * @param apiKey Trello API access key.
-     * @param apiToken Trello API access token.
+     * @param apiKey    Trello API access key.
+     * @param apiToken  Trello API access token.
      */
     public TrelloAPI(String boardName, String apiKey, String apiToken) throws IOException {
         this.apiKey = apiKey;
@@ -107,9 +108,9 @@ public class TrelloAPI {
     }
 
     /**
-     * @param component Component that we want to access (list, card, board, etc).
+     * @param component   Component that we want to access (list, card, board, etc).
      * @param componentId ID of the component that we want to access.
-     * @param url Url of the component (board url, list url, etc).
+     * @param url         Url of the component (board url, list url, etc).
      * @return A {@link Response} object.
      * @throws IOException If the request fails.
      */
@@ -317,7 +318,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param sprintType Spring type.
+     * @param sprintType   Spring type.
      * @param sprintNumber Spring number.
      * @return Description of the ceremony in question.
      * @throws IOException If the request fails.
@@ -492,7 +493,7 @@ public class TrelloAPI {
         }
     }
 
-    private void addObjectToList(Card card, Pattern pattern, ArrayList<HoursPerUser> hoursPerUser ) throws IOException {
+    private void addObjectToList(Card card, Pattern pattern, ArrayList<HoursPerUser> hoursPerUser) throws IOException {
         for (var member : this.getMemberOfCard(card.getId())) {
             if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
                 hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
@@ -512,7 +513,7 @@ public class TrelloAPI {
 
     /**
      * @param listQuery query for the list name.
-     * @param cardQuery  query for the card name.
+     * @param cardQuery query for the card name.
      * @return the total hours spent by user in a list of {@link HoursPerUser}
      * @throws IOException If the request fails.
      */

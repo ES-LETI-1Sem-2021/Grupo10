@@ -4,22 +4,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class ActionTests {
 
     @Test
-    public void saveDataTest() throws FileNotFoundException {
-
-        String[] str = {"str_line1", "str_line2", "str_line3"};
-        Action.saveData(str,str,"test_files/data_saver_tests.txt" );
+    public void saveDataTest() throws IOException {
+        var str = new String[]{"str_line1", "str_line2", "str_line3"};
+        Action.saveData(str, str, "test_files/data_saver_tests.txt");
 
         Assertions.assertArrayEquals(str, DataReader.getUserGitData("test_files/data_saver_tests.txt"));
         Assertions.assertArrayEquals(str, DataReader.getUserTrelloData("test_files/data_saver_tests.txt"));
     }
 
     @Test
-    public void convertMarkdownToHTMLTest(){
-        String mdText = """
+    public void convertMarkdownToHTMLTest() {
+        var mdText = """
                 # Críticas positivas:
                 - Estimativa da duração do sprint
                 - Organização do trabalho a fazer

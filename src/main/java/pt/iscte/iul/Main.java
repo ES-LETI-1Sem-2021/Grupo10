@@ -9,7 +9,7 @@ import java.io.IOException;
  *
  * @author Rodrigo Guerreiro.
  */
-public class Main{
+public class Main {
 
     /**
      * Main function to start the application.
@@ -25,21 +25,18 @@ public class Main{
      * @author Rodrigo Guerreiro
      */
     public static void main(String[] args) throws IOException {
-        JFrame frame = new JFrame();
-        String data = "data/user_data.txt";
-        File dataFile = new File(data);
+        var frame = new JFrame();
+        var data = "data/user_data.txt";
+        var dataFile = new File(data);
         if (DataSaver.exists(dataFile) && dataFile.length() != 0) {
-            int opc = HomeUI.pop();
+            var opc = HomeUI.pop();
             if (opc == JOptionPane.YES_OPTION) {
-                String[] trello = DataReader.getUserTrelloData(data);
-                String[] git = DataReader.getUserGitData(data);
+                var trello = DataReader.getUserTrelloData(data);
+                var git = DataReader.getUserGitData(data);
 
                 HomeUI.showFrame(frame);
                 Action.doAction(frame, git, trello, 1);
-            } /*else if (opc == JOptionPane.NO_OPTION) {
-                new HomeUI();
             }
-            */
         } else {
             new HomeUI();
         }

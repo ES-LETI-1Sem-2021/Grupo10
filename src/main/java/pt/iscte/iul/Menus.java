@@ -22,7 +22,6 @@ import java.util.List;
 
 public class Menus implements ActionListener {
     private final JFrame frame;
-    private final String boardID;
     private final JMenuBar menuBar;
     private final GitHubAPI gitHubAPI;
     private final TrelloAPI trelloAPI;
@@ -34,19 +33,16 @@ public class Menus implements ActionListener {
     /**
      * Constructor method to inicialize the variables in order to create the menus.
      *
-     * @param frame   The frame where the menus will be attached on.
-     * @param gitHubAPI    Instance of GitHub Api.
-     * @param trelloAPI    Instance of Trello Api.
-     * @param boardID The ID of the board to get the lists and cards.
+     * @param frame     The frame where the menus will be attached on.
+     * @param gitHubAPI Instance of GitHub Api.
+     * @param trelloAPI Instance of Trello Api.
      * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      */
-    public Menus(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI, String boardID) throws IOException {
+    public Menus(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI) throws IOException {
         this.frame = frame;
         this.gitHubAPI = gitHubAPI;
         this.trelloAPI = trelloAPI;
-
-        this.boardID = boardID;
 
         this.menuBar = new JMenuBar();
 
@@ -65,25 +61,25 @@ public class Menus implements ActionListener {
      * @author Rodrigo Guerreiro
      */
     private void optionsMenus() {
-        JMenu options = new JMenu("Options");
+        var options = new JMenu("Options");
         this.optionsMenus = new JMenuItem[4];
 
-        JMenuItem defaultScreen = new JMenuItem("Home Screen");
+        var defaultScreen = new JMenuItem("Home Screen");
         defaultScreen.addActionListener(this);
         options.add(defaultScreen);
         this.optionsMenus[0] = defaultScreen;
 
-        JMenuItem exportToCsv = new JMenuItem("Export to CSV");
+        var exportToCsv = new JMenuItem("Export to CSV");
         exportToCsv.addActionListener(this);
         options.add(exportToCsv);
         this.optionsMenus[0] = exportToCsv;
 
-        JMenuItem clearCache = new JMenuItem("Clear data file");
+        var clearCache = new JMenuItem("Clear data file");
         clearCache.addActionListener(this);
         options.add(clearCache);
         this.optionsMenus[1] = clearCache;
 
-        JMenuItem logout = new JMenuItem("Logout");
+        var logout = new JMenuItem("Logout");
         logout.addActionListener(this);
         options.add(logout);
         this.optionsMenus[2] = logout;
@@ -98,9 +94,9 @@ public class Menus implements ActionListener {
      * @author Rodrigo Guerreiro
      */
     public void gitMenus() throws IOException {
-        JMenu colabs = new JMenu("Collaborators");
+        var colabs = new JMenu("Collaborators");
         for (var col : gitHubAPI.getCollaborators()) {
-            JMenuItem item = getjMenuItem(col);
+            var item = getjMenuItem(col);
 
             item.addActionListener(this);
             colabs.add(item);
@@ -154,17 +150,17 @@ public class Menus implements ActionListener {
      * @author Rodrigo Guerreiro
      */
     private void listsMenus() throws IOException {
-        JMenu listas = new JMenu("Listas");
+        var listas = new JMenu("Listas");
 
-        TrelloAPI.List[] lists = trelloAPI.getBoardLists(boardID);
+        var lists = trelloAPI.getBoardLists();
 
         if (lists != null) {
-            for (TrelloAPI.List l : lists) {
-                JMenu listMenu = new JMenu(l.getName());
-                TrelloAPI.Card[] cards = trelloAPI.getListCards(l.getId());
+            for (var l : lists) {
+                var listMenu = new JMenu(l.getName());
+                var cards = trelloAPI.getListCards(l.getId());
 
-                for (TrelloAPI.Card card : cards) {
-                    JMenuItem item2 = new JMenuItem(card.getName());
+                for (var card : cards) {
+                    var item2 = new JMenuItem(card.getName());
                     arrayCards.add(new ItemCard<>(card, item2));
                     item2.addActionListener(this);
                     listMenu.add(item2);
@@ -193,7 +189,7 @@ public class Menus implements ActionListener {
         listsActionPerformed(e);
 
         //Options menus
-        for (JMenuItem opm : optionsMenus) {
+        for (var opm : optionsMenus) {
             if (e.getSource() == opm) {
                 try {
                     optionsActionPerformed(opm);
@@ -215,7 +211,7 @@ public class Menus implements ActionListener {
         switch (opm.getText()) {
             case "Home Screen" -> {
                 Action.clearFrame(frame);
-                Action.homeScreen(this.frame, this.gitHubAPI, this.trelloAPI, this.boardID);
+                Action.homeScreen(this.frame, this.gitHubAPI, this.trelloAPI);
             }
             case "Clear data file" -> Action.clearTheFile("data/user_data.txt");
             case "Logout" -> {
@@ -242,7 +238,7 @@ public class Menus implements ActionListener {
         this.arrayCards.stream().filter(carditemCard -> e.getSource() == carditemCard.getItem())
                 .forEach(carditemCard -> {
                     try {
-                        CardUI thread = new CardUI(carditemCard.getObject(), this.frame, trelloAPI, boardID);
+                        CardUI thread = new CardUI(carditemCard.getObject(), this.frame, trelloAPI);
                         thread.start();
                     } catch (IOException ex) {
                         ex.printStackTrace();

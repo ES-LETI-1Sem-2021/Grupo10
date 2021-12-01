@@ -90,7 +90,7 @@ public class GitHubAPITests {
 
         var names = new String[]{"Sprint_1", "DashboardSCRUM-0.2"};
         var dates = new GitHubAPI.Date[]{new GitHubAPI.Date("2021-10-29"), new GitHubAPI.Date("2021-11-20")};
-        for (int i = 0; i < tags.size(); i++) {
+        for (var i = 0; i < tags.size(); i++) {
             Assertions.assertEquals(names[i], tags.get(i).name());
             Assertions.assertEquals(dates[i], tags.get(i).date());
         }

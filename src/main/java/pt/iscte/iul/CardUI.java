@@ -10,14 +10,12 @@ import java.io.IOException;
  *
  * @author Rodrigo Guerreiro
  */
-public class CardUI extends Thread{
+public class CardUI extends Thread {
     private final TrelloAPI.Card card;
     private final JFrame frame;
     private final String dueDate;
     private final JLabel dateLabel = new JLabel();
     private final TrelloAPI trelloAPI;
-    private final String boardID;
-
 
     /**
      * Constructor method thar initializes all the needed variable
@@ -26,12 +24,11 @@ public class CardUI extends Thread{
      * @param frame The frame were the card will be shown.
      * @author Rodrigo Guerreiro
      */
-    public CardUI(@NotNull TrelloAPI.Card card, JFrame frame, TrelloAPI trelloAPI, String boardID) throws  IOException{
+    public CardUI(@NotNull TrelloAPI.Card card, JFrame frame, TrelloAPI trelloAPI) throws IOException {
         this.card = card;
         this.frame = frame;
         this.dueDate = card.getDueDate();
         this.trelloAPI = trelloAPI;
-        this.boardID = boardID;
         Action.clearFrame(frame);
 
         showCardInfo();
@@ -63,15 +60,15 @@ public class CardUI extends Thread{
         if (this.card.getName().contains("Sprint Retrospective")) {
             String splitString = this.card.getName().split(" - ")[1];
             try {
-                JElements.addHoursInfo(frame, splitString, this.boardID , trelloAPI);
-                new JElements(frame, trelloAPI.getTotalHoursByUser(boardID, splitString,""));
+                JElements.addHoursInfo(frame, splitString, trelloAPI);
+                new JElements(frame, trelloAPI.getTotalHoursByUser(splitString, ""));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                JElements.addHoursInfo(frame, card.getName(), this.boardID , trelloAPI);
-                new JElements(frame, trelloAPI.getTotalHoursByUser(boardID, card.getName(),""));
+                JElements.addHoursInfo(frame, card.getName(), trelloAPI);
+                new JElements(frame, trelloAPI.getTotalHoursByUser(card.getName(), ""));
             } catch (IOException e) {
                 e.printStackTrace();
             }

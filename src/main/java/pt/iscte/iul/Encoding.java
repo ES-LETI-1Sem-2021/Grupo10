@@ -8,6 +8,7 @@ import org.apache.commons.codec.binary.Base64;
 public class Encoding {
     /**
      * Encodes the given string into base64.
+     *
      * @param in Input string.
      * @return Encoded string.
      */
@@ -17,6 +18,7 @@ public class Encoding {
 
     /**
      * Decodes the given base64 string.
+     *
      * @param in Input string.
      * @return Decoded string.
      */

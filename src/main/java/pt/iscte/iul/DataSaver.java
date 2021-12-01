@@ -20,17 +20,9 @@ public class DataSaver {
      * @param filename       the name of the file to save the info.
      * @author Rodrigo Guerreiro
      */
-    public static void save(String[] userGitInfo, String[] userTrelloInfo, String filename) {
-
-        try {
-            File file = new File(filename);
-            //if (!file.exists()) {
-                //file.createNewFile();
-            //}
-            write(userGitInfo, userTrelloInfo, file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void save(String[] userGitInfo, String[] userTrelloInfo, String filename) throws IOException {
+        var file = new File(filename);
+        write(userGitInfo, userTrelloInfo, file);
     }
 
     /**
@@ -43,12 +35,12 @@ public class DataSaver {
      * @author Rodrigo Guerreiro
      */
     private static void write(String[] userGitInfo, String[] userTrelloInfo, File file) throws IOException {
-        FileWriter fileWriter = new FileWriter(file);
-        for (String g : userGitInfo) {
+        var fileWriter = new FileWriter(file);
+        for (var g : userGitInfo) {
             fileWriter.write(Encoding.encode(g) + "\n");
         }
 
-        for (String t : userTrelloInfo) {
+        for (var t : userTrelloInfo) {
             fileWriter.write(Encoding.encode(t) + "\n");
         }
 

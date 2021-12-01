@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-
 /**
  * Class to Read and decode the user information stored on a .txt file
  *
@@ -20,18 +19,15 @@ public class DataReader {
      * @return user_git_info. An array with the data saved in the .txt file, regarding the GitHUb api.
      * @author Rodrigo Guerreiro
      */
-    public static String[] getUserGitData(String data) {
-        String[] userGitInfo = {"", "", ""};
-        try {
-            File file = new File(data);
-            Scanner sc = new Scanner(file);
-            userGitInfo[0] = Encoding.decode(sc.nextLine());
-            userGitInfo[1] = Encoding.decode(sc.nextLine());
-            userGitInfo[2] = Encoding.decode(sc.nextLine());
-            sc.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public static String[] getUserGitData(String data) throws FileNotFoundException {
+        var userGitInfo = new String[]{"", "", ""};
+
+        var file = new File(data);
+        var sc = new Scanner(file);
+        userGitInfo[0] = Encoding.decode(sc.nextLine());
+        userGitInfo[1] = Encoding.decode(sc.nextLine());
+        userGitInfo[2] = Encoding.decode(sc.nextLine());
+        sc.close();
 
         return userGitInfo;
     }
@@ -47,10 +43,10 @@ public class DataReader {
      * @author Rodrigo Guerreiro
      */
     public static String[] getUserTrelloData(String data) throws FileNotFoundException {
-        String[] userTrelloInfo = {"", "", ""};
+        var userTrelloInfo = new String[]{"", "", ""};
 
-        File file = new File(data);
-        Scanner sc = new Scanner(file);
+        var file = new File(data);
+        var sc = new Scanner(file);
 
         sc.nextLine();
         sc.nextLine();

@@ -105,7 +105,7 @@ public class GitHubAPI {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Date date = (Date) o;
-            return  Objects.equals(year, date.year) && Objects.equals(month, date.month) && Objects.equals(day, date.day);
+            return Objects.equals(year, date.year) && Objects.equals(month, date.month) && Objects.equals(day, date.day);
         }
     }
 
@@ -420,6 +420,7 @@ public class GitHubAPI {
 
     /**
      * Retrieves the tags of the master branch.
+     *
      * @return A list of {@link TagData}
      * @throws IOException If a request fails.
      */
@@ -453,6 +454,7 @@ public class GitHubAPI {
 
     /**
      * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV formatted string.
+     *
      * @return A CSV formatted string.
      * @throws IOException
      */

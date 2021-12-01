@@ -63,21 +63,20 @@ public class CardUI extends Thread{
         if (this.card.getName().contains("Sprint Retrospective")) {
             String splitString = this.card.getName().split(" - ")[1];
             try {
-                Action.addHoursInfo(frame, splitString, this.boardID , trelloAPI);
+                JElements.addHoursInfo(frame, splitString, this.boardID , trelloAPI);
                 new JElements(frame, trelloAPI.getTotalHoursByUser(boardID, splitString,""));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                Action.addHoursInfo(frame, card.getName(), this.boardID , trelloAPI);
+                JElements.addHoursInfo(frame, card.getName(), this.boardID , trelloAPI);
                 new JElements(frame, trelloAPI.getTotalHoursByUser(boardID, card.getName(),""));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         this.frame.repaint();
-        System.out.println("CHARTS");
     }
 
 }

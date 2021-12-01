@@ -3,15 +3,12 @@ package pt.iscte.iul;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.PrintWriter;
 
 import static javax.swing.BorderFactory.createEmptyBorder;
 
@@ -98,6 +95,21 @@ public class Action {
     }
 
     /**
+     * Method that clear the content of a file.
+     *
+     * @param filename Input filename.
+     * @throws IOException throws exception.
+     * @author Rodrigo Guerreiro
+     */
+    public static void clearTheFile(String filename) throws IOException {
+        FileWriter fwOb = new FileWriter(filename, false);
+        PrintWriter pwOb = new PrintWriter(fwOb, false);
+        pwOb.flush();
+        pwOb.close();
+        fwOb.close();
+    }
+
+    /**
      * Function that shows the default information on the screen.
      *
      * @param frame the frame to show the info.
@@ -125,7 +137,6 @@ public class Action {
 
         //Print do readme no ecrã
         editorPane.setContentType("text/html");
-
         editorPane.setText("<br></br><br></br>" + convertMarkdownToHTML(readme) + "<br></br><br></br><br></br>");
         editorPane.setEditable(false);
         editorPane.setVisible(true);
@@ -140,13 +151,12 @@ public class Action {
         frame.add(scrollerLeft);
         frame.setVisible(true);
 
-
         // Threading
         SwingUtilities.invokeLater(() -> {
             try {
-                addHoursInfo(frame,"",boardID,trelloAPI);
-                addSprintDatesTable(trelloAPI, frame, boardID);
-                addHoursByCeremony(trelloAPI, frame, boardID);
+                JElements.addHoursInfo(frame,"",boardID,trelloAPI);
+                JElements.addSprintDatesTable(trelloAPI, frame, boardID);
+                JElements.addHoursByCeremony(trelloAPI, frame, boardID);
                 frame.repaint();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -154,119 +164,4 @@ public class Action {
         });
     }
 
-    /**
-     * Function that adds a pie chart to the ui as well as a table with the same information.
-     * This function, by calling the getTotalHoursByUser severely increases the processing time.
-     *
-     * @param frame the frame to display the table
-     * @param sprintName the name of the sprint blank if total.
-     * @param boardID   the board id.
-     * @param trelloAPI the trello instance.
-     * @throws IOException throws exception
-     * @author Rodrigo Guerreiro
-     * @author Duarte Casaleiro
-     */
-    public static void addHoursInfo(JFrame frame, String sprintName, String boardID, TrelloAPI trelloAPI) throws IOException {
-        ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers = trelloAPI.getTotalHoursByUser(boardID,"", sprintName);
-
-        // Pie Charts
-        DefaultPieDataset<String> dataset= new DefaultPieDataset<>();
-        DefaultPieDataset<String> spentHoursDataset= new DefaultPieDataset<>();
-
-        hoursPerUsers.forEach(e->{
-            dataset.setValue(e.getUser(),e.getEstimatedHours());
-            spentHoursDataset.setValue(e.getUser(),e.getEstimatedHours());
-        });
-        JFreeChart chart = ChartFactory.createPieChart(
-                "Hours Estimated by user " + sprintName,
-                dataset, true,true,false);
-
-        JFreeChart spentHoursChart = ChartFactory.createPieChart(
-                "Hours Spent by user " + sprintName,
-                dataset, true,true,false);
-        ChartPanel cp = new ChartPanel(chart);
-        cp.setBounds(((frame.getWidth() / 2) - 30), 0, 300, 250);
-        cp.setVisible(true);
-
-        ChartPanel spentCP = new ChartPanel(spentHoursChart);
-        spentCP.setBounds((frame.getWidth() - 320), 0, 300, 250);
-        spentCP.setVisible(true);
-
-        frame.add(cp);
-        frame.add(spentCP);
-        frame.setVisible(true);
-
-        new JElements(frame, hoursPerUsers);
-    }
-
-    /**
-     * Function that adds a table with the start and end date of each sprint
-     *
-     * @param trelloAPI the trello instance
-     * @param frame the frame to display the table
-     * @param boardID   the board id.
-     * @throws IOException throws exception
-     * @author Rodrigo Guerreiro
-     * @author Duarte Casaleiro
-     */
-    public static void addSprintDatesTable(TrelloAPI trelloAPI, JFrame frame, String boardID) throws IOException {
-
-        int numberOfSprints = trelloAPI.getListsThatContain(boardID, "Done - Sprint").size();
-
-        String[][] dates = new String[numberOfSprints + 1][3];
-        String[] names = {"Sprint", "Start Date", "End Date"};
-        dates[0] = names;
-
-        for (int i = 0; i < numberOfSprints; i++) {
-            String[] datesOfSprint = trelloAPI.getSprintDates(boardID, i+1);
-            dates[i + 1] = new String[]{String.valueOf(i + 1), datesOfSprint[0], datesOfSprint[1]};
-        }
-
-        JTable table = new JTable(dates, names);
-        table.setBounds(((frame.getWidth() / 2) + 95), (frame.getHeight() - 150), 400, 100);
-        table.setVisible(true);
-        table.setEnabled(false);
-        table.setGridColor(Color.BLACK);
-        table.setShowGrid(true);
-
-        frame.add(table);
-    }
-
-    /**
-     * Function that adds a table with the hours spent by the team and by member in ceremonies
-     *
-     * @param trelloAPI the trello instance
-     * @param frame the frame to display the table
-     * @param boardID   the board id.
-     * @throws IOException throws exception
-     * @author Rodrigo Guerreiro
-     * @author Duarte Casaleiro
-     */
-    public static void addHoursByCeremony(TrelloAPI trelloAPI, JFrame frame, String boardID) throws IOException {
-        ArrayList<TrelloAPI.HoursPerUser> hoursPerUser = trelloAPI.getTotalHoursByUser(boardID,"Ceremonies", "");
-
-        String[][] content = new String[hoursPerUser.size() + 2][3];
-        String[] names = {"Members", "Nº Ceremonies", "Total Hours"};
-        content[0] = names;
-
-        for (int i = 0; i != hoursPerUser.size(); i++) {
-            content[i + 1] = new String[]{hoursPerUser.get(i).getUser(),
-                    String.valueOf(trelloAPI.getTotalNumberOfCeremonies(boardID)),
-                    String.valueOf(hoursPerUser.get(i).getSpentHours())};
-        }
-
-        content[hoursPerUser.size() + 1] = new String[]{"Total",
-                String.valueOf(trelloAPI.getTotalNumberOfCeremonies(boardID)),
-                        String.valueOf(trelloAPI.getTotalHoursCeremony(boardID))};
-
-        JTable table = new JTable(content, names);
-        table.setBounds(((frame.getWidth() / 2) + 150), ((frame.getHeight() / 2) + 70), 300, 100);
-        table.setVisible(true);
-        table.setEnabled(false);
-        table.setGridColor(Color.black);
-        table.setShowGrid(true);
-
-        frame.add(table);
-
-    }
 }

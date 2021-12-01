@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe that creates the menus to be added onto the frame.
+ * Class that creates the menus to be added onto the frame.
  *
  * @author Rodrigo Guerreiro.
  */
@@ -66,12 +66,17 @@ public class Menus implements ActionListener {
      */
     private void optionsMenus() {
         JMenu options = new JMenu("Options");
-        this.optionsMenus = new JMenuItem[3];
+        this.optionsMenus = new JMenuItem[4];
 
         JMenuItem defaultScreen = new JMenuItem("Home Screen");
         defaultScreen.addActionListener(this);
         options.add(defaultScreen);
         this.optionsMenus[0] = defaultScreen;
+
+        JMenuItem exportToCsv = new JMenuItem("Export to CSV");
+        exportToCsv.addActionListener(this);
+        options.add(exportToCsv);
+        this.optionsMenus[0] = exportToCsv;
 
         JMenuItem clearCache = new JMenuItem("Clear data file");
         clearCache.addActionListener(this);
@@ -212,11 +217,15 @@ public class Menus implements ActionListener {
                 Action.clearFrame(frame);
                 Action.homeScreen(this.frame, this.gitHubAPI, this.trelloAPI, this.boardID);
             }
-            case "Clear data file" -> clearTheFile("data/user_data.txt");
+            case "Clear data file" -> Action.clearTheFile("data/user_data.txt");
             case "Logout" -> {
-                clearTheFile("data/user_data.txt");
+                Action.clearTheFile("data/user_data.txt");
                 this.frame.dispose();
                 new HomeUI();
+            }
+            case "Export to CSV" -> {
+                System.out.println("Export to csv");
+                // TODO add export functions here (TRABALHA OLEK)
             }
             default -> {
             }
@@ -258,18 +267,4 @@ public class Menus implements ActionListener {
                 });
     }
 
-    /**
-     * Method that clear the content of a file.
-     *
-     * @param filename Input filename.
-     * @throws IOException throws exception.
-     * @author Rodrigo Guerreiro
-     */
-    public static void clearTheFile(String filename) throws IOException {
-        FileWriter fwOb = new FileWriter(filename, false);
-        PrintWriter pwOb = new PrintWriter(fwOb, false);
-        pwOb.flush();
-        pwOb.close();
-        fwOb.close();
-    }
 }

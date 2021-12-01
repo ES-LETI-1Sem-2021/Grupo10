@@ -452,13 +452,24 @@ public class GitHubAPI {
     }
 
     /**
-     * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV formatted string.
-     * @return A CSV formatted string.
+     * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV and HTML formatted strings.
+     * @return CSV and HTML formatted strings.
      * @throws IOException
      */
-    public String commitsToCSV() throws IOException {
+    public String[] convert() throws IOException {
         var csv = new ArrayList<String>();
+        var html = new ArrayList<String>();
+
         csv.add("Contributor,Branch,Mensagem do Commit,Data do Commit (MM/DD/YYYY)\n");
+
+        html.add("""
+                <tr>
+                    <th>Contributor</th>
+                    <th>Branch</th>
+                    <th>Mensagem do Commit</th>
+                    <th>Data do Commit (YYYY/MM/DD)</th>
+                </tr>
+                """);
 
         var previousUser = "";
         var previousBranch = "";
@@ -472,15 +483,35 @@ public class GitHubAPI {
                                     Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
                                     Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
                                     commit.message().replace(',', ' ').split("\n")[0],
-                                    commit.date().toString()
+                                    commit.date()
                             )
                     );
+
+                    html.add(
+                            String.format("""
+                                    <tr>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                    </tr>
+                                    """,
+                                    Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
+                                    Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
+                                    commit.message().replace(',', ' ').split("\n")[0],
+                                    commit.date()
+                            )
+                    );
+
                     previousUser = user.getLogin();
                     previousBranch = branch.getName();
                 }
             }
         }
 
-        return String.join("", csv);
+        return new String[]{
+                String.join("", csv),
+                "<table>\n" + String.join("", html) + "</table>"
+        };
     }
 }

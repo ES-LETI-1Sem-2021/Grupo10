@@ -3,6 +3,7 @@ package pt.iscte.iul;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 
 import static javax.swing.BorderFactory.createEmptyBorder;
@@ -45,20 +46,21 @@ public class CardUI extends Thread {
         JEditorPane edt = new JEditorPane();
 
         this.dateLabel.setText("This card was ended at: " + this.dueDate);
-        this.dateLabel.setBounds(75, 10, 350, 10);
+        this.dateLabel.setBounds(130, 5, 350, 30);
         this.dateLabel.setVisible(true);
-        this.frame.add(dateLabel);
+        this.dateLabel.setForeground(new Color(68, 114, 196));
+        edt.add(dateLabel);
+        //this.frame.add(dateLabel);
 
         JScrollPane scrollerLeft = new JScrollPane();
 
         edt.setContentType("text/html");
-        edt.setText(Action.convertMarkdownToHTML(card.getDescription()));
+        edt.setText("<br></br><br></br>" + Action.convertMarkdownToHTML(card.getDescription()) +"<br></br><br></br>");
         edt.setEditable(false);
         edt.setVisible(true);
         edt.setBounds(75, 100, 500, 600);
 
         scrollerLeft.setViewportView(edt);
-        scrollerLeft.add(dateLabel);
 
         scrollerLeft.setBounds(15, 0, ((frame.getWidth() - 100) / 2), frame.getHeight());
         scrollerLeft.setBorder(createEmptyBorder());

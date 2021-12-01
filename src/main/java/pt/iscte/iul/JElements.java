@@ -35,6 +35,7 @@ public class JElements implements ActionListener {
         //Button
         this.button = new JButton("Calculate new Cost");
         this.button.setBounds((frame.getWidth() - 220), ((frame.getHeight() / 2) - 25), 150, 50);
+        this.button.setForeground(new Color(68, 114, 196));
         this.button.setVisible(true);
         this.frame.add(button);
         this.button.repaint();
@@ -117,12 +118,14 @@ public class JElements implements ActionListener {
         cp.setVisible(true);
         chart.getPlot().setBackgroundPaint(Color.white);
         chart.getPlot().setOutlinePaint(Color.white);
+        chart.getTitle().setPaint(new Color(68, 114, 196));
 
         ChartPanel spentCP = new ChartPanel(spentHoursChart);
         spentCP.setBounds((frame.getWidth() - 320), 0, 300, 250);
         spentCP.setVisible(true);
         spentHoursChart.getPlot().setBackgroundPaint(Color.white);
         spentHoursChart.getPlot().setOutlinePaint(Color.white);
+        spentHoursChart.getTitle().setPaint(new Color(68, 114, 196));
 
         frame.add(cp);
         frame.add(spentCP);

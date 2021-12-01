@@ -52,7 +52,7 @@ public class Action {
      *
      * @param userGitInfo    info needed for git api.
      * @param userTrelloInfo info needed for trello api.
-     * @throws IOException
+     * @throws IOException   throws exception
      * @author Rodrigo Guerreiro
      */
     public static void saveData(String[] userGitInfo, String[] userTrelloInfo, String filename) throws IOException {
@@ -121,11 +121,13 @@ public class Action {
         var labelData = new JLabel("Project's start date: " + dataInicio.toString());
         labelData.setBounds(10, 5, 250, 30);
         editorPane.add(labelData);
+        labelData.setForeground(new Color(68, 114, 196));
 
         //Label com o nome do projeto (nome do repo)
         var labelProjName = new JLabel("Project's name: " + trelloAPI.getBoardInfo().getName());
         labelProjName.setBounds(260, 5, 300, 30);
         editorPane.add(labelProjName);
+        labelProjName.setForeground(new Color(68, 114, 196));
 
         //Print do readme no ecrã
         editorPane.setContentType("text/html");

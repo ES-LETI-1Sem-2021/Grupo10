@@ -498,7 +498,7 @@ public class GitHubAPI {
                                     """,
                                     Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
                                     Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
-                                    commit.message().replace(',', ' ').split("\n")[0],
+                                    commit.message().replace("\n", "<br>"),
                                     commit.date()
                             )
                     );
@@ -511,7 +511,7 @@ public class GitHubAPI {
 
         return new String[]{
                 String.join("", csv),
-                "<table>\n" + String.join("", html) + "</table>"
+                "<table border=1>\n" + String.join("", html) + "</table>"
         };
     }
 }

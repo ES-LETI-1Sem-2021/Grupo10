@@ -115,10 +115,14 @@ public class JElements implements ActionListener {
         ChartPanel cp = new ChartPanel(chart);
         cp.setBounds(((frame.getWidth() / 2) - 30), 0, 300, 250);
         cp.setVisible(true);
+        chart.getPlot().setBackgroundPaint(Color.white);
+        chart.getPlot().setOutlinePaint(Color.white);
 
         ChartPanel spentCP = new ChartPanel(spentHoursChart);
         spentCP.setBounds((frame.getWidth() - 320), 0, 300, 250);
         spentCP.setVisible(true);
+        spentHoursChart.getPlot().setBackgroundPaint(Color.white);
+        spentHoursChart.getPlot().setOutlinePaint(Color.white);
 
         frame.add(cp);
         frame.add(spentCP);

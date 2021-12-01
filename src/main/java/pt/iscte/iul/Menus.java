@@ -72,17 +72,17 @@ public class Menus implements ActionListener {
         var exportToCsv = new JMenuItem("Export to CSV");
         exportToCsv.addActionListener(this);
         options.add(exportToCsv);
-        this.optionsMenus[0] = exportToCsv;
+        this.optionsMenus[1] = exportToCsv;
 
         var clearCache = new JMenuItem("Clear data file");
         clearCache.addActionListener(this);
         options.add(clearCache);
-        this.optionsMenus[1] = clearCache;
+        this.optionsMenus[2] = clearCache;
 
         var logout = new JMenuItem("Logout");
         logout.addActionListener(this);
         options.add(logout);
-        this.optionsMenus[2] = logout;
+        this.optionsMenus[3] = logout;
 
         menuBar.add(options);
     }

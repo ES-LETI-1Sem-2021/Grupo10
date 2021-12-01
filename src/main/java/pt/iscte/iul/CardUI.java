@@ -47,6 +47,8 @@ public class CardUI extends Thread {
         this.dateLabel.setVisible(true);
         this.frame.add(dateLabel);
 
+        JScrollPane scrollerLeft = new JScrollPane();
+
         edt.setContentType("text/html");
         edt.setText(Action.convertMarkdownToHTML(card.getDescription()));
         edt.setEditable(false);

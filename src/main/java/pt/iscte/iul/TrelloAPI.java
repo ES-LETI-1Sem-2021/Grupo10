@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Duarte Casaleiro, Oleksandr Kobelyuk, Miguel Romana.
@@ -530,5 +531,36 @@ public class TrelloAPI {
             }
         }
         return hoursPerUser;
+    }
+
+    public String[] convertToCSV(int rate, int numberOfSprints) throws IOException {
+        var hoursPerUser = this.getTotalHoursByUser("", "");
+
+        // recursos humanos
+        var csv = new ArrayList<String>();
+        csv.add("Elemento,Salario\n");
+        for (var user : hoursPerUser) {
+            csv.add(
+                    user.user + "," + user.spentHours * rate + "\n"
+            );
+        }
+        csv.add("Total, " + hoursPerUser.stream().map(user -> user.spentHours * rate).mapToDouble(d -> d).sum() + "\n");
+
+        // horas de cada sprint
+        var csv2 = new ArrayList<String>();
+        csv2.add("Sprint,Elemento,Horas\n");
+        for (var i = 1; i < numberOfSprints + 1; i++) {
+            hoursPerUser = this.getTotalHoursByUser("", "Sprint " + i);
+            for (var user : hoursPerUser) {
+                csv2.add(
+                        i + "," + user.getUser() + "," + user.getSpentHours() + "\n"
+                );
+            }
+        }
+
+        return new String[]{
+                String.join("", csv),
+                String.join("", csv2)
+        };
     }
 }

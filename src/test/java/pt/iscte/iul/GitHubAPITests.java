@@ -22,7 +22,7 @@ public class GitHubAPITests {
 
     @Test
     public void numberOfCollaborators() throws IOException {
-        var collaborators = api.getCollaborators();
+        var collaborators = this.api.getCollaborators();
 
         Assertions.assertEquals(5, collaborators.length);
 
@@ -35,7 +35,7 @@ public class GitHubAPITests {
     @Test
     public void fileTest() throws IOException {
         // may be changed in the future
-        String foo = """
+        var foo = """
                 just a placeholder for the data directory because it is necessary to have this directory in order
                 for the program to work.
                 """;
@@ -58,7 +58,7 @@ public class GitHubAPITests {
 
     @Test
     public void branchTest() throws IOException {
-        var branches = api.getBranches();
+        var branches = this.api.getBranches();
 
         Assertions.assertEquals(4, branches.length);
 
@@ -70,7 +70,7 @@ public class GitHubAPITests {
 
     @Test
     public void commitTest() throws IOException {
-        var commits = api.getCommits("ui_test", "Roguezilla");
+        var commits = this.api.getCommits("ui_test", "Roguezilla");
 
         Assertions.assertFalse(commits.getCommitList().isEmpty());
 
@@ -86,7 +86,7 @@ public class GitHubAPITests {
 
     @Test
     public void tagTest() throws IOException {
-        var tags = api.getTags();
+        var tags = this.api.getTags();
 
         var names = new String[]{"Sprint_1", "DashboardSCRUM-0.2"};
         var dates = new GitHubAPI.Date[]{new GitHubAPI.Date("2021-10-29"), new GitHubAPI.Date("2021-11-20")};

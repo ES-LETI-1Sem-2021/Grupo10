@@ -104,7 +104,7 @@ public class Menus implements ActionListener {
             arrayColabs.add(new ItemCard<>(col, item));
         }
         var commits = new JMenu("Commits");
-        this.commitsTable = new JMenuItem("Commits Table");
+        this.commitsTable = new JMenuItem("Commits Info");
         this.commitsTable.addActionListener(this);
         commits.add(commitsTable);
 
@@ -278,6 +278,7 @@ public class Menus implements ActionListener {
         if(Objects.equals(e.getActionCommand(), this.commitsTable.getText())){
             Action.clearFrame(this.frame);
             JElements.addCommitsTable(frame, this.gitHubAPI);
+            JElements.addTagsTable(frame, this.gitHubAPI);
         }
     }
 

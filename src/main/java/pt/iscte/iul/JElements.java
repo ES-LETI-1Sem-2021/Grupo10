@@ -244,14 +244,47 @@ public class JElements implements ActionListener {
         editorPane.setText("<br></br><br></br>" + gitHubAPI.convert()[1] + "<br></br><br></br><br></br><br></br><br></br><br></br>");
         editorPane.setEditable(false);
         editorPane.setVisible(true);
+        editorPane.setCaretPosition(0);
         editorPane.setBounds(100, 100, 500, 600);
         frame.add(editorPane);
 
         scroller.setViewportView(editorPane);
-        scroller.setBounds((frame.getWidth()/6), 0, ((2*frame.getWidth()) / 3), frame.getHeight());
+        scroller.getVerticalScrollBar().setValue(scroller.getVerticalScrollBar().getMinimum());
+        scroller.setBounds(10, 0, ((2*frame.getWidth()) / 3), frame.getHeight());
         scroller.setBorder(createEmptyBorder());
 
         frame.add(scroller);
+        frame.setVisible(true);
+    }
+
+    /**
+     * Function that adds a table with all tags and respective date
+     *
+     * @param frame The frame to present the table.
+     * @param gitHubAPI The instance of the {@link GitHubAPI}.
+     * @throws IOException throws exception.
+     * @author Duarte Casaleiro, Rodrigo Guerreiro
+     */
+    public static void addTagsTable(JFrame frame, GitHubAPI gitHubAPI) throws IOException{
+
+        var tagsData = gitHubAPI.getTags();
+        var names = new String[]{"Tag", "Date"};
+        var content = new String[tagsData.size() + 1][2];
+        content[0] = names;
+
+        for (int i = 0; i < tagsData.size(); i++) {
+            content[i+1] = new String[]{tagsData.get(i).name(), String.valueOf(tagsData.get(i).date())};
+        }
+
+        var table = new JTable(content, names);
+        table.setBounds((frame.getWidth() - 370), 200, 300, 150);
+        table.setVisible(true);
+        table.setEnabled(false);
+        table.setGridColor(Color.black);
+        table.setShowGrid(true);
+
+        frame.add(table);
+
         frame.setVisible(true);
     }
 

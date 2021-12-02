@@ -6,13 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class that creates the menus to be added onto the frame.
@@ -26,6 +25,7 @@ public class Menus implements ActionListener {
     private final GitHubAPI gitHubAPI;
     private final TrelloAPI trelloAPI;
     private JMenuItem[] optionsMenus;
+    private JMenuItem commitsTable;
     private final List<ItemCard<TrelloAPI.Card>> arrayCards = new ArrayList<>();
     private final List<ItemCard<GitHubAPI.Collaborators>> arrayColabs = new ArrayList<>();
 
@@ -102,6 +102,12 @@ public class Menus implements ActionListener {
             colabs.add(item);
             arrayColabs.add(new ItemCard<>(col, item));
         }
+        var commits = new JMenu("Commits");
+        this.commitsTable = new JMenuItem("Commits Table");
+        this.commitsTable.addActionListener(this);
+        commits.add(commitsTable);
+        
+        menuBar.add(commits);
         menuBar.add(colabs);
     }
 
@@ -117,7 +123,7 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Um record que associa um objeto a um menuItem.
+     * A record that associates an object <T> to a menuItem.
      *
      * @param object the object to associate to the menu item.
      * @param item   the item to associate to the object.
@@ -182,8 +188,12 @@ public class Menus implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        //redirect for the GitHub page
-        gitActionPerformed(e);
+        //Action performed regarding GitHub
+        try{
+            gitActionPerformed(e);
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
 
         //action for the clicks on a card from a list
         listsActionPerformed(e);
@@ -202,7 +212,7 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Method that based on which menu item was clicked performs an action.
+     * Method that based on which menu item was clicked performs an action regarding the options menus list.
      *
      * @param opm the JMenuItem that was clicked.
      * @author Rodrigo Guerreiro
@@ -248,11 +258,12 @@ public class Menus implements ActionListener {
 
     /**
      * Method that based on which menu item was clicked redirects to the person's GitHub page.
+     * If it was the commits tab it shows the commits table.
      *
      * @param e action event.
      * @author Rodrigo Guerreiro
      */
-    private void gitActionPerformed(ActionEvent e) {
+    private void gitActionPerformed(ActionEvent e) throws IOException {
         this.arrayColabs.stream().filter(collaboratorsitem -> e.getSource() == collaboratorsitem.getItem())
                 .forEach(collaboratorsitem -> {
                     try {
@@ -261,6 +272,11 @@ public class Menus implements ActionListener {
                         ex.printStackTrace();
                     }
                 });
+
+        if(Objects.equals(e.getActionCommand(), this.commitsTable.getText())){
+            Action.clearFrame(this.frame);
+            JElements.addCommitsTable(frame, this.gitHubAPI);
+        }
     }
 
 }

@@ -2,7 +2,6 @@ package pt.iscte.iul;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
@@ -12,6 +11,14 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static javax.swing.BorderFactory.createEmptyBorder;
+
+/**
+ * Class that creates the tables and graphs to be presented on the frame
+ *
+ * @author Rodrigo Guerreiro
+ * @author Duarte Casaleiro
+ */
 public class JElements implements ActionListener {
 
     private final JFrame frame;
@@ -21,6 +28,15 @@ public class JElements implements ActionListener {
     private JTable table;
     private String[][] data;
 
+    /**
+     * Constructor method that inicializes the objects and creates a spinner and a button
+     * used to calculate the new costs in the tables.
+     *
+     * @param frame The frame where the graphs and the tables will be presented
+     * @param hoursPerUsers An arrayList with {@Link TrelloApi.HoursPerUser}
+     * @author Rodrigo Guerreiro
+     * @author Duarte Casaleiro
+     */
     public JElements(JFrame frame, ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers) {
         this.frame = frame;
         this.hoursPerUsers = hoursPerUsers;
@@ -47,7 +63,14 @@ public class JElements implements ActionListener {
         this.frame.repaint();
     }
 
-    //Table
+    /**
+     * Creates and adds a table with the hours spent and estimated for each user and in total,
+     *  as well as the cost
+     *
+     * @param hoursPerUsers An arrayList with {@Link TrelloApi.HoursPerUser}
+     * @param frame The frame where the graphs and the tables will be presented
+     * @param spinner An instance for the spinner in order for the user to be able to change costs.
+     */
     public void addTable(ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers, JFrame frame, JSpinner spinner) {
         var totalEstimated = 0.0;
         var totalSpent = 0.0;
@@ -136,7 +159,7 @@ public class JElements implements ActionListener {
 
 
     /**
-     * Function that adds a table with the start and end date of each sprint
+     * Function that adds a table with the start and end date of each sprint.
      *
      * @param trelloAPI the trello instance
      * @param frame     the frame to display the table
@@ -169,7 +192,7 @@ public class JElements implements ActionListener {
 
 
     /**
-     * Function that adds a table with the hours spent by the team and by member in ceremonies
+     * Function that adds a table with the hours spent by the team and by member in ceremonies.
      *
      * @param trelloAPI the trello instance
      * @param frame     the frame to display the table
@@ -205,6 +228,40 @@ public class JElements implements ActionListener {
 
     }
 
+    /**
+     * Adds a table with all the information regarding the commits by all the users, on all the branches, ordered by:
+     * user, branch, date.
+     *
+     * @param frame The frame to present the table
+     * @param gitHubAPI The instance of the {@Link GitHubAPI.java}
+     * @throws IOException Throws exception.
+     * @author Rodrigo Guerreiro
+     */
+    public static void addCommitsTable(JFrame frame, GitHubAPI gitHubAPI) throws IOException{
+        var editorPane = new JEditorPane();
+        var scroller = new JScrollPane();
+
+        editorPane.setContentType("text/html");
+        editorPane.setText("<br></br><br></br>" + gitHubAPI.convert()[1] + "<br></br><br></br><br></br><br></br><br></br><br></br>");
+        editorPane.setEditable(false);
+        editorPane.setVisible(true);
+        editorPane.setBounds(100, 100, 500, 600);
+        frame.add(editorPane);
+
+        scroller.setViewportView(editorPane);
+        scroller.setBounds(frame.getWidth()/4, 0, ((2*frame.getWidth()) / 3), frame.getHeight());
+        scroller.setBorder(createEmptyBorder());
+
+        frame.add(scroller);
+        frame.setVisible(true);
+    }
+
+    /**
+     * Action event to update the value based on the new cost inputted by the user.
+     *
+     * @param e The event that occurred
+     * @author Rodrigo Guerreiro
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         var totalMoney = 0;

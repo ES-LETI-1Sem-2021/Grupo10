@@ -249,7 +249,7 @@ public class JElements implements ActionListener {
         frame.add(editorPane);
 
         scroller.setViewportView(editorPane);
-        scroller.setBounds(frame.getWidth()/4, 0, ((2*frame.getWidth()) / 3), frame.getHeight());
+        scroller.setBounds((frame.getWidth()/6), 0, ((2*frame.getWidth()) / 3), frame.getHeight());
         scroller.setBorder(createEmptyBorder());
 
         frame.add(scroller);

@@ -55,7 +55,7 @@ public class CardUI extends Thread {
         JScrollPane scrollerLeft = new JScrollPane();
 
         edt.setContentType("text/html");
-        edt.setText("<br></br><br></br>" + Action.convertMarkdownToHTML(card.getDescription()) +"<br></br><br></br>");
+        edt.setText("<br></br>" + Action.convertMarkdownToHTML(card.getDescription()) +"<br></br><br></br>");
         edt.setEditable(false);
         edt.setVisible(true);
         edt.setBounds(75, 100, 500, 600);

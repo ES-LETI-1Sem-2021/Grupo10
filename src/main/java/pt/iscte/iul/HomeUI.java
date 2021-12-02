@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-
 /**
  * The basic 'Home Screen' where the user inputs his information.
  * Also has pop-ups!
@@ -72,7 +71,34 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Method that adds the labels on the screen to show the user where to put each credential.
+     * Function that displays a pop-up window on the screen.
+     *
+     * @return opc the value (int) of the option chosen by the user
+     * @author Rodrigo Guerreiro
+     */
+    public static int pop() {
+        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved information's?",
+                "Warning?", JOptionPane.YES_NO_OPTION);
+    }
+
+    /**
+     * Function that displays a frame on the screen.
+     *
+     * @param frame Frame to be displayed on the screen.
+     * @author Rodrigo Guerreiro
+     */
+    public static void showFrame(JFrame frame) {
+        frame.setTitle("DashboardScrum");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        frame.setResizable(false);
+        frame.setLayout(null);
+        frame.getContentPane().setBackground(Color.WHITE);
+    }
+
+    /**
+     * Function that adds the labels on the screen to show the user where to put each credential.
      *
      * @author Rodrigo Guerreiro
      */
@@ -93,18 +119,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Function that displays a pop-up window on the screen.
-     *
-     * @return opc the value (int) of the option chosen by the user.
-     * @author Rodrigo Guerreiro
-     */
-    public static int pop() {
-        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved information's?",
-                "Warning?", JOptionPane.YES_NO_OPTION);
-    }
-
-    /**
-     * Function that adds the input boxes on the frame for the user to input his/her credentials.
+     * Function that adds the input boxes on the frame for the user to input his credentials.
      *
      * @author Rodrigo Guerreiro
      */
@@ -128,23 +143,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Function that displays a frame on the screen.
-     *
-     * @param frame frame to be displayed on the screen.
-     * @author Rodrigo Guerreiro
-     */
-    public static void showFrame(JFrame frame) {
-        frame.setTitle("DashboardScrum");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        frame.setResizable(false);
-        frame.setLayout(null);
-        frame.getContentPane().setBackground(Color.WHITE);
-    }
-
-    /**
-     * Function that displays on the frame the two images (Git and Trello).
+     * Function that displays the two images (Git and Trello) on the frame.
      *
      * @author Rodrigo Guerreiro
      */
@@ -172,9 +171,9 @@ public class HomeUI implements ActionListener {
 
     /**
      * {@link Action} performed when the search button is pressed.
-     * Creates a pop-up window with a yes/no question and based on the answer
-     * saves the data and calls {@link Action#doAction(JFrame, String[], String[], int)}
-     * or only calls {@link Action#doAction(JFrame, String[], String[], int)}.
+     * Creates a pop-up window with a yes/no question and based on the answer.
+     * Saves the data and calls {@link Action #doAction}.
+     * or only calls {@link Action #doAction}.
      * userGitInfo [gitOwner, gitRepo, gitToken].
      * userTrelloInfo [trelloUser, trelloKey, trelloToken].
      *
@@ -209,8 +208,8 @@ public class HomeUI implements ActionListener {
     /**
      * Checks if all fields are full.
      *
-     * @param userGitInfo    user info regarding git.
-     * @param userTrelloInfo user info regarding trello.
+     * @param userGitInfo    user info regarding Git.
+     * @param userTrelloInfo user info regarding Trello.
      * @return the value 1 if is empty, 0 otherwise.
      */
     private int allFieldsFull(String[] userGitInfo, String[] userTrelloInfo) {

@@ -21,10 +21,10 @@ public class CardUI extends Thread {
     private final TrelloAPI trelloAPI;
 
     /**
-     * Constructor method thar initializes all the needed variable
+     * Constructor method that initializes all the needed variables.
      *
-     * @param card  The card to be showed
-     * @param frame The frame were the card will be shown.
+     * @param card  The card to be shown.
+     * @param frame The frame where the card will be shown.
      * @author Rodrigo Guerreiro
      */
     public CardUI(@NotNull TrelloAPI.Card card, JFrame frame, TrelloAPI trelloAPI) throws IOException {
@@ -38,7 +38,7 @@ public class CardUI extends Thread {
     }
 
     /**
-     * Function that adds everything to the frame.
+     * Method that adds everything to the frame.
      *
      * @author Rodrigo Guerreiro
      */
@@ -55,7 +55,7 @@ public class CardUI extends Thread {
         JScrollPane scrollerLeft = new JScrollPane();
 
         edt.setContentType("text/html");
-        edt.setText("<br></br>" + Action.convertMarkdownToHTML(card.getDescription()) +"<br></br><br></br>");
+        edt.setText("<br></br><br></br>" + Action.convertMarkdownToHTML(card.getDescription()) + "<br></br><br></br>");
         edt.setEditable(false);
         edt.setVisible(true);
         edt.setBounds(75, 100, 500, 600);

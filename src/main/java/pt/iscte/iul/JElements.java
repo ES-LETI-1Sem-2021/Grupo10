@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import static javax.swing.BorderFactory.createEmptyBorder;
 
 /**
- * Class that creates the tables and graphs to be presented on the frame
+ * Class that creates the tables and graphs to be presented on the frame.
  *
  * @author Rodrigo Guerreiro
  * @author Duarte Casaleiro
@@ -29,11 +29,11 @@ public class JElements implements ActionListener {
     private String[][] data;
 
     /**
-     * Constructor method that inicializes the objects and creates a spinner and a button
+     * Constructor method that initializes the objects and creates a spinner and a button
      * used to calculate the new costs in the tables.
      *
      * @param frame The frame where the graphs and the tables will be presented
-     * @param hoursPerUsers An arrayList with {@Link TrelloApi.HoursPerUser}
+     * @param hoursPerUsers An arrayList with {@link TrelloAPI.HoursPerUser}
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
      */
@@ -64,10 +64,10 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Creates and adds a table with the hours spent and estimated for each user and in total,
-     *  as well as the cost
+     * Creates and adds a table with the hours spent and estimated for each user
+     * and in total, as well as the cost.
      *
-     * @param hoursPerUsers An arrayList with {@Link TrelloApi.HoursPerUser}
+     * @param hoursPerUsers An arrayList with {@link TrelloAPI.HoursPerUser}
      * @param frame The frame where the graphs and the tables will be presented
      * @param spinner An instance for the spinner in order for the user to be able to change costs.
      */
@@ -106,14 +106,13 @@ public class JElements implements ActionListener {
         this.frame.repaint();
     }
 
-
     /**
-     * Function that adds a pie chart to the ui as well as a table with the same information.
-     * This function, by calling the getTotalHoursByUser severely increases the processing time.
+     * Function that adds a pie chart to the UI as well as a table with the same information.
+     * Calling the {@link TrelloAPI #getTotalHoursByUser} severely increases the processing time.
      *
-     * @param frame      the frame to display the table
-     * @param sprintName the name of the sprint blank if total.
-     * @param trelloAPI  the trello instance.
+     * @param frame      the frame to display the table.
+     * @param sprintName the name of the sprint (blank if relative to total project).
+     * @param trelloAPI  the Trello instance.
      * @throws IOException throws exception
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
@@ -161,9 +160,9 @@ public class JElements implements ActionListener {
     /**
      * Function that adds a table with the start and end date of each sprint.
      *
-     * @param trelloAPI the trello instance
-     * @param frame     the frame to display the table
-     * @throws IOException throws exception
+     * @param trelloAPI the Trello instance.
+     * @param frame     the frame to display the table.
+     * @throws IOException throws exception.
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
      */
@@ -194,9 +193,9 @@ public class JElements implements ActionListener {
     /**
      * Function that adds a table with the hours spent by the team and by member in ceremonies.
      *
-     * @param trelloAPI the trello instance
-     * @param frame     the frame to display the table
-     * @throws IOException throws exception
+     * @param trelloAPI the Trello instance.
+     * @param frame     the frame to display the table.
+     * @throws IOException throws exception.
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
      */
@@ -225,16 +224,16 @@ public class JElements implements ActionListener {
         table.setShowGrid(true);
 
         frame.add(table);
-
     }
 
     /**
-     * Adds a table with all the information regarding the commits by all the users, on all the branches, ordered by:
+     * Function that adds a table with all the information regarding the commits
+     * by all the users, on all the branches, ordered by:
      * user, branch, date.
      *
-     * @param frame The frame to present the table
-     * @param gitHubAPI The instance of the {@Link GitHubAPI.java}
-     * @throws IOException Throws exception.
+     * @param frame The frame to present the table.
+     * @param gitHubAPI The instance of the {@link GitHubAPI}.
+     * @throws IOException throws exception.
      * @author Rodrigo Guerreiro
      */
     public static void addCommitsTable(JFrame frame, GitHubAPI gitHubAPI) throws IOException{
@@ -257,9 +256,9 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Action event to update the value based on the new cost inputted by the user.
+     * Action event to update the value based on the new cost input by the user.
      *
-     * @param e The event that occurred
+     * @param e The event that occurred.
      * @author Rodrigo Guerreiro
      */
     @Override

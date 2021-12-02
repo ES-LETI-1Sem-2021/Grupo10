@@ -31,12 +31,12 @@ public class Menus implements ActionListener {
 
 
     /**
-     * Constructor method to inicialize the variables in order to create the menus.
+     * Constructor method to initialize the variables in order to create the menus.
      *
-     * @param frame     The frame where the menus will be attached on.
-     * @param gitHubAPI Instance of GitHub Api.
-     * @param trelloAPI Instance of Trello Api.
-     * @throws IOException throws exception
+     * @param frame     The frame where the menus will be attached to.
+     * @param gitHubAPI Instance of GitHub API.
+     * @param trelloAPI Instance of Trello API.
+     * @throws IOException throws exception.
      * @author Rodrigo Guerreiro
      */
     public Menus(JFrame frame, GitHubAPI gitHubAPI, TrelloAPI trelloAPI) throws IOException {
@@ -54,9 +54,9 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Creates the option's menu with all of its submenus.
+     * Creates the options' menu with all of its submenus.
      * Stores in an array with the following content:
-     * - optionsMenus[Default_screen, clear_userData, logout]
+     * - optionsMenus [Default_screen, clear_userData, logout]
      *
      * @author Rodrigo Guerreiro
      */
@@ -88,38 +88,39 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Function that creates the menus, regarding the collaborators and menu bars and attaches it to the frame.
+     * Method that creates the menus, regarding the collaborators and menu bars
+     * and attaches it to the frame.
      *
      * @throws IOException exception.
      * @author Rodrigo Guerreiro
      */
     public void gitMenus() throws IOException {
-        var colabs = new JMenu("Collaborators");
+        var collaborators = new JMenu("Collaborators");
         for (var col : gitHubAPI.getCollaborators()) {
             var item = getjMenuItem(col);
 
             item.addActionListener(this);
-            colabs.add(item);
+            collaborators.add(item);
             arrayColabs.add(new ItemCard<>(col, item));
         }
         var commits = new JMenu("Commits");
         this.commitsTable = new JMenuItem("Commits Table");
         this.commitsTable.addActionListener(this);
         commits.add(commitsTable);
-        
+
         menuBar.add(commits);
-        menuBar.add(colabs);
+        menuBar.add(collaborators);
     }
 
     /**
      * Creates an item associated with a collaborator.
      *
-     * @param col the collaborator.
+     * @param collaborator The collaborator.
      * @return the item associated with the collaborator.
      */
     @NotNull
-    private JMenuItem getjMenuItem(GitHubAPI.Collaborators col) {
-        return col.getName() == null ? new JMenuItem(col.getLogin()) : new JMenuItem(col.getName());
+    private JMenuItem getjMenuItem(GitHubAPI.Collaborators collaborator) {
+        return collaborator.getName() == null ? new JMenuItem(collaborator.getLogin()) : new JMenuItem(collaborator.getName());
     }
 
     /**
@@ -133,14 +134,14 @@ public class Menus implements ActionListener {
         /**
          * Getter for the menuItem.
          *
-         * @return item --> The menu item to be returned.
+         * @return item The menu item to be returned.
          */
         public JMenuItem getItem() {
             return item;
         }
 
         /**
-         * @return object --> The object to be returned.
+         * @return object The object to be returned.
          */
         public T getObject() {
             return object;
@@ -149,10 +150,10 @@ public class Menus implements ActionListener {
 
 
     /**
-     * Function that creates a menu item for each list in the board.
+     * Method that creates a menu item for each list in the board.
      * Also creates a submenu on each item, regarding the cards on that list.
      *
-     * @throws IOException exception.
+     * @throws IOException throws exception.
      * @author Rodrigo Guerreiro
      */
     private void listsMenus() throws IOException {
@@ -178,12 +179,13 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Performs an action based on which menu item was clicked.
-     * If the user clicks on a collaborator item it will redirect to the GitHub page.
-     * If the user clicks on the Lists menus it will show all the lists. Each list is a submenu,
+     * Function that, based on which menu item was clicked, performs an action.
+     * If the user clicks on a collaborator's item, it will redirect to the GitHub page.
+     * If the user clicks on the Lists' menus, it will show all the lists.
+     * Each list is a submenu.
      * On each submenu it will show all the cards from that list.
      *
-     * @param e the events that happens when the user clicks on a collaborator name.
+     * @param e The events that happen when the user clicks on a collaborator's name.
      * @author Rodrigo Guerreiro
      */
     @Override
@@ -212,9 +214,9 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Method that based on which menu item was clicked performs an action regarding the options menus list.
+     * Method that, based on which menu item was clicked, performs an action regarding the options menus list.
      *
-     * @param opm the JMenuItem that was clicked.
+     * @param opm The JMenuItem that was clicked.
      * @author Rodrigo Guerreiro
      */
     private void optionsActionPerformed(@NotNull JMenuItem opm) throws IOException {
@@ -239,9 +241,9 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Method that based on which menu item was clicked show the trello card on the frame.
+     * Method that, based on which menu item was clicked, shows the Trello card on the frame.
      *
-     * @param e action event.
+     * @param e Action event.
      * @author Rodrigo Guerreiro
      */
     private void listsActionPerformed(ActionEvent e) {
@@ -257,10 +259,10 @@ public class Menus implements ActionListener {
     }
 
     /**
-     * Method that based on which menu item was clicked redirects to the person's GitHub page.
+     * Method that, based on which menu item was clicked, redirects to the collaborator's GitHub page.
      * If it was the commits tab it shows the commits table.
      *
-     * @param e action event.
+     * @param e Action event.
      * @author Rodrigo Guerreiro
      */
     private void gitActionPerformed(ActionEvent e) throws IOException {

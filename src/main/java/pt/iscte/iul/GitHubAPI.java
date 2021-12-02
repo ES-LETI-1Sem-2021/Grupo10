@@ -154,7 +154,7 @@ public class GitHubAPI {
         private String name;
 
         /**
-         * @return The github handle.
+         * @return The GitHub handle.
          */
         public String getLogin() {
             return this.login;
@@ -168,7 +168,7 @@ public class GitHubAPI {
         }
 
         /**
-         * @return The github profile url.
+         * @return The GitHub profile url.
          */
         public String getProfile() {
             return this.html_url;
@@ -276,7 +276,7 @@ public class GitHubAPI {
     }
 
     /**
-     * Stores imporant data about a commit.
+     * Stores important data about a commit.
      */
     public record CommitData(Date date, String message) {
 
@@ -454,7 +454,7 @@ public class GitHubAPI {
     /**
      * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV and HTML formatted strings.
      * @return CSV and HTML formatted strings.
-     * @throws IOException
+     * @throws IOException If a request fails.
      */
     public String[] convert() throws IOException {
         var csv = new ArrayList<String>();

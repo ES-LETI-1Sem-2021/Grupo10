@@ -9,15 +9,14 @@ import java.io.IOException;
  *
  * @author Rodrigo Guerreiro.
  */
-
 public class DataSaver {
     /**
-     * This function se if the file exists and if not it crates the file.
-     * Calls the write function so write the data in the file.
+     * Function to see if the file exists (if not, it creates the file).
+     * Calls the write function to write the data in the file.
      *
-     * @param userGitInfo    an array with data so save in a .txt file regarding GitHub api.
-     * @param userTrelloInfo an array with data so save in a .txt file regarding trello api.
-     * @param filename       the name of the file to save the info.
+     * @param userGitInfo    an array with data to save in a .txt file regarding GitHub API.
+     * @param userTrelloInfo an array with data to save in a .txt file regarding Trello API.
+     * @param filename       the name of the file where the info is saved.
      * @author Rodrigo Guerreiro
      */
     public static void save(String[] userGitInfo, String[] userTrelloInfo, String filename) throws IOException {
@@ -26,10 +25,10 @@ public class DataSaver {
     }
 
     /**
-     * This function writes the user data received in the parameter in a file that is also passed in the parameters
+     * Function that writes the user data received in the parameter in a file that is also passed in the parameters
      *
-     * @param userGitInfo    an array with data so save in a .txt file regarding GitHub api.
-     * @param userTrelloInfo an array with data so save in a .txt file regarding trello api.
+     * @param userGitInfo    an array with data to save in a .txt file regarding GitHub API.
+     * @param userTrelloInfo an array with data to save in a .txt file regarding Trello API.
      * @param file           the file where the data is going to be written.
      * @throws IOException if it can't write in the file.
      * @author Rodrigo Guerreiro
@@ -55,4 +54,5 @@ public class DataSaver {
     public static boolean exists(File file) {
         return file.exists();
     }
+
 }

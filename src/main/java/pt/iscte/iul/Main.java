@@ -13,15 +13,15 @@ public class Main {
 
     /**
      * Main function to start the application.
-     * Sees if the data file existe and if so reads the data.
+     * Sees if the data file exists and if so, reads the data.
      * Shows a pop-up window with a yes/no question.
      * If answer == yes loads the app with the saved data.
-     * If answer == no proceed with the standard load.
+     * If answer == no proceeds with the standard load.
      * If there is no data file also does the standard load.
-     * If flag==1 then it will scale the main frame.
+     * If flag == 1 then it will scale the main frame.
      *
      * @param args nothing.
-     * @throws IOException throws exception
+     * @throws IOException throws exception.
      * @author Rodrigo Guerreiro
      */
     public static void main(String[] args) throws IOException {
@@ -41,4 +41,5 @@ public class Main {
             new HomeUI();
         }
     }
+
 }

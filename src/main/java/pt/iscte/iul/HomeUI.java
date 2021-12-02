@@ -34,23 +34,20 @@ public class HomeUI implements ActionListener {
     private final JTextField trelloKey;
 
     /**
-     * Constructor method that initialize the variables in order for the frame to be created.
+     * Constructor method that initializes the variables in order for the frame to be created.
      *
      * @author Rodrigo Guerreiro
      */
-
-
     public HomeUI() {
         this.frame = new JFrame();
 
-        this.labelGitLogo = new JLabel("Please insert your Github token in the box below:");
-        this.labelGitOwner = new JLabel("Please insert the repository owner in the box below:");
-        this.labelGitRepo = new JLabel("Please the repository name in the box below:");
+        this.labelGitLogo = new JLabel("Please insert your GitHub token in the box below:");
+        this.labelGitOwner = new JLabel("Please insert the repository's owner in the box below:");
+        this.labelGitRepo = new JLabel("Please insert the repository's name in the box below:");
 
         this.labelTrelloLogo = new JLabel("Please insert your Trello token in the box below:");
-        this.labelTrelloBoardName = new JLabel("Please insert your Trello's board name in the box below:");
-
         this.labelTrelloKey = new JLabel("Please insert your Trello key in the box below:");
+        this.labelTrelloBoardName = new JLabel("Please insert your board's name in the box below:");
 
         this.gitToken = new JTextField();
         this.gitOwner = new JTextField();
@@ -75,7 +72,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Function that add the labels on the screen to show the user where to put each credential.
+     * Method that adds the labels on the screen to show the user where to put each credential.
      *
      * @author Rodrigo Guerreiro
      */
@@ -96,9 +93,9 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Displays a pop-up window on the screen.
+     * Function that displays a pop-up window on the screen.
      *
-     * @return opc the value (int) of the option chosen by the user
+     * @return opc the value (int) of the option chosen by the user.
      * @author Rodrigo Guerreiro
      */
     public static int pop() {
@@ -107,7 +104,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Function that add the input boxes to the frame for the user input his credentials.
+     * Function that adds the input boxes on the frame for the user to input his/her credentials.
      *
      * @author Rodrigo Guerreiro
      */
@@ -131,9 +128,9 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Displays a frame on the screen.
+     * Function that displays a frame on the screen.
      *
-     * @param frame receives a frame and displays it on the screen
+     * @param frame frame to be displayed on the screen.
      * @author Rodrigo Guerreiro
      */
     public static void showFrame(JFrame frame) {
@@ -147,7 +144,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Function that displays on the frame the two images (git and trello).
+     * Function that displays on the frame the two images (Git and Trello).
      *
      * @author Rodrigo Guerreiro
      */
@@ -177,9 +174,9 @@ public class HomeUI implements ActionListener {
      * {@link Action} performed when the search button is pressed.
      * Creates a pop-up window with a yes/no question and based on the answer
      * saves the data and calls {@link Action#doAction(JFrame, String[], String[], int)}
-     * or only calls {@link Action#doAction(JFrame, String[], String[], int)}
-     * userGitInfo[gitOwner, gitRepo, gitToken]
-     * userTrelloInfo[trelloUser, trelloKey, trelloToken]
+     * or only calls {@link Action#doAction(JFrame, String[], String[], int)}.
+     * userGitInfo [gitOwner, gitRepo, gitToken].
+     * userTrelloInfo [trelloUser, trelloKey, trelloToken].
      *
      * @author Rodrigo Guerreiro
      */
@@ -210,7 +207,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Checks if all fields are full or not.
+     * Checks if all fields are full.
      *
      * @param userGitInfo    user info regarding git.
      * @param userTrelloInfo user info regarding trello.

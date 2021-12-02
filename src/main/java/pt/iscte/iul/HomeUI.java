@@ -188,24 +188,18 @@ public class HomeUI implements ActionListener {
         var userGitInfo = new String[]{this.gitOwner.getText(), this.gitRepo.getText(), this.gitToken.getText()};
         var userTrelloInfo = new String[]{this.trelloBoardName.getText(), this.trelloKey.getText(), this.trelloToken.getText()};
 
-        var i = 0;
-        i = allFieldsFull(userGitInfo, userTrelloInfo, i);
+        var i = allFieldsFull(userGitInfo, userTrelloInfo);
 
         var opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
-                "Warning?", JOptionPane.YES_NO_OPTION);
+                "Warning", JOptionPane.YES_NO_OPTION);
 
         if (opc == JOptionPane.YES_OPTION && i == 0) {
             try {
                 Action.saveData(userGitInfo, userTrelloInfo, "data/user_data.txt");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            try {
                 Action.doAction(this.frame, userGitInfo, userTrelloInfo, 1);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-
         } else if (opc == JOptionPane.NO_OPTION && i == 0) {
             try {
                 Action.doAction(this.frame, userGitInfo, userTrelloInfo, 1);
@@ -218,12 +212,12 @@ public class HomeUI implements ActionListener {
     /**
      * Checks if all fields are full or not.
      *
-     * @param userGitInfo    user info
-     * @param userTrelloInfo user info
-     * @param i              a value
+     * @param userGitInfo    user info regarding git.
+     * @param userTrelloInfo user info regarding trello.
      * @return the value 1 if is empty, 0 otherwise.
      */
-    private int allFieldsFull(String[] userGitInfo, String[] userTrelloInfo, int i) {
+    private int allFieldsFull(String[] userGitInfo, String[] userTrelloInfo) {
+        int i = 0;
         for (var s : userGitInfo) {
             if (s.isEmpty()) {
                 i = 1;

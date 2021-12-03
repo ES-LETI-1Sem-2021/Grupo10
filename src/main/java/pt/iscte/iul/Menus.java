@@ -233,7 +233,6 @@ public class Menus implements ActionListener {
                 new HomeUI();
             }
             case "Export to CSV" -> {
-                System.out.println("Export to csv");
                 Action.exportCSV(gitHubAPI, trelloAPI);
             }
             default -> {

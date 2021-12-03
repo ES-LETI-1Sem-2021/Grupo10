@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -233,7 +234,7 @@ public class Menus implements ActionListener {
             }
             case "Export to CSV" -> {
                 System.out.println("Export to csv");
-                // TODO add export functions here (TRABALHA OLEK)
+                Action.exportCSV(gitHubAPI, trelloAPI);
             }
             default -> {
             }

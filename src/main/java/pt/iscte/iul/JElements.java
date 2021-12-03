@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,6 +22,7 @@ import static javax.swing.BorderFactory.createEmptyBorder;
  */
 public class JElements implements ActionListener {
 
+    private static int rate;
     private final JFrame frame;
     private final JSpinner spinner;
     private final JButton button;
@@ -241,7 +243,7 @@ public class JElements implements ActionListener {
         var scroller = new JScrollPane();
 
         editorPane.setContentType("text/html");
-        editorPane.setText("<br></br><br></br>" + gitHubAPI.convert()[1] + "<br></br><br></br><br></br><br></br><br></br><br></br>");
+        editorPane.setText("<br></br><br></br>" + gitHubAPI.convert()[1] +"<br></br><br></br><br></br><br></br>");
         editorPane.setEditable(false);
         editorPane.setVisible(true);
         editorPane.setCaretPosition(0);
@@ -298,6 +300,7 @@ public class JElements implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         var totalMoney = 0;
         var multiplier = (int)spinner.getValue();
+        rate = multiplier;
         for (var i = 1; i != hoursPerUsers.size() + 1; i++) {
             var obj = this.hoursPerUsers.get(i - 1).getSpentHours() * multiplier;
             this.table.setValueAt(String.valueOf(obj), i, 3);
@@ -306,5 +309,9 @@ public class JElements implements ActionListener {
 
         this.table.setValueAt(String.valueOf(totalMoney), hoursPerUsers.size() + 1, 3);
         this.frame.repaint();
+    }
+
+    public static int getRate() {
+        return rate;
     }
 }

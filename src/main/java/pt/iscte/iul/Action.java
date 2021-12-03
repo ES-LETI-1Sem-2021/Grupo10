@@ -156,4 +156,14 @@ public class Action {
         });
     }
 
+    public static void exportCSV(GitHubAPI git, TrelloAPI trello) throws IOException {
+        FileWriter writer = new FileWriter("out.csv");
+        writer.write(
+              git.convert()[0]
+              + "\n"
+              + trello.convertToCSV(JElements.getRate(), 3)
+              + "\n"
+        );
+        writer.close();
+    }
 }

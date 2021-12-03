@@ -9,10 +9,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * @author Duarte Casaleiro, Oleksandr Kobelyuk, Miguel Romana.
@@ -387,6 +388,29 @@ public class TrelloAPI {
             }
         }
         return 0;
+    }
+
+    /**
+     * Method that returns the dates of implementation of features and tests.
+     *
+     * @return Start and end dates of features and tests.
+     * @throws IOException If the request fails.
+     * @author Miguel Romana.
+     */
+    public Map<Card, String[]> getFeaturesAndTestsDates() throws IOException {
+        String[] dates;
+        var cardDates = new HashMap<Card, String[]>();
+        var lists = this.queryLists("Done");
+        for (var list : lists) {
+            var cards = getListCards(list.id);
+            for (var card : cards) {
+                String createdDate = new SimpleDateFormat("yyyy-MM-dd").
+                        format(new Date(1000L * parseInt(card.id.substring(0, 8), 16)));
+                dates = new String[] {createdDate, card.getDueDate()};
+                cardDates.put(card, dates);
+            }
+        }
+        return cardDates;
     }
 
     /**

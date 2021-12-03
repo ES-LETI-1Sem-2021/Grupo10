@@ -37,6 +37,9 @@ public class Main {
                 HomeUI.showFrame(frame);
                 Action.doAction(frame, git, trello, 1);
             }
+            else{
+                new HomeUI();
+            }
         } else {
             new HomeUI();
         }

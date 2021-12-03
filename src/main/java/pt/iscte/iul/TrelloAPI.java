@@ -538,11 +538,12 @@ public class TrelloAPI {
      * Converts relevant information into CSV strings.
      * @param rate Hourly rate.
      * @param numberOfSprints Number of Sprints.
+     * @param listQuery Optional variable for list selection.
      * @return An array of CSV formatted strings.
      * @throws IOException If the request fails.
      */
-    public String[] convertToCSV(int rate, int numberOfSprints) throws IOException {
-        var hoursPerUser = this.getTotalHoursByUser("", "");
+    public String[] convertToCSV(int rate, int numberOfSprints, String... listQuery) throws IOException {
+        var hoursPerUser = this.getTotalHoursByUser(listQuery.length == 0 ? "" : listQuery[0], "");
 
         // Recursos Humanos
         var csv = new ArrayList<String>();

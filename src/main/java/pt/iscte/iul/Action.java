@@ -156,12 +156,20 @@ public class Action {
         });
     }
 
-    public static void exportCSV(GitHubAPI git, TrelloAPI trello) throws IOException {
+    /**
+     * Function that exports a csv file with all project's information.
+     *
+     * @param gitHubAPI the GitHub API instance.
+     * @param trelloAPI the Trello API instance.
+     * @throws IOException throws exception
+     * @author Oleksandr Kobelyuk
+     */
+    public static void exportCSV(GitHubAPI gitHubAPI, TrelloAPI trelloAPI) throws IOException {
         FileWriter writer = new FileWriter("out.csv");
         writer.write(
-              git.convert()[0]
+                gitHubAPI.convert()[0]
               + "\n"
-              + trello.convertToCSV(JElements.getRate(), 3)
+              + trelloAPI.convertToCSV(JElements.getRate(), 3)
               + "\n"
         );
         writer.close();

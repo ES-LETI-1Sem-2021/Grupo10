@@ -394,12 +394,12 @@ public class TrelloAPI {
      * @return An {@link ArrayList} of {@link List} that match the query.
      * @throws IOException If the request fails.
      */
-    public ArrayList<List> queryLists(String query) throws IOException {
+    public ArrayList<List> queryLists(String query, boolean...exclude) throws IOException {
         var allLists = this.getBoardLists();
         var listsThatStartWith = new ArrayList<List>();
 
         for (var list : allLists) {
-            if (list.getName().contains(query)) {
+            if (exclude.length == 1 ? (exclude[0] != list.getName().contains(query)) : list.getName().contains(query)) {
                 listsThatStartWith.add(list);
             }
         }
@@ -517,11 +517,11 @@ public class TrelloAPI {
      * @return the total hours spent by user in a list of {@link HoursPerUser}
      * @throws IOException If the request fails.
      */
-    public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery) throws IOException {
+    public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery, boolean...exclude) throws IOException {
         var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
 
         var hoursPerUser = new ArrayList<HoursPerUser>();
-        var listOfCeremonies = this.queryLists(listQuery);
+        var listOfCeremonies = this.queryLists(listQuery, exclude);
         for (var list : listOfCeremonies) {
             for (var card : this.getListCards(list.getId())) {
                 if (!card.getName().contains(cardQuery))
@@ -537,38 +537,81 @@ public class TrelloAPI {
      * Converts relevant information into CSV strings.
      * @param rate Hourly rate.
      * @param numberOfSprints Number of Sprints.
-     * @param listQuery Optional variable for list selection.
      * @return An array of CSV formatted strings.
      * @throws IOException
      */
-    public String[] convertToCSV(int rate, int numberOfSprints, String... listQuery) throws IOException {
-        var hoursPerUser = this.getTotalHoursByUser(listQuery.length == 0 ? "" : listQuery[0], "");
+    public String convertToCSV(int rate, int numberOfSprints) throws IOException {
+        // 8 & 9
+        var csv8 = new ArrayList<String>();
+        csv8.add("Sprint,Elemento,Horas Usadas,Horas Previstas\n");
 
-        // recursos humanos
-        var csv = new ArrayList<String>();
-        csv.add("Elemento,Salario\n");
-        for (var user : hoursPerUser) {
-            csv.add(
-                    user.user + "," + user.spentHours * rate + "\n"
-            );
-        }
-        csv.add("Total, " + hoursPerUser.stream().map(user -> user.spentHours * rate).mapToDouble(d -> d).sum() + "\n");
+        var csv9 = new ArrayList<String>();
+        csv9.add("Sprint,Elemento,Salario\n");
 
-        // horas de cada sprint
-        var csv2 = new ArrayList<String>();
-        csv2.add("Sprint,Elemento,Horas\n");
         for (var i = 1; i < numberOfSprints + 1; i++) {
-            hoursPerUser = this.getTotalHoursByUser("", "Sprint " + i);
+            var hoursPerUser = this.getTotalHoursByUser("", "Sprint " + i);
+
             for (var user : hoursPerUser) {
-                csv2.add(
-                        i + "," + user.getUser() + "," + user.getSpentHours() + "\n"
+                csv9.add(
+                        i + "," + user.user + "," + user.spentHours * rate + "\n"
+                );
+
+                csv8.add(
+                        i + "," + user.getUser() + "," + user.getSpentHours() + "," + user.getEstimatedHours() + "\n"
                 );
             }
         }
 
-        return new String[]{
-                String.join("", csv),
-                String.join("", csv2)
-        };
+        var hoursPerUser = this.getTotalHoursByUser("", "");
+        csv9.add(",Total, " + hoursPerUser.stream().map(user -> user.spentHours * rate).mapToDouble(d -> d).sum() + "\n");
+
+        // 10
+        var csv10 = new ArrayList<String>();
+        csv10.add("Atividades,Horas,Custo\n");
+
+        var lists = this.queryLists("Ceremonies", true);
+        var numberOfCards = lists.stream().map(list -> {
+            try {
+                return this.getListCards(list.getId()).length;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }).mapToInt(i -> i).sum();
+
+        var hours = this.getTotalHoursByUser("Ceremonies", "", true)
+                .stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+
+        csv10.add(numberOfCards + "," + hours + "," + hours * rate + "\n");
+
+        // 11
+        var csv11 = new ArrayList<String>();
+        csv11.add("Atividades,Horas,Custo\n");
+
+        lists = this.queryLists("Ceremonies");
+        numberOfCards = lists.stream().map(list -> {
+            try {
+                return this.getListCards(list.getId()).length;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }).mapToInt(i -> i).sum();
+
+        hours = this.getTotalHoursByUser("Ceremonies", "")
+                .stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+
+        csv11.add(numberOfCards + "," + hours + "," + hours * rate + "\n");
+
+        return String.join("", csv8) + "\n"
+                + String.join("", csv9) + "\n"
+                + "Nao engloba cerimonias\n"
+                + String.join("", csv10) + "\n"
+                + "So cerimonias\n"
+                + String.join("", csv11);
     }
+
+
 }

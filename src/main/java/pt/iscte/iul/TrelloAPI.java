@@ -34,9 +34,10 @@ public class TrelloAPI {
 
     /**
      * Base class for requesting information from the Trello API.
+     *
      * @param boardName Name of the board.
-     * @param apiKey Trello API access key.
-     * @param apiToken Trello API access token.
+     * @param apiKey    Trello API access key.
+     * @param apiToken  Trello API access token.
      */
     public TrelloAPI(String boardName, String apiKey, String apiToken) throws IOException {
         this.apiKey = apiKey;
@@ -109,9 +110,9 @@ public class TrelloAPI {
     }
 
     /**
-     * @param component Component that we want to access (list, card, board, etc).
+     * @param component   Component that we want to access (list, card, board, etc).
      * @param componentId ID of the component that we want to access.
-     * @param url Url of the component (board url, list url, etc).
+     * @param url         Url of the component (board url, list url, etc).
      * @return A {@link Response} object.
      * @throws IOException If the request fails.
      */
@@ -311,7 +312,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param sprintType Spring type.
+     * @param sprintType   Spring type.
      * @param sprintNumber Spring number.
      * @return Description of the ceremony in question.
      * @throws IOException If the request fails.
@@ -383,16 +384,14 @@ public class TrelloAPI {
      * @author Miguel Romana.
      */
     public Map<Card, String[]> getFeaturesAndTestsDates() throws IOException {
-        String[] dates;
         var cardDates = new HashMap<Card, String[]>();
         var lists = this.queryLists("Done");
         for (var list : lists) {
             var cards = getListCards(list.id);
             for (var card : cards) {
-                String createdDate = new SimpleDateFormat("yyyy-MM-dd").
+                var createdDate = new SimpleDateFormat("yyyy-MM-dd").
                         format(new Date(1000L * parseInt(card.getId().substring(0, 8), 16)));
-                dates = new String[] {createdDate, card.getDueDate()};
-                cardDates.put(card, dates);
+                cardDates.put(card, new String[]{createdDate, card.getDueDate()});
             }
         }
         return cardDates;
@@ -403,7 +402,7 @@ public class TrelloAPI {
      * @return An {@link ArrayList} of {@link List} that match the query.
      * @throws IOException If the request fails.
      */
-    public ArrayList<List> queryLists(String query, boolean...exclude) throws IOException {
+    public ArrayList<List> queryLists(String query, boolean... exclude) throws IOException {
         var allLists = this.getBoardLists();
         var listsThatStartWith = new ArrayList<List>();
         for (var list : allLists) {
@@ -440,6 +439,7 @@ public class TrelloAPI {
         private String user;
         private double spentHours;
         private double estimatedHours;
+        private int cards = 0;
 
         /**
          * Class to get all hours spent and estimated by user.
@@ -475,18 +475,20 @@ public class TrelloAPI {
             return estimatedHours;
         }
 
-        /**
-         * @param hours spent hours added to the user.
-         */
         private void addSpentHours(double hours) {
             this.spentHours += hours;
         }
 
-        /**
-         * @param hours estimated hours added to the user.
-         */
         private void addEstimatedHours(double hours) {
             this.estimatedHours += hours;
+        }
+
+        private void addCard() {
+            this.cards++;
+        }
+
+        private int getCards() {
+            return cards;
         }
 
         @Override
@@ -499,7 +501,7 @@ public class TrelloAPI {
         }
     }
 
-    private void addObjectToList(Card card, Pattern pattern, ArrayList<HoursPerUser> hoursPerUser ) throws IOException {
+    private void addObjectToList(Card card, Pattern pattern, ArrayList<HoursPerUser> hoursPerUser) throws IOException {
         for (var member : this.getMemberOfCard(card.getId())) {
             if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
                 hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
@@ -508,9 +510,10 @@ public class TrelloAPI {
         var match = pattern.matcher(card.getDescription());
         while (match.find()) {
             for (var o : hoursPerUser) {
-                if (Objects.equals(o.user, match.group(1))) {
+                if (Objects.equals(o.getUser(), match.group(1))) {
                     o.addSpentHours(Double.parseDouble(match.group(2)));
                     o.addEstimatedHours(Double.parseDouble(match.group(3)));
+                    o.addCard();
                 }
             }
         }
@@ -518,11 +521,11 @@ public class TrelloAPI {
 
     /**
      * @param listQuery query for the list name.
-     * @param cardQuery  query for the card name.
+     * @param cardQuery query for the card name.
      * @return the total hours spent by user in a list of {@link HoursPerUser}
      * @throws IOException If the request fails.
      */
-    public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery, boolean...exclude) throws IOException {
+    public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery, boolean... exclude) throws IOException {
         var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
         var hoursPerUser = new ArrayList<HoursPerUser>();
         var listOfCeremonies = this.queryLists(listQuery, exclude);
@@ -538,7 +541,8 @@ public class TrelloAPI {
 
     /**
      * Converts relevant information into CSV strings.
-     * @param rate Hourly rate.
+     *
+     * @param rate            Hourly rate.
      * @param numberOfSprints Number of Sprints.
      * @return An array of CSV formatted strings.
      * @throws IOException
@@ -570,7 +574,17 @@ public class TrelloAPI {
 
         // 10
         var csv10 = new ArrayList<String>();
-        csv10.add("Atividades,Horas,Custo\n");
+        csv10.add("Elemento,Atividades,Horas,Custo\n");
+
+        var users10 = this.getTotalHoursByUser("Ceremonies", "", true);
+        for (var perUser : users10) {
+            csv10.add(
+                    perUser.getUser()
+                            + "," + perUser.getCards()
+                            + "," + perUser.getSpentHours()
+                            + "," + perUser.getSpentHours() * rate + "\n"
+            );
+        }
 
         var lists = this.queryLists("Ceremonies", true);
         var numberOfCards = lists.stream().map(list -> {
@@ -586,11 +600,21 @@ public class TrelloAPI {
         var hours = this.getTotalHoursByUser("Ceremonies", "", true)
                 .stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
 
-        csv10.add(numberOfCards + "," + hours + "," + hours * rate + "\n");
+        csv10.add("Global," + numberOfCards + "," + hours + "," + hours * rate + "\n");
 
         // 11
         var csv11 = new ArrayList<String>();
-        csv11.add("Atividades,Horas,Custo\n");
+        csv11.add("Elemento,Atividades,Horas,Custo\n");
+
+        var users11 = this.getTotalHoursByUser("Ceremonies", "");
+        for (var perUser : users11) {
+            csv11.add(
+                    perUser.getUser()
+                            + "," + perUser.getCards()
+                            + "," + perUser.getSpentHours()
+                            + "," + perUser.getSpentHours() * rate + "\n"
+            );
+        }
 
         lists = this.queryLists("Ceremonies");
         numberOfCards = lists.stream().map(list -> {
@@ -606,13 +630,13 @@ public class TrelloAPI {
         hours = this.getTotalHoursByUser("Ceremonies", "")
                 .stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
 
-        csv11.add(numberOfCards + "," + hours + "," + hours * rate + "\n");
+        csv11.add("Global," + numberOfCards + "," + hours + "," + hours * rate + "\n");
 
         return String.join("", csv8) + "\n"
                 + String.join("", csv9) + "\n"
-                + "Nao engloba cerimonias\n"
+                + "Cartoes que geraram artefactos\n"
                 + String.join("", csv10) + "\n"
-                + "So cerimonias\n"
+                + "Cartoes que nao geraram artefactos\n"
                 + String.join("", csv11);
     }
 

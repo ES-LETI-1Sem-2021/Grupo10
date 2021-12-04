@@ -316,7 +316,7 @@ public class JElements implements ActionListener {
         }
 
         var table = new JTable(content, names);
-        table.setBounds(200, 150, 350, 325);
+        table.setBounds(200, 150, 350, frame.getHeight());
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.black);

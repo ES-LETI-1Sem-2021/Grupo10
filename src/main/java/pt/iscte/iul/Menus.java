@@ -312,11 +312,18 @@ public class Menus implements ActionListener {
     private void trelloActionPerformed(ActionEvent e) throws IOException {
         if(Objects.equals(e.getActionCommand(), this.activity.getText())){
             Action.clearFrame(this.frame);
-            JElements.addTestsTable(this.frame, this.trelloAPI);
-            JElements.addArtifactsTable(this.frame, this.trelloAPI);
-            JElements.addNonArtifactsTable(this.frame, this.trelloAPI);
+
+            // Threading
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    JElements.addTestsTable(this.frame, this.trelloAPI);
+                    JElements.addArtifactsTable(this.frame, this.trelloAPI);
+                    JElements.addNonArtifactsTable(this.frame, this.trelloAPI);
+                    frame.repaint();
+                } catch (IOException ee) {
+                    ee.printStackTrace();
+                }
+            });
         }
     }
-
-
 }

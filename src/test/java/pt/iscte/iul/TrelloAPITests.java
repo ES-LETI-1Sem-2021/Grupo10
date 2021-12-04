@@ -194,16 +194,12 @@ public class TrelloAPITests {
 
     @Test
     public void featuresAndTestsDates() throws IOException {
-        String firstCreatedDate = "2021-10-09";
-        for (Map.Entry<TrelloAPI.Card, String[]> card : this.api.getFeaturesAndTestsDates().entrySet()) {
+        for (var card : this.api.getFeaturesAndTestsDates().entrySet()) {
             Assertions.assertNotNull(card);
             if (card.getKey().getName().equals("6. Testes realizados e Implementação das funcionalidades - Sprint 3")) {
-                Assertions.assertEquals(firstCreatedDate, card.getValue()[0]);
+                Assertions.assertEquals("2021-10-09", card.getValue()[0]);
             }
             Assertions.assertEquals(card.getKey().getDueDate(), card.getValue()[1]);
-
         }
-
     }
-
 }

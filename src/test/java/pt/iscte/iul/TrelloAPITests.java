@@ -156,7 +156,7 @@ public class TrelloAPITests {
 
     @Test
     public void totalNumberOfCeremonies() throws IOException {
-        Assertions.assertEquals(14, this.api.getTotalNumberOfCeremonies());
+        Assertions.assertEquals(16, this.api.getTotalNumberOfCeremonies());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class TrelloAPITests {
 
     @Test
     public void numberOfHoursCeremony() throws IOException {
-        Assertions.assertEquals(12.0, this.api.getTotalCeremonyHours());
+        Assertions.assertEquals(12.75, this.api.getTotalCeremonyHours());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class TrelloAPITests {
         String firstCreatedDate = "2021-10-09";
         for (Map.Entry<TrelloAPI.Card, String[]> card : this.api.getFeaturesAndTestsDates().entrySet()) {
             Assertions.assertNotNull(card);
-            if (card.getKey().getName().equals("15. Exportação para ficheiro .csv - Sprint 3")) {
+            if (card.getKey().getName().equals("6. Testes realizados e Implementação das funcionalidades - Sprint 3")) {
                 Assertions.assertEquals(firstCreatedDate, card.getValue()[0]);
             }
             Assertions.assertEquals(card.getKey().getDueDate(), card.getValue()[1]);

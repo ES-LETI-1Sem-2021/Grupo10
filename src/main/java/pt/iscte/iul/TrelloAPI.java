@@ -423,7 +423,7 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     public double getTotalCeremonyHours() throws IOException {
-        var pattern = Pattern.compile("(?:@global (\\d?.?\\d+)/(\\d?.?\\d+))");
+        var pattern = Pattern.compile("(?:@global (\\d*.?\\d+)/(\\d*.?\\d+))");
         var totalOfHours = 0.0;
         var listOfCeremonies = this.queryLists("Ceremonies");
         for (var list : listOfCeremonies) {
@@ -534,7 +534,7 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery, boolean... exclude) throws IOException {
-        var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
+        var pattern = Pattern.compile("(?:@(.+) (\\d*.?\\d+)/(\\d*.?\\d+))");
         var hoursPerUser = new ArrayList<HoursPerUser>();
         var listOfCeremonies = this.queryLists(listQuery, exclude);
         for (var list : listOfCeremonies) {

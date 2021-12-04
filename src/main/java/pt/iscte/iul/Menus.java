@@ -313,6 +313,8 @@ public class Menus implements ActionListener {
         if(Objects.equals(e.getActionCommand(), this.activity.getText())){
             Action.clearFrame(this.frame);
             JElements.addTestsTable(this.frame, this.trelloAPI);
+            JElements.addArtifactsTable(this.frame, this.trelloAPI);
+            JElements.addNonArtifactsTable(this.frame, this.trelloAPI);
         }
     }
 

@@ -5,6 +5,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,7 +24,7 @@ import static javax.swing.BorderFactory.createEmptyBorder;
  */
 public class JElements implements ActionListener {
 
-    private static int rate;
+    private static int rate = 20;
     private final JFrame frame;
     private final JSpinner spinner;
     private final JButton button;
@@ -206,7 +207,7 @@ public class JElements implements ActionListener {
         var hoursPerUser = trelloAPI.getTotalHoursByUser("Ceremonies", "");
 
         var content = new String[hoursPerUser.size() + 2][3];
-        var names = new String[]{"Members", "Nº Ceremonies", "Total Hours"};
+        var names = new String[]{"Member", "Nº Ceremonies", "Total Hours"};
         content[0] = names;
 
         for (var i = 0; i != hoursPerUser.size(); i++) {
@@ -305,22 +306,142 @@ public class JElements implements ActionListener {
         var names = new String[]{"Card", "Start Date", "End Date"};
         var content = new String[testsData.size() + 1][4];
         content[0] = names;
-        System.out.println(testsData.size());
 
         for (int i = 0; i < testsData.size(); i++) {
-            content[i + 1] = new String[]{testsData.keySet().stream().skip(i).findFirst().get().getName(),
+            content[i + 1] = new String[]{
+                    testsData.keySet().stream().skip(i).findFirst().get().getName(),
                     testsData.values().stream().skip(i).findFirst().get()[0],
                     testsData.values().stream().skip(i).findFirst().get()[1]
             };
         }
 
         var table = new JTable(content, names);
-        table.setBounds(50, 150, 350, 325);
+        table.setBounds(200, 150, 350, 325);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.black);
         table.setShowGrid(true);
 
+        frame.add(table);
+
+        frame.setVisible(true);
+    }
+
+    /**
+     * Function that adds a table with all complete cards and respective start and end date
+     *
+     * @param frame The frame to present the table.
+     * @param trelloAPI The instance of the {@link TrelloAPI}.
+     * @throws IOException throws exception.
+     * @author Duarte Casaleiro, Rodrigo Guerreiro
+     */
+    public static void addArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
+
+        var users10 = trelloAPI.getTotalHoursByUser("Ceremonies", "", true);
+
+        var lists = trelloAPI.queryLists("Ceremonies", true);
+        var numberOfCards = lists.stream().map(list -> {
+            try {
+                return trelloAPI.getListCards(list.getId()).length;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }).mapToInt(i -> i).sum();
+
+        var hours = users10.stream().map(TrelloAPI.HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+
+        var names = new String[]{"Member", "Cards", "Spent Hours", "Cost"};
+        var content = new String[users10.size() + 2][4];
+        content[0] = names;
+
+        for (int i = 0; i < users10.size(); i++) {
+            content[i + 1] = new String[]{
+                    users10.get(i).getUser(),
+                    String.valueOf(users10.get(i).getCards()),
+                    String.valueOf(users10.get(i).getSpentHours()),
+                    String.valueOf(users10.get(i).getSpentHours() * getRate())
+            };
+        }
+        content[users10.size() + 1] = new String[]{
+                "Global",
+                String.valueOf(numberOfCards),
+                String.valueOf(hours),
+                String.valueOf(hours * getRate())
+        };
+
+        var title = new JLabel("Artifacts Table");
+        title.setForeground(new Color(68, 114, 196));
+        title.setBounds(825, 150, 150, 25);
+        title.setVisible(true);
+        var table = new JTable(content, names);
+        table.setBounds(700, 175, 350, 150);
+        table.setVisible(true);
+        table.setEnabled(false);
+        table.setGridColor(Color.black);
+        table.setShowGrid(true);
+
+        frame.add(table);
+        frame.add(title);
+
+        frame.setVisible(true);
+    }
+
+    /**
+     * Function that adds a table with all complete cards and respective start and end date
+     *
+     * @param frame The frame to present the table.
+     * @param trelloAPI The instance of the {@link TrelloAPI}.
+     * @throws IOException throws exception.
+     * @author Duarte Casaleiro, Rodrigo Guerreiro
+     */
+    public static void addNonArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
+
+        var users10 = trelloAPI.getTotalHoursByUser("Ceremonies", "");
+
+        var lists = trelloAPI.queryLists("Ceremonies");
+        var numberOfCards = lists.stream().map(list -> {
+            try {
+                return trelloAPI.getListCards(list.getId()).length;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }).mapToInt(i -> i).sum();
+
+        var hours = users10.stream().map(TrelloAPI.HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+
+        var names = new String[]{"Member", "Cards", "Spent Hours", "Cost"};
+        var content = new String[users10.size() + 2][4];
+        content[0] = names;
+
+        for (int i = 0; i < users10.size(); i++) {
+            content[i + 1] = new String[]{
+                    users10.get(i).getUser(),
+                    String.valueOf(users10.get(i).getCards()),
+                    String.valueOf(users10.get(i).getSpentHours()),
+                    String.valueOf(users10.get(i).getSpentHours() * getRate())
+            };
+        }
+        content[users10.size() + 1] = new String[]{
+                "Global",
+                String.valueOf(numberOfCards),
+                String.valueOf(hours),
+                String.valueOf(hours * getRate())
+        };
+
+        var title = new JLabel("Non Artifacts Table");
+        title.setForeground(new Color(68, 114, 196));
+        title.setBounds(825, 325, 150, 25);
+        title.setVisible(true);
+        var table = new JTable(content, names);
+        table.setBounds(700, 350, 350, 150);
+        table.setVisible(true);
+        table.setEnabled(false);
+        table.setGridColor(Color.black);
+        table.setShowGrid(true);
+
+        frame.add(title);
         frame.add(table);
 
         frame.setVisible(true);

@@ -462,14 +462,14 @@ public class TrelloAPI {
         }
 
         /**
-         * @return the hours that were spent.
+         * @return The hours that were spent.
          */
         public double getSpentHours() {
             return spentHours;
         }
 
         /**
-         * @return the hours that were estimated.
+         * @return The hours that were estimated.
          */
         public double getEstimatedHours() {
             return estimatedHours;
@@ -487,7 +487,10 @@ public class TrelloAPI {
             this.cards++;
         }
 
-        private int getCards() {
+        /**
+         * @return The number of cards associated to the user.
+         */
+        public int getCards() {
             return cards;
         }
 
@@ -597,8 +600,7 @@ public class TrelloAPI {
             return 0;
         }).mapToInt(i -> i).sum();
 
-        var hours = this.getTotalHoursByUser("Ceremonies", "", true)
-                .stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+        var hours = users10.stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
 
         csv10.add("Global," + numberOfCards + "," + hours + "," + hours * rate + "\n");
 
@@ -627,8 +629,7 @@ public class TrelloAPI {
             return 0;
         }).mapToInt(i -> i).sum();
 
-        hours = this.getTotalHoursByUser("Ceremonies", "")
-                .stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+        hours = users11.stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
 
         csv11.add("Global," + numberOfCards + "," + hours + "," + hours * rate + "\n");
 

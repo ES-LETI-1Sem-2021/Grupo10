@@ -9,10 +9,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * @author Duarte Casaleiro, Oleksandr Kobelyuk, Miguel Romana.
@@ -253,10 +254,6 @@ public class TrelloAPI {
     public static class Member {
         private String username;
         private String id;
-        // DRAFT: Hours defined for testing
-        private int estimatedHours;
-        private int onGoingHours;
-        private int concludedHours;
 
         /**
          * @return The name.
@@ -281,7 +278,6 @@ public class TrelloAPI {
     public Member[] getMemberOfCard(String cardId) throws IOException {
         //HTTP request to access all Members of a Card
         var response = this.httpRequest("members", cardId, this.cardURL);
-
         // map http response to the class Member
         return mapper.readValue(response.body().string(), Member[].class);
     }
@@ -296,10 +292,8 @@ public class TrelloAPI {
         boolean startDateFound = false;
         // initialize list of dates
         var dates = new String[2];
-
         // get the list of all ceremonies
         var list = this.getList("Ceremonies - Sprint " + sprintNumber);
-
         // Iterate over all cards in the list
         for (var c : this.getListCards(list.getId())) {
             // search for due date of Sprint Planning that is equal to Sprint start date
@@ -313,7 +307,6 @@ public class TrelloAPI {
                 if (startDateFound) break; // if start date is found, we can break the for loop
             }
         }
-
         return dates;
     }
 
@@ -327,7 +320,6 @@ public class TrelloAPI {
     public String getCeremonyDescription(String sprintType, int sprintNumber) throws IOException {
         // get the list of all ceremonies
         var list = this.getList("Ceremonies - Sprint " + sprintNumber);
-
         // Iterate over all cards in the list
         for (var c : this.getListCards(list.getId())) {
             // get the Sprint sprintType's description
@@ -335,7 +327,6 @@ public class TrelloAPI {
                 return c.getDescription();
             }
         }
-
         return ""; // returns an empty String if the description doesn't exist
     }
 
@@ -346,13 +337,11 @@ public class TrelloAPI {
      */
     public ArrayList<String> getDoneProductBacklog(int sprintNumber) throws IOException {
         var doneItems = new ArrayList<String>();
-
         // get specific list
         var list = this.getList("Done - Sprint " + sprintNumber);
         for (var card : this.getListCards(list.getId())) {
             doneItems.add(card.name);
         }
-
         return doneItems;
     }
 
@@ -363,10 +352,8 @@ public class TrelloAPI {
     public int getTotalNumberOfCeremonies() throws IOException {
         var numberOfCeremonies = 0;
         var ceremoniesLists = this.queryLists("Ceremonies");
-
         for (var ceremoniesList : ceremoniesLists) {
             var ceremoniesListCards = this.getListCards(ceremoniesList.id);
-
             numberOfCeremonies += ceremoniesListCards.length;
         }
         return numberOfCeremonies;
@@ -382,11 +369,33 @@ public class TrelloAPI {
         for (var ceremoniesList : lists) {
             if (ceremoniesList.getName().equals("Ceremonies - Sprint " + sprintNumber)) {
                 var ceremoniesListCards = this.getListCards(ceremoniesList.id);
-
                 return ceremoniesListCards.length;
             }
         }
         return 0;
+    }
+
+    /**
+     * Method that returns the dates of implementation of features and tests.
+     *
+     * @return Start and end dates of features and tests.
+     * @throws IOException If the request fails.
+     * @author Miguel Romana.
+     */
+    public Map<Card, String[]> getFeaturesAndTestsDates() throws IOException {
+        String[] dates;
+        var cardDates = new HashMap<Card, String[]>();
+        var lists = this.queryLists("Done");
+        for (var list : lists) {
+            var cards = getListCards(list.id);
+            for (var card : cards) {
+                String createdDate = new SimpleDateFormat("yyyy-MM-dd").
+                        format(new Date(1000L * parseInt(card.getId().substring(0, 8), 16)));
+                dates = new String[] {createdDate, card.getDueDate()};
+                cardDates.put(card, dates);
+            }
+        }
+        return cardDates;
     }
 
     /**
@@ -397,13 +406,11 @@ public class TrelloAPI {
     public ArrayList<List> queryLists(String query, boolean...exclude) throws IOException {
         var allLists = this.getBoardLists();
         var listsThatStartWith = new ArrayList<List>();
-
         for (var list : allLists) {
             if (exclude.length == 1 ? (exclude[0] != list.getName().contains(query)) : list.getName().contains(query)) {
                 listsThatStartWith.add(list);
             }
         }
-
         return listsThatStartWith;
     }
 
@@ -413,7 +420,6 @@ public class TrelloAPI {
      */
     public double getTotalCeremonyHours() throws IOException {
         var pattern = Pattern.compile("(?:@global (\\d?.?\\d+)/(\\d?.?\\d+))");
-
         var totalOfHours = 0.0;
         var listOfCeremonies = this.queryLists("Ceremonies");
         for (var list : listOfCeremonies) {
@@ -499,7 +505,6 @@ public class TrelloAPI {
                 hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
             }
         }
-
         var match = pattern.matcher(card.getDescription());
         while (match.find()) {
             for (var o : hoursPerUser) {
@@ -519,14 +524,12 @@ public class TrelloAPI {
      */
     public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery, boolean...exclude) throws IOException {
         var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
-
         var hoursPerUser = new ArrayList<HoursPerUser>();
         var listOfCeremonies = this.queryLists(listQuery, exclude);
         for (var list : listOfCeremonies) {
             for (var card : this.getListCards(list.getId())) {
                 if (!card.getName().contains(cardQuery))
                     continue;
-
                 addObjectToList(card, pattern, hoursPerUser);
             }
         }
@@ -612,6 +615,5 @@ public class TrelloAPI {
                 + "So cerimonias\n"
                 + String.join("", csv11);
     }
-
 
 }

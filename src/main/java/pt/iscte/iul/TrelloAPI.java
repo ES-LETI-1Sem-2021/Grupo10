@@ -203,6 +203,7 @@ public class TrelloAPI {
         private String name;
         private String id;
         private String due;
+        private String created;
         private String desc;
         private Member member;
 
@@ -226,6 +227,15 @@ public class TrelloAPI {
         public String getDueDate() {
             return this.due == null ? "N/A" :
                     this.due.split("T")[0]; // split by delimiter T
+        }
+
+        /**
+         * @return The date it was created.
+         */
+        public String getCreatedDate() {
+            this.created = new SimpleDateFormat("yyyy-MM-dd").
+                    format(new Date(1000L * parseInt(this.getId().substring(0, 8), 16)));
+            return this.created;
         }
 
         /**
@@ -319,11 +329,8 @@ public class TrelloAPI {
      * @author Miguel Romana.
      */
     public String getCeremonyDescription(String sprintType, int sprintNumber) throws IOException {
-        // get the list of all ceremonies
         var list = this.getList("Ceremonies - Sprint " + sprintNumber);
-        // Iterate over all cards in the list
         for (var c : this.getListCards(list.getId())) {
-            // get the Sprint sprintType's description
             if (c.name.equals("Sprint " + sprintType + " - Sprint " + sprintNumber)) {
                 return c.getDescription();
             }
@@ -377,7 +384,7 @@ public class TrelloAPI {
     }
 
     /**
-     * Method that returns the dates of implementation of features and tests.
+     * Method that returns the dates of features' and tests' implementation.
      *
      * @return Start and end dates of features and tests.
      * @throws IOException If the request fails.
@@ -389,9 +396,7 @@ public class TrelloAPI {
         for (var list : lists) {
             var cards = getListCards(list.id);
             for (var card : cards) {
-                var createdDate = new SimpleDateFormat("yyyy-MM-dd").
-                        format(new Date(1000L * parseInt(card.getId().substring(0, 8), 16)));
-                cardDates.put(card, new String[]{createdDate, card.getDueDate()});
+                cardDates.put(card, new String[]{card.getCreatedDate(), card.getDueDate()});
             }
         }
         return cardDates;
@@ -418,7 +423,7 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     public double getTotalCeremonyHours() throws IOException {
-        var pattern = Pattern.compile("(?:@global (\\d?.?\\d+)/(\\d?.?\\d+))");
+        var pattern = Pattern.compile("(?:@global (\\d*.?\\d+)/(\\d*.?\\d+))");
         var totalOfHours = 0.0;
         var listOfCeremonies = this.queryLists("Ceremonies");
         for (var list : listOfCeremonies) {
@@ -529,7 +534,7 @@ public class TrelloAPI {
      * @throws IOException If the request fails.
      */
     public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery, boolean... exclude) throws IOException {
-        var pattern = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
+        var pattern = Pattern.compile("(?:@(.+) (\\d*.?\\d+)/(\\d*.?\\d+))");
         var hoursPerUser = new ArrayList<HoursPerUser>();
         var listOfCeremonies = this.queryLists(listQuery, exclude);
         for (var list : listOfCeremonies) {
@@ -548,7 +553,7 @@ public class TrelloAPI {
      * @param rate            Hourly rate.
      * @param numberOfSprints Number of Sprints.
      * @return An array of CSV formatted strings.
-     * @throws IOException
+     * @throws IOException If the request fails.
      */
     public String convertToCSV(int rate, int numberOfSprints) throws IOException {
         // 8 & 9

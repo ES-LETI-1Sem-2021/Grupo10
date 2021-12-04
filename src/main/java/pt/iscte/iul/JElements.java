@@ -328,12 +328,11 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Function that adds a table with all complete cards and respective start and end date
+     * Function that adds a table with the spent hours and cost of the cards that generated artifacts
      *
      * @param frame The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.
      * @throws IOException throws exception.
-     * @author Duarte Casaleiro, Rodrigo Guerreiro
      */
     public static void addArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
 
@@ -388,12 +387,11 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Function that adds a table with all complete cards and respective start and end date
+     * Function that adds a table with the spent hours and cost of the cards that didn't generated artifacts
      *
      * @param frame The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.
      * @throws IOException throws exception.
-     * @author Duarte Casaleiro, Rodrigo Guerreiro
      */
     public static void addNonArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
 

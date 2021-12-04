@@ -277,8 +277,9 @@ public class Menus implements ActionListener {
 
         if(Objects.equals(e.getActionCommand(), this.commitsTable.getText())){
             Action.clearFrame(this.frame);
-            JElements.addCommitsTable(frame, this.gitHubAPI);
-            JElements.addTagsTable(frame, this.gitHubAPI);
+            JElements.addCommitsTable(this.frame, this.gitHubAPI);
+            JElements.addTagsTable(this.frame, this.gitHubAPI);
+            JElements.addTestsTable(this.frame, this.trelloAPI);
         }
     }
 

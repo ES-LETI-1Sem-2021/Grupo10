@@ -279,7 +279,42 @@ public class JElements implements ActionListener {
         }
 
         var table = new JTable(content, names);
-        table.setBounds((frame.getWidth() - 370), 200, 300, 150);
+        table.setBounds((frame.getWidth() - 370), 50, 300, 50);
+        table.setVisible(true);
+        table.setEnabled(false);
+        table.setGridColor(Color.black);
+        table.setShowGrid(true);
+
+        frame.add(table);
+
+        frame.setVisible(true);
+    }
+
+    /**
+     * Function that adds a table with all complete cards and respective start and end date
+     *
+     * @param frame The frame to present the table.
+     * @param trelloAPI The instance of the {@link TrelloAPI}.
+     * @throws IOException throws exception.
+     * @author Duarte Casaleiro, Rodrigo Guerreiro
+     */
+    public static void addTestsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
+
+        var testsData = trelloAPI.getFeaturesAndTestsDates();
+        var names = new String[]{"Card", "Start Date", "End Date"};
+        var content = new String[testsData.size() + 1][3];
+        content[0] = names;
+        System.out.println(testsData.size());
+
+        for (int i = 0; i < testsData.size(); i++) {
+            content[i + 1] = new String[]{testsData.keySet().stream().skip(i).findFirst().get().getName(),
+                    testsData.values().stream().skip(i).findFirst().get()[0],
+                    testsData.values().stream().skip(i).findFirst().get()[1]
+            };
+        }
+
+        var table = new JTable(content, names);
+        table.setBounds((frame.getWidth() - 385), 150, 350, 325);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.black);

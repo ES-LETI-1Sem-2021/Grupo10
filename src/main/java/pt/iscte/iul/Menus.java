@@ -27,6 +27,7 @@ public class Menus implements ActionListener {
     private final TrelloAPI trelloAPI;
     private JMenuItem[] optionsMenus;
     private JMenuItem commitsTable;
+    private JMenuItem activity;
     private final List<ItemCard<TrelloAPI.Card>> arrayCards = new ArrayList<>();
     private final List<ItemCard<GitHubAPI.Collaborators>> arrayColabs = new ArrayList<>();
 
@@ -49,6 +50,7 @@ public class Menus implements ActionListener {
 
         optionsMenus();
         gitMenus();
+        trelloMenus();
         listsMenus();
 
         this.frame.setJMenuBar(menuBar);
@@ -111,6 +113,23 @@ public class Menus implements ActionListener {
 
         menuBar.add(commits);
         menuBar.add(collaborators);
+    }
+
+    /**
+     * Method that creates the menus, regarding the trello activity
+     * and attaches it to the frame.
+     *
+     * @throws IOException exception.
+     * @author Duarte Casaleiro, Rodrigo Guerreiro
+     */
+    public void trelloMenus() throws IOException {
+        var trello = new JMenu("Trello");
+        activity = new JMenuItem("Trello Activity");
+
+        activity.addActionListener(this);
+        trello.add(activity);
+
+        menuBar.add(trello);
     }
 
     /**
@@ -194,6 +213,7 @@ public class Menus implements ActionListener {
         //Action performed regarding GitHub
         try{
             gitActionPerformed(e);
+            trelloActionPerformed(e);
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
@@ -279,8 +299,22 @@ public class Menus implements ActionListener {
             Action.clearFrame(this.frame);
             JElements.addCommitsTable(this.frame, this.gitHubAPI);
             JElements.addTagsTable(this.frame, this.gitHubAPI);
+        }
+    }
+
+    /**
+     * Method that, based on which menu item was clicked, redirects to the collaborator's GitHub page.
+     * If it was the commits tab it shows the commits table.
+     *
+     * @param e Action event.
+     * @author Rodrigo Guerreiro
+     */
+    private void trelloActionPerformed(ActionEvent e) throws IOException {
+        if(Objects.equals(e.getActionCommand(), this.activity.getText())){
+            Action.clearFrame(this.frame);
             JElements.addTestsTable(this.frame, this.trelloAPI);
         }
     }
+
 
 }

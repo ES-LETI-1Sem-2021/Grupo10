@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import static javax.swing.BorderFactory.createEmptyBorder;
@@ -279,7 +280,7 @@ public class JElements implements ActionListener {
         }
 
         var table = new JTable(content, names);
-        table.setBounds((frame.getWidth() - 370), 50, 300, 50);
+        table.setBounds((frame.getWidth() - 370), 250, 300, 50);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.black);
@@ -302,7 +303,7 @@ public class JElements implements ActionListener {
 
         var testsData = trelloAPI.getFeaturesAndTestsDates();
         var names = new String[]{"Card", "Start Date", "End Date"};
-        var content = new String[testsData.size() + 1][3];
+        var content = new String[testsData.size() + 1][4];
         content[0] = names;
         System.out.println(testsData.size());
 
@@ -314,7 +315,7 @@ public class JElements implements ActionListener {
         }
 
         var table = new JTable(content, names);
-        table.setBounds((frame.getWidth() - 385), 150, 350, 325);
+        table.setBounds(50, 150, 350, 325);
         table.setVisible(true);
         table.setEnabled(false);
         table.setGridColor(Color.black);
@@ -344,6 +345,7 @@ public class JElements implements ActionListener {
 
         this.table.setValueAt(String.valueOf(totalMoney), hoursPerUsers.size() + 1, 3);
         this.frame.repaint();
+
     }
 
     public static int getRate() {

@@ -6,12 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 public class TrelloAPITests {
     private TrelloAPI api;
@@ -196,10 +194,9 @@ public class TrelloAPITests {
     public void featuresAndTestsDates() throws IOException {
         for (var card : this.api.getFeaturesAndTestsDates().entrySet()) {
             Assertions.assertNotNull(card);
-            if (card.getKey().getName().equals("6. Testes realizados e Implementação das funcionalidades - Sprint 3")) {
-                Assertions.assertEquals("2021-10-09", card.getValue()[0]);
-            }
+            Assertions.assertEquals(card.getKey().getCreatedDate(), card.getValue()[0]);
             Assertions.assertEquals(card.getKey().getDueDate(), card.getValue()[1]);
         }
     }
+
 }

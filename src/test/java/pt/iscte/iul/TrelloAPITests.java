@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -199,6 +200,14 @@ public class TrelloAPITests {
             Assertions.assertEquals(card.getKey().getCreatedDate(), card.getValue()[0]);
             Assertions.assertEquals(card.getKey().getDueDate(), card.getValue()[1]);
         }
+    }
+
+    @Test
+    public void convertToCSV() throws IOException {
+        FileWriter fw = new FileWriter("out.csv");
+        fw.write(this.api.convertToCSV(20, 3));
+        fw.close();
+        Assertions.assertTrue(new File("out.csv").exists());
     }
 
 }

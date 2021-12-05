@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-
 /**
  * The basic 'Home Screen' where the user inputs his information.
  * Also has pop-ups!
@@ -34,23 +33,20 @@ public class HomeUI implements ActionListener {
     private final JTextField trelloKey;
 
     /**
-     * Constructor method that initialize the variables in order for the frame to be created.
+     * Constructor method that initializes the variables in order for the frame to be created.
      *
      * @author Rodrigo Guerreiro
      */
-
-
     public HomeUI() {
         this.frame = new JFrame();
 
-        this.labelGitLogo = new JLabel("Please insert your Github token in the box below:");
-        this.labelGitOwner = new JLabel("Please insert the repository owner in the box below:");
-        this.labelGitRepo = new JLabel("Please the repository name in the box below:");
+        this.labelGitLogo = new JLabel("Please insert your GitHub token in the box below:");
+        this.labelGitOwner = new JLabel("Please insert the repository's owner in the box below:");
+        this.labelGitRepo = new JLabel("Please insert the repository's name in the box below:");
 
         this.labelTrelloLogo = new JLabel("Please insert your Trello token in the box below:");
-        this.labelTrelloBoardName = new JLabel("Please insert your Trello's board name in the box below:");
-
         this.labelTrelloKey = new JLabel("Please insert your Trello key in the box below:");
+        this.labelTrelloBoardName = new JLabel("Please insert your board's name in the box below:");
 
         this.gitToken = new JTextField();
         this.gitOwner = new JTextField();
@@ -60,7 +56,7 @@ public class HomeUI implements ActionListener {
         this.trelloBoardName = new JTextField();
         this.trelloKey = new JTextField();
 
-        JButton searchButton = new JButton("Search");
+        var searchButton = new JButton("Search");
 
         showFrame(frame);
         addImages();
@@ -75,7 +71,38 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Function that add the labels on the screen to show the user where to put each credential.
+     * Function that displays a pop-up window on the screen.
+     *
+     * @return opc the value (int) of the option chosen by the user
+     * @author Rodrigo Guerreiro
+     */
+    public static int pop() {
+        return JOptionPane.showConfirmDialog(
+                null,
+                "Would you like to load with the saved information's?",
+                "Warning?",
+                JOptionPane.YES_NO_OPTION
+        );
+    }
+
+    /**
+     * Function that displays a frame on the screen.
+     *
+     * @param frame Frame to be displayed on the screen.
+     * @author Rodrigo Guerreiro
+     */
+    public static void showFrame(JFrame frame) {
+        frame.setTitle("DashboardScrum");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        frame.setResizable(false);
+        frame.setLayout(null);
+        frame.getContentPane().setBackground(Color.WHITE);
+    }
+
+    /**
+     * Function that adds the labels on the screen to show the user where to put each credential.
      *
      * @author Rodrigo Guerreiro
      */
@@ -96,18 +123,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Displays a pop-up window on the screen.
-     *
-     * @return opc the value (int) of the option chosen by the user
-     * @author Rodrigo Guerreiro
-     */
-    public static int pop() {
-        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved informations?",
-                "Warning?", JOptionPane.YES_NO_OPTION);
-    }
-
-    /**
-     * Function that add the input boxes to the frame for the user input his credentials.
+     * Function that adds the input boxes on the frame for the user to input his credentials.
      *
      * @author Rodrigo Guerreiro
      */
@@ -131,23 +147,7 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Displays a frame on the screen.
-     *
-     * @param frame receives a frame and displays it on the screen
-     * @author Rodrigo Guerreiro
-     */
-    public static void showFrame(JFrame frame) {
-        frame.setTitle("DashboardScrum");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        frame.setResizable(false);
-        frame.setLayout(null);
-        frame.getContentPane().setBackground(Color.WHITE);
-    }
-
-    /**
-     * Function that displays on the frame the two images (git and trello).
+     * Function that displays the two images (Git and Trello) on the frame.
      *
      * @author Rodrigo Guerreiro
      */
@@ -175,32 +175,31 @@ public class HomeUI implements ActionListener {
 
     /**
      * {@link Action} performed when the search button is pressed.
-     * Creates a pop-up window with a yes/no question and based on the answer
-     * saves the data and calls {@link Action#doAction(JFrame, String[], String[], int)}
-     * or only calls {@link Action#doAction(JFrame, String[], String[], int)}
-     * userGitInfo[gitOwner, gitRepo, gitToken]
-     * userTrelloInfo[trelloUser, trelloKey, trelloToken]
+     * Creates a pop-up window with a yes/no question and based on the answer.
+     * Saves the data and calls {@link Action #doAction}.
+     * or only calls {@link Action #doAction}.
+     * userGitInfo [gitOwner, gitRepo, gitToken].
+     * userTrelloInfo [trelloUser, trelloKey, trelloToken].
+     *
      * @author Rodrigo Guerreiro
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        String[] userGitInfo = {this.gitOwner.getText(), this.gitRepo.getText(), this.gitToken.getText()};
-        String[] userTrelloInfo = {this.trelloBoardName.getText(), this.trelloKey.getText(), this.trelloToken.getText()};
+        var userGitInfo = new String[]{this.gitOwner.getText(), this.gitRepo.getText(), this.gitToken.getText()};
+        var userTrelloInfo = new String[]{this.trelloBoardName.getText(), this.trelloKey.getText(), this.trelloToken.getText()};
 
-        int i = 0;
-        i = allFieldsFull(userGitInfo, userTrelloInfo, i);
+        var i = allFieldsFull(userGitInfo, userTrelloInfo);
 
-        int opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
-                "Warning?", JOptionPane.YES_NO_OPTION);
+        var opc = JOptionPane.showConfirmDialog(null, "Would you like to save your data?",
+                "Warning", JOptionPane.YES_NO_OPTION);
 
         if (opc == JOptionPane.YES_OPTION && i == 0) {
-            Action.saveData(userGitInfo, userTrelloInfo);
             try {
+                Action.saveData(userGitInfo, userTrelloInfo, "data/user_data.txt");
                 Action.doAction(this.frame, userGitInfo, userTrelloInfo, 1);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-
         } else if (opc == JOptionPane.NO_OPTION && i == 0) {
             try {
                 Action.doAction(this.frame, userGitInfo, userTrelloInfo, 1);
@@ -211,22 +210,22 @@ public class HomeUI implements ActionListener {
     }
 
     /**
-     * Checks if all fields are full or not.
+     * Checks if all fields are full.
      *
-     * @param userGitInfo    user info
-     * @param userTrelloInfo user info
-     * @param i                a value
+     * @param userGitInfo    user info regarding Git.
+     * @param userTrelloInfo user info regarding Trello.
      * @return the value 1 if is empty, 0 otherwise.
      */
-    private int allFieldsFull(String[] userGitInfo, String[] userTrelloInfo, int i) {
-        for (String s : userGitInfo) {
+    private int allFieldsFull(String[] userGitInfo, String[] userTrelloInfo) {
+        int i = 0;
+        for (var s : userGitInfo) {
             if (s.isEmpty()) {
                 i = 1;
                 break;
             }
         }
 
-        for (String s1 : userTrelloInfo) {
+        for (var s1 : userTrelloInfo) {
             if (s1.isEmpty()) {
                 i = 1;
                 break;

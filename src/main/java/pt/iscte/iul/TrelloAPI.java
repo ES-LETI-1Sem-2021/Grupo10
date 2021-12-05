@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.regex.Matcher;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * @author Duarte Casaleiro, Oleksandr Kobelyuk, Miguel Romana.
@@ -19,11 +22,15 @@ public class TrelloAPI {
     private final String apiKey;
     private final String apiToken;
     private final String boardName;
-    private final String baseAPIUrl;
-    private final OkHttpClient httpClient;
+
     private final String boardURL = "https://api.trello.com/1/boards/";
     private final String cardURL = "https://api.trello.com/1/cards/";
     private final String listURL = "https://api.trello.com/1/lists/";
+
+    private final OkHttpClient httpClient;
+    private final ObjectMapper mapper;
+
+    private final String boardId;
 
     /**
      * Base class for requesting information from the Trello API.
@@ -32,14 +39,18 @@ public class TrelloAPI {
      * @param apiKey    Trello API access key.
      * @param apiToken  Trello API access token.
      */
-    public TrelloAPI(String boardName, String apiKey, String apiToken) {
+    public TrelloAPI(String boardName, String apiKey, String apiToken) throws IOException {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
         this.boardName = boardName;
 
-        this.baseAPIUrl = "https://api.trello.com/1/members/me/boards?key=" + apiKey + "&token=" + apiToken;
-
+        this.mapper = new ObjectMapper();
         this.httpClient = new OkHttpClient();
+
+        this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        this.mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+        this.boardId = this.getBoardID();
     }
 
     /**
@@ -73,6 +84,60 @@ public class TrelloAPI {
     }
 
     /**
+     * @return a list of all boards owned by the user.
+     * @throws IOException If the request fails.
+     */
+    public Board[] getBoards() throws IOException {
+        var request = new Request.Builder()
+                .header("Accept", "application/json")
+                .url("https://api.trello.com/1/members/me/boards?key=" + this.apiKey + "&token=" + this.apiToken).build();
+
+        var response = this.httpClient.newCall(request).execute();
+
+        return mapper.readValue(response.body().string(), Board[].class);
+    }
+
+    private String getBoardID() throws IOException {
+        var boards = this.getBoards();
+
+        for (var board : boards) {
+            if (Objects.equals(board.getName(), this.boardName)) {
+                return board.getId();
+            }
+        }
+
+        return "not found";
+    }
+
+    /**
+     * @param component   Component that we want to access (list, card, board, etc).
+     * @param componentId ID of the component that we want to access.
+     * @param url         Url of the component (board url, list url, etc).
+     * @return A {@link Response} object.
+     * @throws IOException If the request fails.
+     */
+    private Response httpRequest(String component, String componentId, String url) throws IOException {
+        //HTTP request to access
+        var request = new Request.Builder()
+                .header("Accept", "application/json")
+                .url(url + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
+
+        return this.httpClient.newCall(request).execute();
+    }
+
+    /**
+     * @return Board information associated to the boardId obtained from {@link TrelloAPI#getBoardID()}.
+     * @throws IOException If the request fails.
+     */
+    public Board getBoardInfo() throws IOException {
+        //HTTP request to access the board
+        var response = this.httpRequest("", this.boardId, this.boardURL);
+
+        // map http response to the class Board
+        return mapper.readValue(response.body().string(), Board.class);
+    }
+
+    /**
      * List object.
      */
     public static class List {
@@ -95,12 +160,50 @@ public class TrelloAPI {
     }
 
     /**
+     * @return All lists in the board.
+     * @throws IOException If the request fails.
+     */
+    public List[] getBoardLists() throws IOException {
+        //HTTP request to access the lists
+        var response = this.httpRequest("lists", this.boardId, this.boardURL);
+
+        // map http response to the class List
+        return mapper.readValue(response.body().string(), List[].class);
+    }
+
+    /**
+     * @param listName List name.
+     * @return The list in the board identified by the board id.
+     */
+    public List getList(String listName) throws IOException {
+        for (var list : this.getBoardLists()) {
+            if (list.getName().equals(listName)) {
+                return list;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return All cards in the board identified by the board ID.
+     * @throws IOException If the request fails.
+     */
+    public Card[] getBoardCards() throws IOException {
+        //HTTP request to access all cards in the board
+        var response = this.httpRequest("cards", this.boardId, this.boardURL);
+
+        // map http response to the class Card
+        return mapper.readValue(response.body().string(), Card[].class);
+    }
+
+    /**
      * Card object.
      */
     public static class Card {
         private String name;
         private String id;
         private String due;
+        private String created;
         private String desc;
         private Member member;
 
@@ -127,6 +230,15 @@ public class TrelloAPI {
         }
 
         /**
+         * @return The date it was created.
+         */
+        public String getCreatedDate() {
+            this.created = new SimpleDateFormat("yyyy-MM-dd").
+                    format(new Date(1000L * parseInt(this.getId().substring(0, 8), 16)));
+            return this.created;
+        }
+
+        /**
          * @return The description.
          */
         public String getDescription() {
@@ -135,15 +247,24 @@ public class TrelloAPI {
     }
 
     /**
+     * @param listId List ID.
+     * @return All cards in the list identified by the list id.
+     * @throws IOException If the request fails.
+     */
+    public Card[] getListCards(String listId) throws IOException {
+        //HTTP request to access a List
+        var response = this.httpRequest("cards", listId, this.listURL);
+
+        // map http response to the class List
+        return mapper.readValue(response.body().string(), Card[].class);
+    }
+
+    /**
      * Member object.
      */
     public static class Member {
         private String username;
         private String id;
-        // DRAFT: Hours defined for testing
-        private int estimatedHours;
-        private int onGoingHours;
-        private int concludedHours;
 
         /**
          * @return The name.
@@ -161,177 +282,31 @@ public class TrelloAPI {
     }
 
     /**
-     * @return a list of all boards owned by the user.
-     * @throws IOException If the request fails.
-     */
-    // Function to access every user's boards
-    public Board[] getBoards() throws IOException {
-        //HTTP request to access every user's boards
-        Request request = new Request.Builder()
-                .header("Accept", "application/json")
-                .url(this.baseAPIUrl).build();
-
-        Response response = this.httpClient.newCall(request).execute();
-
-        // Build ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-        // map http response to the class Board
-        return mapper.readValue(response.body().string(), Board[].class);
-    }
-
-    /**
-     * @param component   component that we want to access ("list, card, board, etc.").
-     * @param componentId id of the component that we want to access.
-     * @param url         url of the component (board url, list url, etc).
-     * @return the http response.
-     * @throws IOException If the request fails.
-     */
-    // Function for HTTP request for components
-    private Response HTTPRequest(String component, String componentId, String url) throws IOException {
-        //HTTP request to access
-        Request request = new Request.Builder()
-                .header("Accept", "application/json")
-                .url(url + componentId + "/" + component + "?key=" + apiKey + "&token=" + apiToken).build();
-
-        return this.httpClient.newCall(request).execute();
-    }
-
-    /**
-     * @param boardId board id.
-     * @return the board identified by the board id.
-     * @throws IOException If the request fails.
-     */
-    // Function to return the Board that the user specified at login
-    public Board getBoard(String boardId) throws IOException {
-        //HTTP request to access the board
-        Response response = HTTPRequest("", boardId, boardURL);
-        // Build ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Board
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-
-        return mapper.readValue(response.body().string(), Board.class);
-    }
-
-    /**
-     * @param boardId board id.
-     * @return all lists in the board identified by the board id.
-     * @throws IOException If the request fails.
-     */
-    // Function to return all the lists in the board
-    public List[] getBoardLists(String boardId) throws IOException {
-        //HTTP request to access the lists
-        Response response = HTTPRequest("lists", boardId, boardURL);
-        // Build ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class List
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-
-        // map http response to the class List
-        return mapper.readValue(response.body().string(), List[].class);
-    }
-
-    /**
-     * @param listName name of the list.
-     * @param boardId  board id.
-     * @return the list in the board identified by the board id.
-     */
-    // Function to return a specific list in the board
-    public List getList(String listName, String boardId) throws IOException {
-        var lists = this.getBoardLists(boardId);
-        for (List list : lists) {
-            if (list.getName().equals(listName)) {
-                return list;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param boardId id of the board.
-     * @return all cards in the board identified by the board id.
-     * @throws IOException If the request fails.
-     */
-    // Function to return all the cards in the board
-    public Card[] getBoardCards(String boardId) throws IOException {
-        //HTTP request to access all cards in the board
-        Response response = HTTPRequest("cards", boardId, boardURL);
-        // Build ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Card
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-        // map http response to the class Card
-        return mapper.readValue(response.body().string(), Card[].class);
-    }
-
-    /**
-     * @param listId id of the list.
-     * @return all cards in the list identified by the list id.
-     * @throws IOException If the request fails.
-     */
-    // Function to return all the cards in a specific list
-    public Card[] getListCards(String listId) throws IOException {
-        //HTTP request to access a List
-        Response response = HTTPRequest("cards", listId, this.listURL);
-
-        // Build ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class List
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-        // map http response to the class List
-        return mapper.readValue(response.body().string(), Card[].class);
-    }
-
-    /**
-     * @param cardId id of the card.
-     * @return all members in the card identified by the card id.
+     * @param cardId Card ID.
+     * @return All members in the card identified by the card ID.
      * @throws IOException If the request fails.
      */
     public Member[] getMemberOfCard(String cardId) throws IOException {
         //HTTP request to access all Members of a Card
-        Response response = HTTPRequest("members", cardId, cardURL);
-        // Build ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-        // map http response to the class Member
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-
+        var response = this.httpRequest("members", cardId, this.cardURL);
         // map http response to the class Member
         return mapper.readValue(response.body().string(), Member[].class);
     }
 
     /**
-     * @param sprintNumber number of the sprint.
-     * @param boardId      id of the board.
-     * @return an array with the start date and the end date of the specific sprint.
+     * @param sprintNumber Sprint number.
+     * @return An array with the start date [0] and the end date [1] of the specific sprint.
      * @throws IOException If the request fails.
      */
-    // Function to return the start and end dates of a specific sprint
-    public String[] getSprintDates(String boardId, int sprintNumber) throws IOException {
+    public String[] getSprintDates(int sprintNumber) throws IOException {
         // flag to see if we've found the start date
         boolean startDateFound = false;
         // initialize list of dates
-        String[] dates = new String[2];
-        String listName = "Ceremonies - Sprint " + sprintNumber;
-
+        var dates = new String[2];
         // get the list of all ceremonies
-        var list = this.getList(listName, boardId);
-        var cards = this.getListCards(list.getId());
-
+        var list = this.getList("Ceremonies - Sprint " + sprintNumber);
         // Iterate over all cards in the list
-        for (Card c : cards) {
+        for (var c : this.getListCards(list.getId())) {
             // search for due date of Sprint Planning that is equal to Sprint start date
             if (c.name.equals("Sprint Planning - Sprint " + sprintNumber)) {
                 dates[0] = c.getDueDate();
@@ -343,69 +318,49 @@ public class TrelloAPI {
                 if (startDateFound) break; // if start date is found, we can break the for loop
             }
         }
-        // Returns dates list
-        // dates[0] -> Sprint start date
-        // dates[1] -> Sprint end date
         return dates;
     }
 
     /**
-     * @param boardId      id of the board.
-     * @param sprintType   ceremony of the sprint.
-     * @param sprintNumber number of the sprint.
-     * @return a String with the description of the Sprint Ceremony in the specific sprint.
+     * @param sprintType   Sprint type.
+     * @param sprintNumber Sprint number.
+     * @return Description of the ceremony in question.
      * @throws IOException If the request fails.
      * @author Miguel Romana.
      */
-    // Function to get the description of a Sprint Ceremony of a specific sprint
-    public String getCeremonyDescription(String boardId, String sprintType, int sprintNumber) throws IOException {
-
-        String listName = "Ceremonies - Sprint " + sprintNumber;
-
-        // get the list of all ceremonies
-        var list = this.getList(listName, boardId);
-        var cards = this.getListCards(list.getId());
-
-        // Iterate over all cards in the list
-        for (Card c : cards)
-            // get the Sprint sprintType's description
-            if (c.name.equals("Sprint " + sprintType + " - Sprint " + sprintNumber))
+    public String getCeremonyDescription(String sprintType, int sprintNumber) throws IOException {
+        var list = this.getList("Ceremonies - Sprint " + sprintNumber);
+        for (var c : this.getListCards(list.getId())) {
+            if (c.name.equals("Sprint " + sprintType + " - Sprint " + sprintNumber)) {
                 return c.getDescription();
+            }
+        }
         return ""; // returns an empty String if the description doesn't exist
     }
 
     /**
-     * @param boardId      id of the board.
-     * @param sprintNumber number of the sprint.
-     * @return an ArrayList of all the products already done in the specific sprint.
+     * @param sprintNumber Sprint number.
+     * @return An {@link ArrayList} of all the products already done in the specific sprint.
      * @throws IOException If the request fails.
      */
-    // Function to get product backlog items already done
-    public ArrayList<String> getDoneProductBacklog(String boardId, int sprintNumber) throws IOException {
+    public ArrayList<String> getDoneProductBacklog(int sprintNumber) throws IOException {
         var doneItems = new ArrayList<String>();
-
-        String listName = "Done - Sprint " + sprintNumber;
-
         // get specific list
-        var list = this.getList(listName, boardId);
-        // get all cards from the list
-        var cards = this.getListCards(list.getId());
-        for (Card card : cards) {
+        var list = this.getList("Done - Sprint " + sprintNumber);
+        for (var card : this.getListCards(list.getId())) {
             doneItems.add(card.name);
         }
         return doneItems;
     }
 
     /**
-     * @param boardId id of the board.
-     * @return the total number of ceremonies that have been done.
+     * @return Number of ceremonies done by the team.
      * @throws IOException If the request fails.
      */
-    // function to get the total number of ceremonies
-    public int getTotalNumberOfCeremonies(String boardId) throws IOException {
-        int numberOfCeremonies = 0;
-        var ceremoniesLists = this.getListsThatStartWith(boardId, "Ceremonies");
-        for (List ceremoniesList : ceremoniesLists) {
+    public int getTotalNumberOfCeremonies() throws IOException {
+        var numberOfCeremonies = 0;
+        var ceremoniesLists = this.queryLists("Ceremonies");
+        for (var ceremoniesList : ceremoniesLists) {
             var ceremoniesListCards = this.getListCards(ceremoniesList.id);
             numberOfCeremonies += ceremoniesListCards.length;
         }
@@ -413,15 +368,13 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId      id of the board.
-     * @param sprintNumber number of the sprint.
-     * @return the total number of ceremonies that have been done.
+     * @param sprintNumber Sprint number.
+     * @return Number of ceremonies.
      * @throws IOException If the request fails.
      */
-    // function to get the total number of ceremonies in a specific sprint
-    public int getTotalNumberOfCeremoniesPerSprint(String boardId, int sprintNumber) throws IOException {
-        var lists = this.getBoardLists(boardId);
-        for (List ceremoniesList : lists) {
+    public int getTotalNumberOfCeremoniesPerSprint(int sprintNumber) throws IOException {
+        var lists = this.getBoardLists();
+        for (var ceremoniesList : lists) {
             if (ceremoniesList.getName().equals("Ceremonies - Sprint " + sprintNumber)) {
                 var ceremoniesListCards = this.getListCards(ceremoniesList.id);
                 return ceremoniesListCards.length;
@@ -431,16 +384,34 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId    id of the board.
-     * @param startsWith id of the board.
-     * @return an array of all the lists where the name starts with a specific string.
+     * Method that returns the dates of features' and tests' implementation.
+     *
+     * @return A {@link Map} with the start and end dates of features and tests and the card associated.
+     * @throws IOException If the request fails.
+     * @author Miguel Romana.
+     */
+    public Map<Card, String[]> getFeaturesAndTestsDates() throws IOException {
+        var cardDates = new HashMap<Card, String[]>();
+        var lists = this.queryLists("Done");
+        for (var list : lists) {
+            var cards = getListCards(list.id);
+            for (var card : cards) {
+                cardDates.put(card, new String[]{card.getCreatedDate(), card.getDueDate()});
+            }
+        }
+        return cardDates;
+    }
+
+    /**
+     * @param query query for the list name.
+     * @return An {@link ArrayList} of {@link List} that match the query.
      * @throws IOException If the request fails.
      */
-    public ArrayList<List> getListsThatStartWith(String boardId, String startsWith) throws IOException {
-        var allLists = this.getBoardLists(boardId);
+    public ArrayList<List> queryLists(String query, boolean... exclude) throws IOException {
+        var allLists = this.getBoardLists();
         var listsThatStartWith = new ArrayList<List>();
-        for (List list : allLists) {
-            if (list.getName().startsWith(startsWith)) {
+        for (var list : allLists) {
+            if (exclude.length == 1 ? (exclude[0] != list.getName().contains(query)) : list.getName().contains(query)) {
                 listsThatStartWith.add(list);
             }
         }
@@ -448,34 +419,16 @@ public class TrelloAPI {
     }
 
     /**
-     * @param boardId id of the board.
-     * @param query   name present in the list name.
-     * @return an array of all the lists where the name contains with a specific string.
+     * @return Hours spent by the team on ceremonies.
      * @throws IOException If the request fails.
      */
-    public ArrayList<List> getListsThatContain(String boardId, String query) throws IOException {
-        var allLists = this.getBoardLists(boardId);
-        var listsThatStartWith = new ArrayList<List>();
-        for (List list : allLists) {
-            if (list.getName().contains(query)) {
-                listsThatStartWith.add(list);
-            }
-        }
-        return listsThatStartWith;
-    }
-
-    /**
-     * @param boardId id of the board.
-     * @return the total hours spent by the team in ceremonies.
-     * @throws IOException If the request fails.
-     */
-    public double getTotalHoursCeremony(String boardId) throws IOException {
-        Pattern global = Pattern.compile("(?:@global (\\d?.?\\d+)/(\\d?.?\\d+))");
-        double totalOfHours = 0;
-        ArrayList<List> listOfCeremonies = this.getListsThatStartWith(boardId, "Ceremonies");
-        for (List list : listOfCeremonies) {
-            for (Card card : this.getListCards(list.getId())) {
-                Matcher match = global.matcher(card.getDescription());
+    public double getTotalCeremonyHours() throws IOException {
+        var pattern = Pattern.compile("(?:@global (\\d*.?\\d+)/(\\d*.?\\d+))");
+        var totalOfHours = 0.0;
+        var listOfCeremonies = this.queryLists("Ceremonies");
+        for (var list : listOfCeremonies) {
+            for (var card : this.getListCards(list.getId())) {
+                var match = pattern.matcher(card.getDescription());
                 while (match.find()) {
                     totalOfHours += Double.parseDouble(match.group(1));
                 }
@@ -491,6 +444,7 @@ public class TrelloAPI {
         private String user;
         private double spentHours;
         private double estimatedHours;
+        private int cards = 0;
 
         /**
          * Class to get all hours spent and estimated by user.
@@ -513,34 +467,40 @@ public class TrelloAPI {
         }
 
         /**
-         * @return the hours that were spent.
+         * @return The hours that were spent.
          */
         public double getSpentHours() {
             return spentHours;
         }
 
         /**
-         * @return the hours that were estimated.
+         * @return The hours that were estimated.
          */
         public double getEstimatedHours() {
             return estimatedHours;
         }
 
-        /**
-         * @param hours spent hours added to the user.
-         */
         private void addSpentHours(double hours) {
             this.spentHours += hours;
         }
 
-        /**
-         * @param hours estimated hours added to the user.
-         */
         private void addEstimatedHours(double hours) {
             this.estimatedHours += hours;
         }
 
+        private void addCard() {
+            this.cards++;
+        }
+
+        /**
+         * @return The number of cards associated to the user.
+         */
+        public int getCards() {
+            return cards;
+        }
+
         @Override
+        // auto generated
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
@@ -549,40 +509,141 @@ public class TrelloAPI {
         }
     }
 
+    private void addObjectToList(Card card, Pattern pattern, ArrayList<HoursPerUser> hoursPerUser) throws IOException {
+        for (var member : this.getMemberOfCard(card.getId())) {
+            if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
+                hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
+            }
+        }
+        var match = pattern.matcher(card.getDescription());
+        while (match.find()) {
+            for (var o : hoursPerUser) {
+                if (Objects.equals(o.getUser(), match.group(1))) {
+                    o.addSpentHours(Double.parseDouble(match.group(2)));
+                    o.addEstimatedHours(Double.parseDouble(match.group(3)));
+                    o.addCard();
+                }
+            }
+        }
+    }
+
     /**
-     * @param boardId    id of the board.
-     * @param boardQuery name present on the list name.
-     * @param cardQuery  name present on the card name.
+     * @param listQuery query for the list name.
+     * @param cardQuery query for the card name.
      * @return the total hours spent by user in a list of {@link HoursPerUser}
      * @throws IOException If the request fails.
      */
-    public ArrayList<HoursPerUser> getTotalHoursByUser(String boardId, String boardQuery, String cardQuery) throws IOException {
-        Pattern global = Pattern.compile("(?:@(.+) (\\d?.?\\d+)/(\\d?.?\\d+))");
-
+    public ArrayList<HoursPerUser> getTotalHoursByUser(String listQuery, String cardQuery, boolean... exclude) throws IOException {
+        var pattern = Pattern.compile("(?:@(.+) (\\d*.?\\d+)/(\\d*.?\\d+))");
         var hoursPerUser = new ArrayList<HoursPerUser>();
-        ArrayList<List> listOfCeremonies = this.getListsThatContain(boardId, boardQuery);
-        for (List list : listOfCeremonies) {
-            for (Card card : this.getListCards(list.getId())) {
+        var listOfCeremonies = this.queryLists(listQuery, exclude);
+        for (var list : listOfCeremonies) {
+            for (var card : this.getListCards(list.getId())) {
                 if (!card.getName().contains(cardQuery))
                     continue;
-
-                for (var member : this.getMemberOfCard(card.getId())) {
-                    if (!hoursPerUser.contains(new HoursPerUser(member.getName(), 0.0, 0.0))) {
-                        hoursPerUser.add(new HoursPerUser(member.getName(), 0.0, 0.0));
-                    }
-                }
-
-                Matcher match = global.matcher(card.getDescription());
-                while (match.find()) {
-                    for (var o : hoursPerUser) {
-                        if (Objects.equals(o.user, match.group(1))) {
-                            o.addSpentHours(Double.parseDouble(match.group(2)));
-                            o.addEstimatedHours(Double.parseDouble(match.group(3)));
-                        }
-                    }
-                }
+                addObjectToList(card, pattern, hoursPerUser);
             }
         }
         return hoursPerUser;
     }
+
+    /**
+     * Converts relevant information into CSV strings.
+     *
+     * @param rate            Hourly rate.
+     * @param numberOfSprints Number of Sprints.
+     * @return An array of CSV formatted strings.
+     * @throws IOException If the request fails.
+     */
+    public String convertToCSV(int rate, int numberOfSprints) throws IOException {
+        // 8 & 9
+        var csv8 = new ArrayList<String>();
+        csv8.add("Sprint,Elemento,Horas Usadas,Horas Previstas\n");
+
+        var csv9 = new ArrayList<String>();
+        csv9.add("Sprint,Elemento,Salario\n");
+
+        for (var i = 1; i < numberOfSprints + 1; i++) {
+            var hoursPerUser = this.getTotalHoursByUser("", "Sprint " + i);
+
+            for (var user : hoursPerUser) {
+                csv9.add(
+                        i + "," + user.user + "," + user.spentHours * rate + "\n"
+                );
+
+                csv8.add(
+                        i + "," + user.getUser() + "," + user.getSpentHours() + "," + user.getEstimatedHours() + "\n"
+                );
+            }
+        }
+
+        var hoursPerUser = this.getTotalHoursByUser("", "");
+        csv9.add(",Total, " + hoursPerUser.stream().map(user -> user.spentHours * rate).mapToDouble(d -> d).sum() + "\n");
+
+        // 10
+        var csv10 = new ArrayList<String>();
+        csv10.add("Elemento,Atividades,Horas,Custo\n");
+
+        var users10 = this.getTotalHoursByUser("Ceremonies", "", true);
+        for (var perUser : users10) {
+            csv10.add(
+                    perUser.getUser()
+                            + "," + perUser.getCards()
+                            + "," + perUser.getSpentHours()
+                            + "," + perUser.getSpentHours() * rate + "\n"
+            );
+        }
+
+        var lists = this.queryLists("Ceremonies", true);
+        var numberOfCards = lists.stream().map(list -> {
+            try {
+                return this.getListCards(list.getId()).length;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }).mapToInt(i -> i).sum();
+
+        var hours = users10.stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+
+        csv10.add("Global," + numberOfCards + "," + hours + "," + hours * rate + "\n");
+
+        // 11
+        var csv11 = new ArrayList<String>();
+        csv11.add("Elemento,Atividades,Horas,Custo\n");
+
+        var users11 = this.getTotalHoursByUser("Ceremonies", "");
+        for (var perUser : users11) {
+            csv11.add(
+                    perUser.getUser()
+                            + "," + perUser.getCards()
+                            + "," + perUser.getSpentHours()
+                            + "," + perUser.getSpentHours() * rate + "\n"
+            );
+        }
+
+        lists = this.queryLists("Ceremonies");
+        numberOfCards = lists.stream().map(list -> {
+            try {
+                return this.getListCards(list.getId()).length;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }).mapToInt(i -> i).sum();
+
+        hours = users11.stream().map(HoursPerUser::getSpentHours).mapToDouble(d -> d).sum();
+
+        csv11.add("Global," + numberOfCards + "," + hours + "," + hours * rate + "\n");
+
+        return String.join("", csv8) + "\n"
+                + String.join("", csv9) + "\n"
+                + "Cartoes que geraram artefactos\n"
+                + String.join("", csv10) + "\n"
+                + "Cartoes que nao geraram artefactos\n"
+                + String.join("", csv11);
+    }
+
 }

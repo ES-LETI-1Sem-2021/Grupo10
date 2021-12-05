@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -24,6 +23,10 @@ public class GitHubAPI {
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
+    // simple cache
+    private final Collaborators[] cachedCollaborators;
+    private final Branch[] cachedBranches;
+
     /**
      * Base class for requesting information from the GitHub API.
      *
@@ -31,7 +34,7 @@ public class GitHubAPI {
      * @param projectName Name of the project.
      * @param apiKey      GitHub API access key.
      */
-    public GitHubAPI(String repoOwner, String projectName, String apiKey) {
+    public GitHubAPI(String repoOwner, String projectName, String apiKey) throws IOException {
         this.apiKey = apiKey;
 
         this.baseAPIUrl = "https://api.github.com/repos/" + repoOwner + "/" + projectName;
@@ -40,9 +43,11 @@ public class GitHubAPI {
         this.httpClient = new OkHttpClient();
 
         this.mapper = new ObjectMapper();
-        // https://stackoverflow.com/a/26371693
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+        this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        this.mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+        this.cachedCollaborators = this.getCollaborators();
+        this.cachedBranches = this.getBranches();
     }
 
     /**
@@ -94,6 +99,14 @@ public class GitHubAPI {
         public String toString() {
             return formatted;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Date date = (Date) o;
+            return  Objects.equals(year, date.year) && Objects.equals(month, date.month) && Objects.equals(day, date.day);
+        }
     }
 
     private static class Repo {
@@ -141,7 +154,7 @@ public class GitHubAPI {
         private String name;
 
         /**
-         * @return The github handle.
+         * @return The GitHub handle.
          */
         public String getLogin() {
             return this.login;
@@ -155,7 +168,7 @@ public class GitHubAPI {
         }
 
         /**
-         * @return The github profile url.
+         * @return The GitHub profile url.
          */
         public String getProfile() {
             return this.html_url;
@@ -179,6 +192,10 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public Collaborators[] getCollaborators() throws IOException {
+        if (this.cachedCollaborators != null && this.cachedCollaborators.length != 0) {
+            return this.cachedCollaborators;
+        }
+
         var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseAPIUrl + "/collaborators").build();
@@ -210,11 +227,11 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public String getFile(String branch, String path) throws IOException {
-        Request request = new Request.Builder()
+        var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseRawUrl + "/" + branch + path).build();
 
-        Response resp = this.httpClient.newCall(request).execute();
+        var resp = this.httpClient.newCall(request).execute();
 
         return Objects.requireNonNull(resp.body()).string();
     }
@@ -246,31 +263,23 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public Branch[] getBranches() throws IOException {
+        if (this.cachedBranches != null && this.cachedBranches.length != 0) {
+            return this.cachedBranches;
+        }
+
         var request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .url(this.baseAPIUrl + "/branches").build();
 
-        Response resp = this.httpClient.newCall(request).execute();
+        var resp = this.httpClient.newCall(request).execute();
         return this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Branch[].class);
     }
 
     /**
-     * Stores imporant data about a commit.
+     * Stores important data about a commit.
      */
-    public record CommitData(Date date, String description) {
-        /**
-         * @return Commit date in a {@link Date} object.
-         */
-        public Date getDate() {
-            return date;
-        }
+    public record CommitData(Date date, String message) {
 
-        /**
-         * @return Commit message.
-         */
-        public String getMessage() {
-            return description;
-        }
     }
 
     /**
@@ -347,7 +356,7 @@ public class GitHubAPI {
      * @throws IOException If the request fails.
      */
     public Commits getCommits(String branch, String user) throws IOException {
-        List<Commit> commitBuffer = new ArrayList<>();
+        var commitBuffer = new ArrayList<Commit>();
 
         var currentPage = 1;
         // this way we can easily set the page number
@@ -358,7 +367,7 @@ public class GitHubAPI {
                     .addHeader("Authorization", "Bearer " + apiKey)
                     .url(String.format(formattableUrl, currentPage++)).build();
 
-            Response resp = this.httpClient.newCall(request).execute();
+            var resp = this.httpClient.newCall(request).execute();
 
             try {
                 var ret = this.mapper.readValue(
@@ -375,5 +384,134 @@ public class GitHubAPI {
         }
 
         return new Commits(user, commitBuffer);
+    }
+
+    private static class Tag {
+        private String name;
+        private String sha;
+
+        @SuppressWarnings("unchecked")
+        @JsonProperty("commit")
+        private void unpackNested(Map<String, Object> commit) {
+            this.sha = (String) commit.get("sha");
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getSha() {
+            return sha;
+        }
+    }
+
+    /**
+     * Contains relevant information about a Tag.
+     */
+    public record TagData(String name, Date date) {
+        @Override
+        public String toString() {
+            return "TagData{" +
+                    "name='" + name + '\'' +
+                    ", date=" + date +
+                    '}';
+        }
+    }
+
+    /**
+     * Retrieves the tags of the master branch.
+     * @return A list of {@link TagData}
+     * @throws IOException If a request fails.
+     */
+    public List<TagData> getTags() throws IOException {
+        var tagData = new ArrayList<TagData>();
+
+        var request = new Request.Builder()
+                .addHeader("Authorization", "Bearer " + apiKey)
+                .url(this.baseAPIUrl + "/tags").build();
+
+        var resp = this.httpClient.newCall(request).execute();
+        var mapped = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Tag[].class);
+        for (var tag : mapped) {
+            request = new Request.Builder()
+                    .addHeader("Authorization", "Bearer " + apiKey)
+                    .url(this.baseAPIUrl + "/commits/" + tag.getSha()).build();
+
+            resp = this.httpClient.newCall(request).execute();
+            var commit = this.mapper.readValue(Objects.requireNonNull(resp.body()).string(), Commit.class);
+
+            tagData.add(
+                    new TagData(
+                            tag.getName(),
+                            commit.getCommitDate()
+                    )
+            );
+        }
+
+        return tagData;
+    }
+
+    /**
+     * Exports {@link Collaborators}, {@link Branch} and {@link CommitData} to a CSV and HTML formatted strings.
+     * @return CSV and HTML formatted strings.
+     * @throws IOException If a request fails.
+     */
+    public String[] convert() throws IOException {
+        var csv = new ArrayList<String>();
+        var html = new ArrayList<String>();
+
+        csv.add("Contributor,Branch,Mensagem do Commit,Data do Commit (MM/DD/YYYY)\n");
+
+        html.add("""
+                <tr>
+                    <th>Contributor</th>
+                    <th>Branch</th>
+                    <th>Mensagem do Commit</th>
+                    <th>Data do Commit (YYYY/MM/DD)</th>
+                </tr>
+                """);
+
+        var previousUser = "";
+        var previousBranch = "";
+        for (var user : this.getCollaborators()) {
+            for (var branch : this.getBranches()) {
+                var commitsForUser = this.getCommits(branch.getName(), user.getLogin());
+                for (var commit : commitsForUser.getCommitList()) {
+                    csv.add(
+                            String.format(
+                                    "%s,%s,%s,%s\n",
+                                    Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
+                                    Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
+                                    commit.message().replace(',', ' ').split("\n")[0],
+                                    commit.date()
+                            )
+                    );
+
+                    html.add(
+                            String.format("""
+                                    <tr>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                        <td>%s</th>
+                                    </tr>
+                                    """,
+                                    Objects.equals(previousUser, user.getLogin()) ? "" : user.getLogin(),
+                                    Objects.equals(previousBranch, branch.getName()) ? "" : branch.getName(),
+                                    commit.message().replace("\n", "<br>"),
+                                    commit.date()
+                            )
+                    );
+
+                    previousUser = user.getLogin();
+                    previousBranch = branch.getName();
+                }
+            }
+        }
+
+        return new String[]{
+                String.join("", csv),
+                "<table border=1>\n" + String.join("", html) + "</table>"
+        };
     }
 }

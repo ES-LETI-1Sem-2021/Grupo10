@@ -22,8 +22,8 @@ public class EncodingTests {
 
     @Test
     public void readmeEncodeDecode() throws IOException {
-        String readme = api.getFile("master", "/README.md");
-        String encoded = Encoding.encode(readme);
+        var readme = this.api.getFile("master", "/README.md");
+        var encoded = Encoding.encode(readme);
         Assertions.assertEquals(readme, Encoding.decode(encoded));
     }
 }

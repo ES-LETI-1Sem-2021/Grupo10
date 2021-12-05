@@ -77,9 +77,7 @@ public class GitHubAPITests {
         System.out.println("Committer: " + commits.getCommitter());
         System.out.println("Number of commits: " + commits.getCommitList().size());
         System.out.println("First commit: " + commits.getCommitList().get(0));
-        System.out.println("First commit date: " + commits.getCommitList().get(0));
-        System.out.println("Lastest commit: " + commits.getCommitList().get(commits.getCommitList().size() - 1).message());
-        System.out.println("Lastest commit date: " + commits.getCommitList().get(commits.getCommitList().size() - 1).date());
+        System.out.println("Lastest commit: " + commits.getCommitList().get(commits.getCommitList().size() - 1));
 
         commits.getCommitList().forEach(commitData -> Assertions.assertNotEquals(null, commitData.message()));
     }

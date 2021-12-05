@@ -43,16 +43,15 @@ public class CardUI extends Thread {
      * @author Rodrigo Guerreiro
      */
     private void showCardInfo() {
-        JEditorPane edt = new JEditorPane();
+        var edt = new JEditorPane();
 
         this.dateLabel.setText("This card was ended at: " + this.dueDate);
         this.dateLabel.setBounds(130, 5, 350, 30);
         this.dateLabel.setVisible(true);
         this.dateLabel.setForeground(new Color(68, 114, 196));
         edt.add(dateLabel);
-        //this.frame.add(dateLabel);
 
-        JScrollPane scrollerLeft = new JScrollPane();
+        var scrollerLeft = new JScrollPane();
 
         edt.setContentType("text/html");
         edt.setText("<br></br><br></br>" + Action.convertMarkdownToHTML(card.getDescription()) + "<br></br><br></br>");
@@ -67,13 +66,11 @@ public class CardUI extends Thread {
 
         frame.add(scrollerLeft);
         frame.setVisible(true);
-
-        //this.frame.add(edt);
     }
 
     public void run() {
         if (this.card.getName().contains("Sprint Retrospective")) {
-            String splitString = this.card.getName().split(" - ")[1];
+            var splitString = this.card.getName().split(" - ")[1];
             try {
                 JElements.addHoursInfo(frame, splitString, trelloAPI);
                 new JElements(frame, trelloAPI.getTotalHoursByUser(splitString, ""));
@@ -90,5 +87,4 @@ public class CardUI extends Thread {
         }
         this.frame.repaint();
     }
-
 }

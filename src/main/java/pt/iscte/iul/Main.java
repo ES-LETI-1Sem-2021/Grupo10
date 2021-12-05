@@ -10,7 +10,6 @@ import java.io.IOException;
  * @author Rodrigo Guerreiro.
  */
 public class Main {
-
     /**
      * Main function to start the application.
      * Sees if the data file exists and if so, reads the data.
@@ -36,13 +35,11 @@ public class Main {
 
                 HomeUI.showFrame(frame);
                 Action.doAction(frame, git, trello, 1);
-            }
-            else{
+            } else {
                 new HomeUI();
             }
         } else {
             new HomeUI();
         }
     }
-
 }

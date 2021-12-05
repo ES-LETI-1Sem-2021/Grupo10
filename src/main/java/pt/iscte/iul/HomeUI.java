@@ -77,8 +77,12 @@ public class HomeUI implements ActionListener {
      * @author Rodrigo Guerreiro
      */
     public static int pop() {
-        return JOptionPane.showConfirmDialog(null, "Would you like to load with the saved information's?",
-                "Warning?", JOptionPane.YES_NO_OPTION);
+        return JOptionPane.showConfirmDialog(
+                null,
+                "Would you like to load with the saved information's?",
+                "Warning?",
+                JOptionPane.YES_NO_OPTION
+        );
     }
 
     /**

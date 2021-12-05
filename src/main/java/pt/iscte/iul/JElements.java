@@ -23,7 +23,6 @@ import static javax.swing.BorderFactory.createEmptyBorder;
  * @author Duarte Casaleiro
  */
 public class JElements implements ActionListener {
-
     private static int rate = 20;
     private final JFrame frame;
     private final JSpinner spinner;
@@ -36,7 +35,7 @@ public class JElements implements ActionListener {
      * Constructor method that initializes the objects and creates a spinner and a button
      * used to calculate the new costs in the tables.
      *
-     * @param frame The frame where the graphs and the tables will be presented
+     * @param frame         The frame where the graphs and the tables will be presented
      * @param hoursPerUsers An arrayList with {@link TrelloAPI.HoursPerUser}
      * @author Rodrigo Guerreiro
      * @author Duarte Casaleiro
@@ -72,8 +71,8 @@ public class JElements implements ActionListener {
      * and in total, as well as the cost.
      *
      * @param hoursPerUsers An arrayList with {@link TrelloAPI.HoursPerUser}
-     * @param frame The frame where the graphs and the tables will be presented
-     * @param spinner An instance for the spinner in order for the user to be able to change costs.
+     * @param frame         The frame where the graphs and the tables will be presented
+     * @param spinner       An instance for the spinner in order for the user to be able to change costs.
      */
     public void addTable(ArrayList<TrelloAPI.HoursPerUser> hoursPerUsers, JFrame frame, JSpinner spinner) {
         var totalEstimated = 0.0;
@@ -171,7 +170,6 @@ public class JElements implements ActionListener {
      * @author Duarte Casaleiro
      */
     public static void addSprintDatesTable(TrelloAPI trelloAPI, JFrame frame) throws IOException {
-
         var numberOfSprints = trelloAPI.queryLists("Done - Sprint").size();
 
         var dates = new String[numberOfSprints + 1][3];
@@ -235,17 +233,17 @@ public class JElements implements ActionListener {
      * by all the users, on all the branches, ordered by:
      * user, branch, date.
      *
-     * @param frame The frame to present the table.
+     * @param frame     The frame to present the table.
      * @param gitHubAPI The instance of the {@link GitHubAPI}.
      * @throws IOException throws exception.
      * @author Rodrigo Guerreiro
      */
-    public static void addCommitsTable(JFrame frame, GitHubAPI gitHubAPI) throws IOException{
+    public static void addCommitsTable(JFrame frame, GitHubAPI gitHubAPI) throws IOException {
         var editorPane = new JEditorPane();
         var scroller = new JScrollPane();
 
         editorPane.setContentType("text/html");
-        editorPane.setText("<br></br><br></br>" + gitHubAPI.convert()[1] +"<br></br><br></br><br></br><br></br>");
+        editorPane.setText("<br></br><br></br>" + gitHubAPI.convert()[1] + "<br></br><br></br><br></br><br></br>");
         editorPane.setEditable(false);
         editorPane.setVisible(true);
         editorPane.setCaretPosition(0);
@@ -254,7 +252,7 @@ public class JElements implements ActionListener {
 
         scroller.setViewportView(editorPane);
         scroller.getVerticalScrollBar().setValue(scroller.getVerticalScrollBar().getMinimum());
-        scroller.setBounds(10, 0, ((2*frame.getWidth()) / 3), frame.getHeight());
+        scroller.setBounds(10, 0, ((2 * frame.getWidth()) / 3), frame.getHeight());
         scroller.setBorder(createEmptyBorder());
 
         frame.add(scroller);
@@ -264,20 +262,19 @@ public class JElements implements ActionListener {
     /**
      * Function that adds a table with all tags and respective date.
      *
-     * @param frame The frame to present the table.
+     * @param frame     The frame to present the table.
      * @param gitHubAPI The instance of the {@link GitHubAPI}.
      * @throws IOException throws exception.
      * @author Duarte Casaleiro, Rodrigo Guerreiro
      */
-    public static void addTagsTable(JFrame frame, GitHubAPI gitHubAPI) throws IOException{
-
+    public static void addTagsTable(JFrame frame, GitHubAPI gitHubAPI) throws IOException {
         var tagsData = gitHubAPI.getTags();
         var names = new String[]{"Tag", "Date"};
         var content = new String[tagsData.size() + 1][2];
         content[0] = names;
 
         for (int i = 0; i < tagsData.size(); i++) {
-            content[i+1] = new String[]{tagsData.get(i).name(), String.valueOf(tagsData.get(i).date())};
+            content[i + 1] = new String[]{tagsData.get(i).name(), String.valueOf(tagsData.get(i).date())};
         }
 
         var table = new JTable(content, names);
@@ -295,13 +292,12 @@ public class JElements implements ActionListener {
     /**
      * Function that adds a table with all complete cards and respective start and end date.
      *
-     * @param frame The frame to present the table.
+     * @param frame     The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.
      * @throws IOException throws exception.
      * @author Duarte Casaleiro, Rodrigo Guerreiro
      */
-    public static void addTestsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
-
+    public static void addTestsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException {
         var testsData = trelloAPI.getFeaturesAndTestsDates();
         var names = new String[]{"Card", "Start Date", "End Date"};
         var content = new String[testsData.size() + 1][4];
@@ -330,12 +326,11 @@ public class JElements implements ActionListener {
     /**
      * Function that adds a table with the spent hours and cost of the cards that generated artifacts.
      *
-     * @param frame The frame to present the table.
+     * @param frame     The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.
      * @throws IOException throws exception.
      */
-    public static void addArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
-
+    public static void addArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException {
         var users10 = trelloAPI.getTotalHoursByUser("Ceremonies", "", true);
 
         var lists = trelloAPI.queryLists("Ceremonies", true);
@@ -389,12 +384,11 @@ public class JElements implements ActionListener {
     /**
      * Function that adds a table with the spent hours and cost of the cards that didn't generated artifacts.
      *
-     * @param frame The frame to present the table.
+     * @param frame     The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.
      * @throws IOException throws exception.
      */
-    public static void addNonArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException{
-
+    public static void addNonArtifactsTable(JFrame frame, TrelloAPI trelloAPI) throws IOException {
         var users10 = trelloAPI.getTotalHoursByUser("Ceremonies", "");
 
         var lists = trelloAPI.queryLists("Ceremonies");
@@ -454,7 +448,7 @@ public class JElements implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         var totalMoney = 0;
-        var multiplier = (int)spinner.getValue();
+        var multiplier = (int) spinner.getValue();
         rate = multiplier;
         for (var i = 1; i != hoursPerUsers.size() + 1; i++) {
             var obj = this.hoursPerUsers.get(i - 1).getSpentHours() * multiplier;

@@ -10,7 +10,6 @@ import java.util.Scanner;
  * @author Rodrigo Guerreiro.
  */
 public class DataReader {
-
     /**
      * Function that reads the data saved in the .txt file regarding the GitHub API
      * and returns an array with that data.
@@ -32,7 +31,6 @@ public class DataReader {
 
         return userGitInfo;
     }
-
 
     /**
      * Function that reads the data saved in the .txt file regarding the Trello API

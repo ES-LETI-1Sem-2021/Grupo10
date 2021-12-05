@@ -169,9 +169,9 @@ public class Action {
         FileWriter writer = new FileWriter("out.csv");
         writer.write(
                 gitHubAPI.convert()[0]
-              + "\n"
-              + trelloAPI.convertToCSV(JElements.getRate(), 3)
-              + "\n"
+                        + "\n"
+                        + trelloAPI.convertToCSV(JElements.getRate(), 3)
+                        + "\n"
         );
         writer.close();
     }

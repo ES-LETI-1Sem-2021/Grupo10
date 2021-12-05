@@ -138,7 +138,8 @@ public class Menus implements ActionListener {
      */
     @NotNull
     private JMenuItem getjMenuItem(GitHubAPI.Collaborators collaborator) {
-        return collaborator.getName() == null ? new JMenuItem(collaborator.getLogin()) : new JMenuItem(collaborator.getName());
+        return collaborator.getName() == null ?
+                new JMenuItem(collaborator.getLogin()) : new JMenuItem(collaborator.getName());
     }
 
     /**
@@ -165,7 +166,6 @@ public class Menus implements ActionListener {
             return object;
         }
     }
-
 
     /**
      * Method that creates a menu item for each list in the board.
@@ -209,7 +209,7 @@ public class Menus implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         //Action performed regarding GitHub
-        try{
+        try {
             gitActionPerformed(e);
             trelloActionPerformed(e);
         } catch (IOException ioException) {
@@ -293,7 +293,7 @@ public class Menus implements ActionListener {
                     }
                 });
 
-        if(Objects.equals(e.getActionCommand(), this.commitsTable.getText())){
+        if (Objects.equals(e.getActionCommand(), this.commitsTable.getText())) {
             Action.clearFrame(this.frame);
             JElements.addCommitsTable(this.frame, this.gitHubAPI);
             JElements.addTagsTable(this.frame, this.gitHubAPI);
@@ -308,7 +308,7 @@ public class Menus implements ActionListener {
      * @author Rodrigo Guerreiro
      */
     private void trelloActionPerformed(ActionEvent e) throws IOException {
-        if(Objects.equals(e.getActionCommand(), this.activity.getText())){
+        if (Objects.equals(e.getActionCommand(), this.activity.getText())) {
             Action.clearFrame(this.frame);
 
             // Threading

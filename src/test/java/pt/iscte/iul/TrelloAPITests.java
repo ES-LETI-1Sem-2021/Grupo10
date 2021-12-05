@@ -95,9 +95,9 @@ public class TrelloAPITests {
                 - Definição de Sprint Backlog;
                 - Definidas as datas das Sprint Retrospectives e Sprint Reviews (30 de outubro);
                 - Discussão sobre o design e arquitetura do trabalho.
-                                
+
                 `Iniciado às 16:44 do dia 9 de outubro`
-                                
+
                 @global 3/3
                 @duartecasaleiro 3/3
                 @mamra2 3/3
@@ -109,14 +109,16 @@ public class TrelloAPITests {
         );
 
         var reviewDescription = """
-                Todos os objetivos (Goals) propostos no Sprint Planning foram implementados com sucesso. Daqui saiu a versão 0.1 do trabalho.
+                Todos os objetivos (Goals) propostos no Sprint Planning foram implementados com sucesso.
+                Daqui saiu a versão 0.1 do trabalho.
+
                 ## Este Sprint teve como resultados:
-                > - Uma GUI funcional, onde é possivel observar:
+                > - Uma GUI funcional, onde é possível observar:
                 >   - O ficheiro [README.md](https://github.com/Roguezilla/ES-LETI-1Sem-2021-Grupo10#readme);
                 >   - Os colaboradores (podendo aceder às suas páginas do GitHub);
                 >   - Nome do projeto e sua data de início.
-                > - Datas de ínicio e fim dos sprints.
-                           
+                > - Datas de início e fim dos sprints.
+
                 @global 1/1
                 @duartecasaleiro 1/1
                 @mamra2 1/1
@@ -131,16 +133,16 @@ public class TrelloAPITests {
                 # Críticas positivas:
                 - Estimativa da duração do sprint
                 - Organização do trabalho a fazer
-                                
+
                 # Críticas negativas:
                 - Estimativa da duração das tarefas
                 - Desequilíbrio na distribuição das tarefas
                 (demasiados cartões para a GUI e poucos para a API do Trello)
-                                
+
                 # A melhorar:
                 - Estimar melhor a duração de cada tarefa
                 - Distribuir melhor o trabalho
-                                
+
                 @global 1/1
                 @duartecasaleiro 1/1
                 @mamra2 1/1
@@ -154,7 +156,7 @@ public class TrelloAPITests {
 
     @Test
     public void totalNumberOfCeremonies() throws IOException {
-        Assertions.assertEquals(16, this.api.getTotalNumberOfCeremonies());
+        Assertions.assertEquals(18, this.api.getTotalNumberOfCeremonies());
     }
 
     @Test
@@ -173,7 +175,7 @@ public class TrelloAPITests {
 
     @Test
     public void numberOfHoursCeremony() throws IOException {
-        Assertions.assertEquals(12.75, this.api.getTotalCeremonyHours());
+        Assertions.assertEquals(14.75, this.api.getTotalCeremonyHours());
     }
 
     @Test

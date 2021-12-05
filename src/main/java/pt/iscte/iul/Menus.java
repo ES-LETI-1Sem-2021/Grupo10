@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -119,10 +118,9 @@ public class Menus implements ActionListener {
      * Method that creates the menus, regarding the trello activity
      * and attaches it to the frame.
      *
-     * @throws IOException exception.
      * @author Duarte Casaleiro, Rodrigo Guerreiro
      */
-    public void trelloMenus() throws IOException {
+    public void trelloMenus() {
         var trello = new JMenu("Trello");
         activity = new JMenuItem("Trello Activity");
 

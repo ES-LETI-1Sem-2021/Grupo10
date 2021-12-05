@@ -13,13 +13,13 @@ import static javax.swing.BorderFactory.createEmptyBorder;
 
 /**
  * Class where all the magic happens.
+ * Auxiliary functions that support other classes.
  *
  * @author Rodrigo Guerreiro.
  */
 public class Action {
     /**
      * Function that does everything.
-     * Auxiliary functions that support other classes.
      * Connects the UI's to the API's.
      *
      * @param frame          The frame to attach the info.

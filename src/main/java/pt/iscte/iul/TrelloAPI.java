@@ -386,7 +386,7 @@ public class TrelloAPI {
     /**
      * Method that returns the dates of features' and tests' implementation.
      *
-     * @return Start and end dates of features and tests.
+     * @return A {@link Map} with the start and end dates of features and tests and the card associated.
      * @throws IOException If the request fails.
      * @author Miguel Romana.
      */

@@ -176,7 +176,7 @@ public class TrelloAPITests {
 
     @Test
     public void numberOfHoursCeremony() throws IOException {
-        Assertions.assertEquals(14.75, this.api.getTotalCeremonyHours());
+        Assertions.assertEquals(16.25, this.api.getTotalCeremonyHours());
     }
 
     @Test

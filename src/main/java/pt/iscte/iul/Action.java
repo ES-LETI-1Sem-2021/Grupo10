@@ -19,6 +19,7 @@ import static javax.swing.BorderFactory.createEmptyBorder;
 public class Action {
     /**
      * Function that does everything.
+     * Auxiliary functions that support other classes.
      * Connects the UI's to the API's.
      *
      * @param frame          The frame to attach the info.

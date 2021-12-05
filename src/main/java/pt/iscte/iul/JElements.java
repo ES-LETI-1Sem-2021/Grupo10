@@ -262,7 +262,7 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Function that adds a table with all tags and respective date
+     * Function that adds a table with all tags and respective date.
      *
      * @param frame The frame to present the table.
      * @param gitHubAPI The instance of the {@link GitHubAPI}.
@@ -293,7 +293,7 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Function that adds a table with all complete cards and respective start and end date
+     * Function that adds a table with all complete cards and respective start and end date.
      *
      * @param frame The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.
@@ -328,7 +328,7 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Function that adds a table with the spent hours and cost of the cards that generated artifacts
+     * Function that adds a table with the spent hours and cost of the cards that generated artifacts.
      *
      * @param frame The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.
@@ -387,7 +387,7 @@ public class JElements implements ActionListener {
     }
 
     /**
-     * Function that adds a table with the spent hours and cost of the cards that didn't generated artifacts
+     * Function that adds a table with the spent hours and cost of the cards that didn't generated artifacts.
      *
      * @param frame The frame to present the table.
      * @param trelloAPI The instance of the {@link TrelloAPI}.

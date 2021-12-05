@@ -294,7 +294,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param sprintNumber Spring number.
+     * @param sprintNumber Sprint number.
      * @return An array with the start date [0] and the end date [1] of the specific sprint.
      * @throws IOException If the request fails.
      */
@@ -322,8 +322,8 @@ public class TrelloAPI {
     }
 
     /**
-     * @param sprintType   Spring type.
-     * @param sprintNumber Spring number.
+     * @param sprintType   Sprint type.
+     * @param sprintNumber Sprint number.
      * @return Description of the ceremony in question.
      * @throws IOException If the request fails.
      * @author Miguel Romana.
@@ -339,7 +339,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param sprintNumber Spring number.
+     * @param sprintNumber Sprint number.
      * @return An {@link ArrayList} of all the products already done in the specific sprint.
      * @throws IOException If the request fails.
      */
@@ -368,7 +368,7 @@ public class TrelloAPI {
     }
 
     /**
-     * @param sprintNumber Spring number.
+     * @param sprintNumber Sprint number.
      * @return Number of ceremonies.
      * @throws IOException If the request fails.
      */

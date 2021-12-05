@@ -35,4 +35,7 @@
 >     - Aos cartões que originaram artefactos.
 >   - As etiquetas do branch master;
 >   - Datas de início e fim de testes e funcionalidades;
-> - Informação exportada para ficheiro .csv (`out.csv`);
+> - Informação exportada para ficheiro .csv (out.csv);
+
+### Todos os requisitos foram implementados de acordo com o pedido no enunciado.
+### Apesar da aquisição da informação ser ligeiramente lenta, está tudo implementado sem erros.

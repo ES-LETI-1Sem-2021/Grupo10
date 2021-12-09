@@ -1,6 +1,7 @@
 # Aplicação para monitorização e avaliação de progresso de projetos de software que seguem a abordagem SCRUM
 ---
 
+# olá
 # Projeto desenvolvido por:
 > - 92697 - Duarte Casaleiro
 > - 92688 - Miguel Romana

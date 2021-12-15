@@ -4,14 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>pt.iscte.iul</groupId>
-    <artifactId>ES-LETI-1Sem-2021-Grupo10</artifactId>
-    <version>1.0-SNAPSHOT</version>
+	<groupId>pt.iscte.grupo10</groupId>
+	<artifactId>Grupo10</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	
+	<name>Grupo10</name>
+	<url>https://github.com/ES-LETI-1Sem-2021/Grupo10</url>	
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		  <sonar.organization>es-leti-1sem-2021</sonar.organization>
+		  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+	</properties>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
@@ -21,23 +27,27 @@
             <version>5.8.1</version>
             <scope>test</scope>
         </dependency>
+        
         <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>4.9.2</version>
         </dependency>
+        
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.13.0</version>
         </dependency>
+        
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
         </dependency>
+    
     </dependencies>
 </project>
